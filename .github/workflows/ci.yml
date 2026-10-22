@@ -1,7 +1,7 @@
-# The checks every change has to pass, in two jobs that run in parallel (the import rules of the
-# architecture, and everything else) and in steps, so that the one that fails is the first thing the
-# run page shows. They are the commands listed in the "Checks" section of the README, so anyone can
-# run them locally.
+# The checks every change has to pass, in three jobs that run in parallel (the import rules of the
+# architecture, everything else, and the parity of the tests with the React Native app) and in
+# steps, so that the one that fails is the first thing the run page shows. They are the commands
+# listed in the "Checks" section of the README, so anyone can run them locally.
 name: CI
 
 on:
@@ -69,15 +69,21 @@ jobs:
       - name: Install the dependencies
         run: flutter pub get
 
+      # The freezed classes of the domain (*.freezed.dart) are not committed: the analysis and the
+      # tests need them.
+      - name: Generate the code (build_runner)
+        run: dart run build_runner build
+
       - name: Format check
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze
         run: flutter analyze --fatal-infos --fatal-warnings
 
-      # The tests of the pure Dart folders run with `dart test`, not `flutter test`: that is the proof
-      # that the domain, the application and the tooling need no Flutter. A folder with no test file
-      # yet is skipped, because `dart test` fails on a folder that has none.
+      # The tests of the pure Dart folders (test/domain, test/application and the tooling in
+      # test/tool) run with `dart test`, not `flutter test`: that is the proof that the domain, the
+      # application and the tooling need no Flutter. A folder with no test file yet is skipped,
+      # because `dart test` fails on a folder that has none.
       - name: Pure Dart tests (without Flutter)
         run: |
           folders=()
@@ -116,3 +122,44 @@ jobs:
           path: coverage/lcov.info
           if-no-files-found: ignore
           retention-days: 14
+
+  # The Flutter tests of the domain and of the application are the scenarios of the React Native
+  # ones, one for one: same names, same assertions. The React Native repository is checked out at the
+  # commit that docs/parity/RN_COMMIT pins, so that a change on its side is a decision (a new commit
+  # in that file) and never a surprise. The script (tool/scenario_parity.dart) reads its test
+  # sources, asks `dart test` for the names of the Dart tests, and fails on any difference that
+  # docs/parity/exceptions.md and docs/parity/extras.md do not explain.
+  parity:
+    name: Scenario parity with React Native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Read the pinned React Native commit
+        id: rn
+        run: echo "commit=$(tr -d '[:space:]' < docs/parity/RN_COMMIT)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the React Native repository
+        uses: actions/checkout@v7
+        with:
+          repository: Rileyjrjohns/boardroom
+          ref: ${{ steps.rn.outputs.commit }}
+          path: boardroom-rn
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - name: Install the dependencies
+        run: flutter pub get
+
+      - name: Generate the code (build_runner)
+        run: dart run build_runner build
+
+      - name: Compare the scenarios
+        run: dart run tool/scenario_parity.dart --rn boardroom-rn
