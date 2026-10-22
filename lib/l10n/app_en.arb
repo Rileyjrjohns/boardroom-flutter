@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "Boardroom",
+  "@appTitle": {
+    "description": "Name of the app, shown in the task switcher and as the title of the home screen."
+  },
+  "homeComingSoon": "Your board meetings, documents and votes are coming soon.",
+  "@homeComingSoon": {
+    "description": "Placeholder line of the home screen while the first feature is being built."
+  }
+}
