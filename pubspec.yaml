@@ -11,21 +11,31 @@ environment:
   flutter: 3.47.4
 
 dependencies:
+  # Deep equality of lists and maps (DeepCollectionEquality), pure Dart: Result and the entities compare by value.
+  collection: ^1.19.1
   flutter:
     sdk: flutter
   # gen-l10n output (AppLocalizations) depends on it: the localization delegates and the ARB message formatting.
   flutter_localizations:
     sdk: flutter
+  # Annotations (@freezed) read by the freezed generator for the immutable entities of the domain, pure Dart.
+  freezed_annotation: ^3.1.0
   # Used by the generated AppLocalizations to format dates and plurals.
   intl: ^0.20.3
+  # @immutable on Result and the errors, whose equality is overridden; annotations only, pure Dart.
+  meta: ^1.19.0
 
 dev_dependencies:
-  # Parses the import/export/part directives in tool/check_imports.dart (syntax only, no resolution).
+  # Parses the import/export/part directives in tool/check_imports.dart and the test names in tool/scenario_parity.dart (syntax only, no resolution).
   analyzer: ^13.3.0
+  # Runs the code generators (freezed): `dart run build_runner build`.
+  build_runner: ^2.16.1
   # Widget tests (pumpWidget, finders).
   flutter_test:
     sdk: flutter
-  # Joins and normalizes the paths of the files read by tool/check_imports.dart.
+  # Generates the *.freezed.dart files of the entities (equality, copyWith, toString).
+  freezed: ^4.0.1
+  # Joins and normalizes the paths of the files read by tool/check_imports.dart and tool/scenario_parity.dart.
   path: ^1.9.1
   # Lets the pure Dart layers (domain, application) run under plain `dart test`, without Flutter.
   test: ^1.31.1
