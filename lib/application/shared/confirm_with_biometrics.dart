@@ -1,0 +1,14 @@
+import 'package:boardroom/application/ports/biometric_gate.dart';
+import 'package:boardroom/domain/errors/app_error.dart';
+import 'package:boardroom/domain/shared/result.dart';
+
+/// Asks the user for a biometric proof. The capability is checked first, so
+/// that a device without biometrics, or without enrolment, is reported without
+/// ever showing a prompt.
+Future<Result<void, BiometricError>> confirmWithBiometrics(
+  BiometricGate gate,
+  BiometricReason reason,
+) => andThenAsync<void, void, BiometricError>(
+  gate.checkAvailability(),
+  (_) => gate.authenticate(reason),
+);
