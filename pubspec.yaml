@@ -1,0 +1,38 @@
+name: boardroom
+description: "Board meetings, documents and votes: the Flutter port of Boardroom."
+# Private app, never published to pub.dev.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.3
+  # Read by subosito/flutter-action (flutter-version-file: pubspec.yaml), so CI and local use one version.
+  flutter: 3.47.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # gen-l10n output (AppLocalizations) depends on it: the localization delegates and the ARB message formatting.
+  flutter_localizations:
+    sdk: flutter
+  # Used by the generated AppLocalizations to format dates and plurals.
+  intl: ^0.20.3
+
+dev_dependencies:
+  # Parses the import/export/part directives in tool/check_imports.dart (syntax only, no resolution).
+  analyzer: ^13.3.0
+  # Widget tests (pumpWidget, finders).
+  flutter_test:
+    sdk: flutter
+  # Joins and normalizes the paths of the files read by tool/check_imports.dart.
+  path: ^1.9.1
+  # Lets the pure Dart layers (domain, application) run under plain `dart test`, without Flutter.
+  test: ^1.31.1
+  # Strict lint rule set, the base of analysis_options.yaml.
+  very_good_analysis: 11.0.0
+
+flutter:
+  # Generates lib/l10n output (AppLocalizations) from the ARB files, configured in l10n.yaml.
+  generate: true
+  uses-material-design: true

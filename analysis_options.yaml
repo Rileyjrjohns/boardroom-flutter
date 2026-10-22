@@ -1,0 +1,25 @@
+# Strict lint for the whole project. very_good_analysis already enables a long list of rules;
+# the analyzer settings below turn the type system up to its strictest and promote the
+# mistakes that must never reach CI to errors.
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    missing_required_param: error
+    missing_return: error
+  exclude:
+    # Generated code is never linted nor committed (see the README for the commands that rebuild it).
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'
+    - '.dart_tool/**'
+    - 'build/**'
+    - 'lib/l10n/app_localizations*.dart'
+    # Written by tool/coverage_helper.dart: imports every library, only to load them.
+    - 'test/coverage_helper_test.dart'
+    # Native projects hold no Dart code to lint.
+    - 'android/**'
+    - 'ios/**'
