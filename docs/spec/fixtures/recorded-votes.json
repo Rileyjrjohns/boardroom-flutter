@@ -1,0 +1,439 @@
+{
+  "referenceDate": "2026-10-01T08:00:00.000Z",
+  "recordedVotes": [
+    {
+      "castAt": "2026-10-01T06:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-001",
+      "resolutionId": "meeting-001-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-29T09:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-025",
+      "resolutionId": "meeting-025-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-09-29T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-025",
+      "resolutionId": "meeting-025-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-09-21T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-027",
+      "resolutionId": "meeting-027-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-21T14:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-027",
+      "resolutionId": "meeting-027-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-17T16:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-028",
+      "resolutionId": "meeting-028-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-17T16:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-028",
+      "resolutionId": "meeting-028-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-09-13T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-029",
+      "resolutionId": "meeting-029-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-13T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-029",
+      "resolutionId": "meeting-029-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-09-05T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-031",
+      "resolutionId": "meeting-031-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-09-05T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-031",
+      "resolutionId": "meeting-031-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-09-01T16:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-032",
+      "resolutionId": "meeting-032-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-28T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-033",
+      "resolutionId": "meeting-033-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-28T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-033",
+      "resolutionId": "meeting-033-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-16T16:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-036",
+      "resolutionId": "meeting-036-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-12T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-037",
+      "resolutionId": "meeting-037-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-12T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-037",
+      "resolutionId": "meeting-037-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-12T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-037",
+      "resolutionId": "meeting-037-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-08-12T09:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-037",
+      "resolutionId": "meeting-037-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-08-08T10:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-038",
+      "resolutionId": "meeting-038-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-04T14:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-039",
+      "resolutionId": "meeting-039-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-08-04T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-039",
+      "resolutionId": "meeting-039-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-31T16:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-040",
+      "resolutionId": "meeting-040-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-07-27T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-041",
+      "resolutionId": "meeting-041-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-27T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-041",
+      "resolutionId": "meeting-041-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-19T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-043",
+      "resolutionId": "meeting-043-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-19T14:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-043",
+      "resolutionId": "meeting-043-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-19T14:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-043",
+      "resolutionId": "meeting-043-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-07-19T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-043",
+      "resolutionId": "meeting-043-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-07-15T16:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-044",
+      "resolutionId": "meeting-044-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-07T10:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-046",
+      "resolutionId": "meeting-046-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-07T10:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-046",
+      "resolutionId": "meeting-046-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-07-03T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-047",
+      "resolutionId": "meeting-047-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-07-03T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-047",
+      "resolutionId": "meeting-047-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-29T16:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-048",
+      "resolutionId": "meeting-048-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-25T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-049",
+      "resolutionId": "meeting-049-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-25T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-049",
+      "resolutionId": "meeting-049-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-25T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-049",
+      "resolutionId": "meeting-049-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-06-25T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-049",
+      "resolutionId": "meeting-049-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-06-17T14:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-051",
+      "resolutionId": "meeting-051-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-17T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-051",
+      "resolutionId": "meeting-051-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-13T16:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-052",
+      "resolutionId": "meeting-052-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-13T16:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-052",
+      "resolutionId": "meeting-052-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-06-09T09:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-053",
+      "resolutionId": "meeting-053-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-09T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-053",
+      "resolutionId": "meeting-053-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-05T10:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-054",
+      "resolutionId": "meeting-054-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-06-01T14:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-055",
+      "resolutionId": "meeting-055-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-06-01T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-055",
+      "resolutionId": "meeting-055-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-05-28T16:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-056",
+      "resolutionId": "meeting-056-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-24T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-057",
+      "resolutionId": "meeting-057-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-24T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-057",
+      "resolutionId": "meeting-057-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-16T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-059",
+      "resolutionId": "meeting-059-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-16T14:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-059",
+      "resolutionId": "meeting-059-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-08T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-061",
+      "resolutionId": "meeting-061-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-08T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-061",
+      "resolutionId": "meeting-061-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-05-08T09:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-061",
+      "resolutionId": "meeting-061-resolution-minutes",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-05-08T09:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-061",
+      "resolutionId": "meeting-061-resolution-subject",
+      "voterId": "user-bruno"
+    },
+    {
+      "castAt": "2026-05-04T10:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-062",
+      "resolutionId": "meeting-062-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-04-30T14:00:00.000Z",
+      "choice": "against",
+      "meetingId": "meeting-063",
+      "resolutionId": "meeting-063-resolution-minutes",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-04-30T14:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-063",
+      "resolutionId": "meeting-063-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-04-26T16:00:00.000Z",
+      "choice": "for",
+      "meetingId": "meeting-064",
+      "resolutionId": "meeting-064-resolution-subject",
+      "voterId": "user-alice"
+    },
+    {
+      "castAt": "2026-04-26T16:00:00.000Z",
+      "choice": "abstain",
+      "meetingId": "meeting-064",
+      "resolutionId": "meeting-064-resolution-subject",
+      "voterId": "user-bruno"
+    }
+  ]
+}

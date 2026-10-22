@@ -1,0 +1,5795 @@
+{
+  "referenceDate": "2026-10-01T08:00:00.000Z",
+  "meetings": [
+    {
+      "agenda": [
+        {
+          "id": "meeting-001-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-001-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-10-03T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-001-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the half-year financial statements.",
+          "id": "meeting-001-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-03T11:00:00.000Z",
+            "description": "The board approves the consolidated financial statements for the first half of the year, as presented by the chief financial officer.",
+            "id": "meeting-001-resolution-subject",
+            "status": "open",
+            "title": "Approve the half-year financial statements"
+          },
+          "title": "Half-year financial statements"
+        },
+        {
+          "id": "meeting-001-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-001-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-001-document-2",
+          "pageCount": 38,
+          "title": "Consolidated half-year financial statements"
+        }
+      ],
+      "id": "meeting-001",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-10-03T09:00:00.000Z",
+      "title": "Audit committee: Half-year financial statements, session 8"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-002-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-002-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the annual budget.",
+          "id": "meeting-002-item-3",
+          "position": 3,
+          "resolution": {
+            "description": "The board approves the budget of the next financial year, including the investment envelope and the hiring plan.",
+            "id": "meeting-002-resolution-subject",
+            "status": "open",
+            "title": "Approve the annual budget"
+          },
+          "title": "Annual budget"
+        },
+        {
+          "id": "meeting-002-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-002-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-002-document-2",
+          "pageCount": 52,
+          "title": "Budget proposal"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-002-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-002",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-10-06T10:00:00.000Z",
+      "title": "Board of directors: Annual budget, session 15"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-003-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-003-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-10-10T14:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-003-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the dividend policy.",
+          "id": "meeting-003-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-10T14:00:00.000Z",
+            "description": "The board approves the dividend to be proposed to the shareholders at the next general meeting.",
+            "id": "meeting-003-resolution-subject",
+            "status": "open",
+            "title": "Approve the dividend proposal"
+          },
+          "title": "Dividend policy"
+        },
+        {
+          "id": "meeting-003-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-003-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-003-document-2",
+          "pageCount": 12,
+          "title": "Dividend recommendation"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-003-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-003",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-10-09T14:00:00.000Z",
+      "title": "Board of directors: Dividend policy, session 16"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-004-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-004-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the cybersecurity review.",
+          "id": "meeting-004-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-12T18:00:00.000Z",
+            "description": "The committee approves the action plan that follows the penetration tests of the year.",
+            "id": "meeting-004-resolution-subject",
+            "status": "open",
+            "title": "Approve the cybersecurity action plan"
+          },
+          "title": "Cybersecurity review"
+        },
+        {
+          "id": "meeting-004-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-004-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-004-document-2",
+          "pageCount": 27,
+          "title": "Cybersecurity incident report"
+        }
+      ],
+      "id": "meeting-004",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "guest",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-10-12T16:00:00.000Z",
+      "title": "Risk committee: Cybersecurity review, session 8"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-005-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-005-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-10-15T13:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-005-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the acquisition of a logistics company.",
+          "id": "meeting-005-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-15T13:00:00.000Z",
+            "description": "The committee authorises the chief executive to submit a binding offer within the limits of the approved valuation.",
+            "id": "meeting-005-resolution-subject",
+            "status": "open",
+            "title": "Authorise the acquisition offer"
+          },
+          "title": "Acquisition of a logistics company"
+        },
+        {
+          "id": "meeting-005-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-005-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-005-document-2",
+          "pageCount": 64,
+          "title": "Due diligence summary"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-005-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-005",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-10-15T09:00:00.000Z",
+      "title": "Strategy committee: Acquisition of a logistics company, session 8"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-006-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-006-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the executive remuneration.",
+          "id": "meeting-006-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-19T10:00:00.000Z",
+            "description": "The committee approves the remuneration policy of the executive team for the coming year.",
+            "id": "meeting-006-resolution-subject",
+            "status": "open",
+            "title": "Approve the executive remuneration policy"
+          },
+          "title": "Executive remuneration"
+        },
+        {
+          "id": "meeting-006-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-006-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-006-document-2",
+          "pageCount": 31,
+          "title": "Remuneration benchmark study"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-006-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-006",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-10-18T10:00:00.000Z",
+      "title": "Remuneration committee: Executive remuneration, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-007-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-007-item-2",
+          "position": 2,
+          "resolution": {
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-007-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-007-item-3",
+          "position": 3,
+          "resolution": {
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-007-resolution-subject",
+            "status": "open",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-007-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-007-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-007-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        }
+      ],
+      "id": "meeting-007",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-10-21T14:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 17"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-008-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-008-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-008-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-24T20:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-008-resolution-subject",
+            "status": "open",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-008-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-008-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-008-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-008-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-008",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-10-24T16:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 9"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-009-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-009-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-10-28T09:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-009-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-009-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-28T09:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-009-resolution-subject",
+            "status": "open",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-009-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-009-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-009-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-009-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-009",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-10-27T09:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-010-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-010-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-010-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-10-30T12:00:00.000Z",
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-010-resolution-subject",
+            "status": "open",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-010-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-010-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-010-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        }
+      ],
+      "id": "meeting-010",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-10-30T10:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 18"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-011-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-011-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-11-02T18:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-011-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-011-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-02T18:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-011-resolution-subject",
+            "status": "open",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-011-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-011-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-011-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-011-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-011",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-11-02T14:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 9"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-012-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-012-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-012-item-3",
+          "position": 3,
+          "resolution": {
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-012-resolution-subject",
+            "status": "open",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-012-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-012-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-012-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-012-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-012",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-11-05T16:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 9"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-013-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-013-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-11-08T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-013-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the half-year financial statements.",
+          "id": "meeting-013-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-08T11:00:00.000Z",
+            "description": "The board approves the consolidated financial statements for the first half of the year, as presented by the chief financial officer.",
+            "id": "meeting-013-resolution-subject",
+            "status": "open",
+            "title": "Approve the half-year financial statements"
+          },
+          "title": "Half-year financial statements"
+        },
+        {
+          "id": "meeting-013-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-013-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-013-document-2",
+          "pageCount": 38,
+          "title": "Consolidated half-year financial statements"
+        }
+      ],
+      "id": "meeting-013",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "secretary",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "member",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-11-08T09:00:00.000Z",
+      "title": "Audit committee: Half-year financial statements, session 10"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-014-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-014-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the annual budget.",
+          "id": "meeting-014-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-11T14:00:00.000Z",
+            "description": "The board approves the budget of the next financial year, including the investment envelope and the hiring plan.",
+            "id": "meeting-014-resolution-subject",
+            "status": "open",
+            "title": "Approve the annual budget"
+          },
+          "title": "Annual budget"
+        },
+        {
+          "id": "meeting-014-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-014-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-014-document-2",
+          "pageCount": 52,
+          "title": "Budget proposal"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-014-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-014",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-11-11T10:00:00.000Z",
+      "title": "Board of directors: Annual budget, session 19"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-015-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-015-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-11-15T14:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-015-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the dividend policy.",
+          "id": "meeting-015-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-15T14:00:00.000Z",
+            "description": "The board approves the dividend to be proposed to the shareholders at the next general meeting.",
+            "id": "meeting-015-resolution-subject",
+            "status": "open",
+            "title": "Approve the dividend proposal"
+          },
+          "title": "Dividend policy"
+        },
+        {
+          "id": "meeting-015-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-015-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-015-document-2",
+          "pageCount": 12,
+          "title": "Dividend recommendation"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-015-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-015",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-11-14T14:00:00.000Z",
+      "title": "Board of directors: Dividend policy, session 20"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-016-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-016-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the cybersecurity review.",
+          "id": "meeting-016-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-17T18:00:00.000Z",
+            "description": "The committee approves the action plan that follows the penetration tests of the year.",
+            "id": "meeting-016-resolution-subject",
+            "status": "open",
+            "title": "Approve the cybersecurity action plan"
+          },
+          "title": "Cybersecurity review"
+        },
+        {
+          "id": "meeting-016-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-016-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-016-document-2",
+          "pageCount": 27,
+          "title": "Cybersecurity incident report"
+        }
+      ],
+      "id": "meeting-016",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-11-17T16:00:00.000Z",
+      "title": "Risk committee: Cybersecurity review, session 10"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-017-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-017-item-2",
+          "position": 2,
+          "resolution": {
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-017-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the acquisition of a logistics company.",
+          "id": "meeting-017-item-3",
+          "position": 3,
+          "resolution": {
+            "description": "The committee authorises the chief executive to submit a binding offer within the limits of the approved valuation.",
+            "id": "meeting-017-resolution-subject",
+            "status": "open",
+            "title": "Authorise the acquisition offer"
+          },
+          "title": "Acquisition of a logistics company"
+        },
+        {
+          "id": "meeting-017-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-017-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-017-document-2",
+          "pageCount": 64,
+          "title": "Due diligence summary"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-017-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-017",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-11-20T09:00:00.000Z",
+      "title": "Strategy committee: Acquisition of a logistics company, session 10"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-018-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-018-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the executive remuneration.",
+          "id": "meeting-018-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-24T10:00:00.000Z",
+            "description": "The committee approves the remuneration policy of the executive team for the coming year.",
+            "id": "meeting-018-resolution-subject",
+            "status": "open",
+            "title": "Approve the executive remuneration policy"
+          },
+          "title": "Executive remuneration"
+        },
+        {
+          "id": "meeting-018-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-018-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-018-document-2",
+          "pageCount": 31,
+          "title": "Remuneration benchmark study"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-018-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-018",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-11-23T10:00:00.000Z",
+      "title": "Remuneration committee: Executive remuneration, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-019-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-019-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-11-26T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-019-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-019-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-26T16:00:00.000Z",
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-019-resolution-subject",
+            "status": "open",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-019-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-019-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-019-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        }
+      ],
+      "id": "meeting-019",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-11-26T14:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 21"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-020-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-020-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-020-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-11-29T20:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-020-resolution-subject",
+            "status": "open",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-020-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-020-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-020-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-020-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-020",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-11-29T16:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 11"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-021-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-021-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-12-03T09:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-021-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-021-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-12-03T09:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-021-resolution-subject",
+            "status": "open",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-021-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-021-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-021-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-021-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-021",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-12-02T09:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 6"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-022-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-022-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-022-item-3",
+          "position": 3,
+          "resolution": {
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-022-resolution-subject",
+            "status": "open",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-022-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-022-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-022-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        }
+      ],
+      "id": "meeting-022",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-12-05T10:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 22"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-023-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-023-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-12-08T18:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-023-resolution-minutes",
+            "status": "open",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-023-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-12-08T18:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-023-resolution-subject",
+            "status": "open",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-023-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-023-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-023-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-023-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-023",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-12-08T14:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 11"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-024-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-024-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-024-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-12-12T16:00:00.000Z",
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-024-resolution-subject",
+            "status": "open",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-024-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-024-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-024-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-024-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-024",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-12-11T16:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 11"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-025-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-025-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-09-29T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-025-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-025-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-29T11:00:00.000Z",
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-025-resolution-subject",
+            "status": "closed",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-025-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-025-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-025-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        }
+      ],
+      "id": "meeting-025",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-09-29T09:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 7"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-026-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-026-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-026-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-25T12:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-026-resolution-subject",
+            "status": "open",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-026-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-026-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-026-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-026-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-026",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-09-25T10:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 7"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-027-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-027-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-09-21T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-027-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-027-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-21T16:00:00.000Z",
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-027-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-027-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-027-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-027-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-027-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-027",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-09-21T14:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 14"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-028-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-028-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-028-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-17T18:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-028-resolution-subject",
+            "status": "closed",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-028-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-028-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-028-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        }
+      ],
+      "id": "meeting-028",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-09-17T16:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-029-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-029-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-09-13T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-029-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-029-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-13T11:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-029-resolution-subject",
+            "status": "closed",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-029-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-029-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-029-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-029-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-029",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-09-13T09:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 7"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-030-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-030-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-030-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-09T12:00:00.000Z",
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-030-resolution-subject",
+            "status": "closed",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-030-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-030-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-030-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-030-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-030",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-09-09T10:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 13"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-031-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-031-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-09-05T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-031-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the executive remuneration.",
+          "id": "meeting-031-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-05T16:00:00.000Z",
+            "description": "The committee approves the remuneration policy of the executive team for the coming year.",
+            "id": "meeting-031-resolution-subject",
+            "status": "closed",
+            "title": "Approve the executive remuneration policy"
+          },
+          "title": "Executive remuneration"
+        },
+        {
+          "id": "meeting-031-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-031-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-031-document-2",
+          "pageCount": 31,
+          "title": "Remuneration benchmark study"
+        }
+      ],
+      "id": "meeting-031",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "guest",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-09-05T14:00:00.000Z",
+      "title": "Remuneration committee: Executive remuneration, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-032-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-032-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the acquisition of a logistics company.",
+          "id": "meeting-032-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-09-01T18:00:00.000Z",
+            "description": "The committee authorises the chief executive to submit a binding offer within the limits of the approved valuation.",
+            "id": "meeting-032-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the acquisition offer"
+          },
+          "title": "Acquisition of a logistics company"
+        },
+        {
+          "id": "meeting-032-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-032-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-032-document-2",
+          "pageCount": 64,
+          "title": "Due diligence summary"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-032-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-032",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-09-01T16:00:00.000Z",
+      "title": "Strategy committee: Acquisition of a logistics company, session 6"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-033-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-033-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-08-28T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-033-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the cybersecurity review.",
+          "id": "meeting-033-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-28T11:00:00.000Z",
+            "description": "The committee approves the action plan that follows the penetration tests of the year.",
+            "id": "meeting-033-resolution-subject",
+            "status": "closed",
+            "title": "Approve the cybersecurity action plan"
+          },
+          "title": "Cybersecurity review"
+        },
+        {
+          "id": "meeting-033-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-033-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-033-document-2",
+          "pageCount": 27,
+          "title": "Cybersecurity incident report"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-033-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-033",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-08-28T09:00:00.000Z",
+      "title": "Risk committee: Cybersecurity review, session 6"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-034-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-034-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the dividend policy.",
+          "id": "meeting-034-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-24T12:00:00.000Z",
+            "description": "The board approves the dividend to be proposed to the shareholders at the next general meeting.",
+            "id": "meeting-034-resolution-subject",
+            "status": "open",
+            "title": "Approve the dividend proposal"
+          },
+          "title": "Dividend policy"
+        },
+        {
+          "id": "meeting-034-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-034-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-034-document-2",
+          "pageCount": 12,
+          "title": "Dividend recommendation"
+        }
+      ],
+      "id": "meeting-034",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-08-24T10:00:00.000Z",
+      "title": "Board of directors: Dividend policy, session 12"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-035-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-035-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-08-20T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-035-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the annual budget.",
+          "id": "meeting-035-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-20T16:00:00.000Z",
+            "description": "The board approves the budget of the next financial year, including the investment envelope and the hiring plan.",
+            "id": "meeting-035-resolution-subject",
+            "status": "closed",
+            "title": "Approve the annual budget"
+          },
+          "title": "Annual budget"
+        },
+        {
+          "id": "meeting-035-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-035-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-035-document-2",
+          "pageCount": 52,
+          "title": "Budget proposal"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-035-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-035",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-08-20T14:00:00.000Z",
+      "title": "Board of directors: Annual budget, session 11"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-036-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-036-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the half-year financial statements.",
+          "id": "meeting-036-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-16T18:00:00.000Z",
+            "description": "The board approves the consolidated financial statements for the first half of the year, as presented by the chief financial officer.",
+            "id": "meeting-036-resolution-subject",
+            "status": "closed",
+            "title": "Approve the half-year financial statements"
+          },
+          "title": "Half-year financial statements"
+        },
+        {
+          "id": "meeting-036-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-036-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-036-document-2",
+          "pageCount": 38,
+          "title": "Consolidated half-year financial statements"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-036-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-036",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-08-16T16:00:00.000Z",
+      "title": "Audit committee: Half-year financial statements, session 6"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-037-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-037-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-08-12T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-037-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-037-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-12T11:00:00.000Z",
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-037-resolution-subject",
+            "status": "closed",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-037-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-037-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-037-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        }
+      ],
+      "id": "meeting-037",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-08-12T09:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-038-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-038-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-038-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-08T12:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-038-resolution-subject",
+            "status": "closed",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-038-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-038-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-038-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-038-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-038",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-08-08T10:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-039-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-039-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-08-04T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-039-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-039-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-08-04T16:00:00.000Z",
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-039-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-039-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-039-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-039-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-039-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-039",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-08-04T14:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 10"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-040-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-040-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-040-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-31T18:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-040-resolution-subject",
+            "status": "closed",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-040-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-040-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-040-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        }
+      ],
+      "id": "meeting-040",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-07-31T16:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-041-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-041-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-07-27T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-041-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-041-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-27T11:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-041-resolution-subject",
+            "status": "closed",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-041-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-041-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-041-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-041-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-041",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-07-27T09:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-042-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-042-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-042-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-23T12:00:00.000Z",
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-042-resolution-subject",
+            "status": "open",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-042-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-042-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-042-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-042-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-042",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-07-23T10:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 9"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-043-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-043-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-07-19T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-043-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the executive remuneration.",
+          "id": "meeting-043-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-19T16:00:00.000Z",
+            "description": "The committee approves the remuneration policy of the executive team for the coming year.",
+            "id": "meeting-043-resolution-subject",
+            "status": "closed",
+            "title": "Approve the executive remuneration policy"
+          },
+          "title": "Executive remuneration"
+        },
+        {
+          "id": "meeting-043-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-043-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-043-document-2",
+          "pageCount": 31,
+          "title": "Remuneration benchmark study"
+        }
+      ],
+      "id": "meeting-043",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-07-19T14:00:00.000Z",
+      "title": "Remuneration committee: Executive remuneration, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-044-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-044-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the acquisition of a logistics company.",
+          "id": "meeting-044-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-15T18:00:00.000Z",
+            "description": "The committee authorises the chief executive to submit a binding offer within the limits of the approved valuation.",
+            "id": "meeting-044-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the acquisition offer"
+          },
+          "title": "Acquisition of a logistics company"
+        },
+        {
+          "id": "meeting-044-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-044-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-044-document-2",
+          "pageCount": 64,
+          "title": "Due diligence summary"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-044-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-044",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-07-15T16:00:00.000Z",
+      "title": "Strategy committee: Acquisition of a logistics company, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-045-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-045-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-07-11T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-045-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the cybersecurity review.",
+          "id": "meeting-045-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-11T11:00:00.000Z",
+            "description": "The committee approves the action plan that follows the penetration tests of the year.",
+            "id": "meeting-045-resolution-subject",
+            "status": "closed",
+            "title": "Approve the cybersecurity action plan"
+          },
+          "title": "Cybersecurity review"
+        },
+        {
+          "id": "meeting-045-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-045-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-045-document-2",
+          "pageCount": 27,
+          "title": "Cybersecurity incident report"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-045-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-045",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-07-11T09:00:00.000Z",
+      "title": "Risk committee: Cybersecurity review, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-046-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-046-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the dividend policy.",
+          "id": "meeting-046-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-07T12:00:00.000Z",
+            "description": "The board approves the dividend to be proposed to the shareholders at the next general meeting.",
+            "id": "meeting-046-resolution-subject",
+            "status": "closed",
+            "title": "Approve the dividend proposal"
+          },
+          "title": "Dividend policy"
+        },
+        {
+          "id": "meeting-046-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-046-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-046-document-2",
+          "pageCount": 12,
+          "title": "Dividend recommendation"
+        }
+      ],
+      "id": "meeting-046",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-07-07T10:00:00.000Z",
+      "title": "Board of directors: Dividend policy, session 8"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-047-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-047-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-07-03T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-047-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the annual budget.",
+          "id": "meeting-047-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-07-03T16:00:00.000Z",
+            "description": "The board approves the budget of the next financial year, including the investment envelope and the hiring plan.",
+            "id": "meeting-047-resolution-subject",
+            "status": "closed",
+            "title": "Approve the annual budget"
+          },
+          "title": "Annual budget"
+        },
+        {
+          "id": "meeting-047-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-047-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-047-document-2",
+          "pageCount": 52,
+          "title": "Budget proposal"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-047-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-047",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-07-03T14:00:00.000Z",
+      "title": "Board of directors: Annual budget, session 7"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-048-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-048-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the half-year financial statements.",
+          "id": "meeting-048-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-29T18:00:00.000Z",
+            "description": "The board approves the consolidated financial statements for the first half of the year, as presented by the chief financial officer.",
+            "id": "meeting-048-resolution-subject",
+            "status": "closed",
+            "title": "Approve the half-year financial statements"
+          },
+          "title": "Half-year financial statements"
+        },
+        {
+          "id": "meeting-048-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-048-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-048-document-2",
+          "pageCount": 38,
+          "title": "Consolidated half-year financial statements"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-048-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-048",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-06-29T16:00:00.000Z",
+      "title": "Audit committee: Half-year financial statements, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-049-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-049-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-06-25T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-049-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-049-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-25T11:00:00.000Z",
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-049-resolution-subject",
+            "status": "closed",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-049-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-049-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-049-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        }
+      ],
+      "id": "meeting-049",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-06-25T09:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-050-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-050-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-050-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-21T12:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-050-resolution-subject",
+            "status": "open",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-050-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-050-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-050-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-050-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-050",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-06-21T10:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-051-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-051-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-06-17T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-051-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-051-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-17T16:00:00.000Z",
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-051-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-051-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-051-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-051-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-051-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-051",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-06-17T14:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 6"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-052-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-052-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-052-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-13T18:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-052-resolution-subject",
+            "status": "closed",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-052-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-052-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-052-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        }
+      ],
+      "id": "meeting-052",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-06-13T16:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-053-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-053-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-06-09T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-053-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-053-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-09T11:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-053-resolution-subject",
+            "status": "closed",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-053-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-053-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-053-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-053-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-053",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-06-09T09:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-054-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-054-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-054-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-05T12:00:00.000Z",
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-054-resolution-subject",
+            "status": "closed",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-054-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-054-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-054-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-054-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-054",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-06-05T10:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 5"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-055-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-055-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-06-01T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-055-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the executive remuneration.",
+          "id": "meeting-055-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-06-01T16:00:00.000Z",
+            "description": "The committee approves the remuneration policy of the executive team for the coming year.",
+            "id": "meeting-055-resolution-subject",
+            "status": "closed",
+            "title": "Approve the executive remuneration policy"
+          },
+          "title": "Executive remuneration"
+        },
+        {
+          "id": "meeting-055-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-055-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-055-document-2",
+          "pageCount": 31,
+          "title": "Remuneration benchmark study"
+        }
+      ],
+      "id": "meeting-055",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-06-01T14:00:00.000Z",
+      "title": "Remuneration committee: Executive remuneration, session 1"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-056-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-056-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the acquisition of a logistics company.",
+          "id": "meeting-056-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-28T18:00:00.000Z",
+            "description": "The committee authorises the chief executive to submit a binding offer within the limits of the approved valuation.",
+            "id": "meeting-056-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the acquisition offer"
+          },
+          "title": "Acquisition of a logistics company"
+        },
+        {
+          "id": "meeting-056-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-056-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-056-document-2",
+          "pageCount": 64,
+          "title": "Due diligence summary"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-056-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-056",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-05-28T16:00:00.000Z",
+      "title": "Strategy committee: Acquisition of a logistics company, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-057-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-057-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-05-24T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-057-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the cybersecurity review.",
+          "id": "meeting-057-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-24T11:00:00.000Z",
+            "description": "The committee approves the action plan that follows the penetration tests of the year.",
+            "id": "meeting-057-resolution-subject",
+            "status": "closed",
+            "title": "Approve the cybersecurity action plan"
+          },
+          "title": "Cybersecurity review"
+        },
+        {
+          "id": "meeting-057-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-057-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-057-document-2",
+          "pageCount": 27,
+          "title": "Cybersecurity incident report"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-057-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-057",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-05-24T09:00:00.000Z",
+      "title": "Risk committee: Cybersecurity review, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-058-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-058-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the dividend policy.",
+          "id": "meeting-058-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-20T12:00:00.000Z",
+            "description": "The board approves the dividend to be proposed to the shareholders at the next general meeting.",
+            "id": "meeting-058-resolution-subject",
+            "status": "open",
+            "title": "Approve the dividend proposal"
+          },
+          "title": "Dividend policy"
+        },
+        {
+          "id": "meeting-058-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-058-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-058-document-2",
+          "pageCount": 12,
+          "title": "Dividend recommendation"
+        }
+      ],
+      "id": "meeting-058",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-05-20T10:00:00.000Z",
+      "title": "Board of directors: Dividend policy, session 4"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-059-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-059-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-05-16T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-059-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the annual budget.",
+          "id": "meeting-059-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-16T16:00:00.000Z",
+            "description": "The board approves the budget of the next financial year, including the investment envelope and the hiring plan.",
+            "id": "meeting-059-resolution-subject",
+            "status": "closed",
+            "title": "Approve the annual budget"
+          },
+          "title": "Annual budget"
+        },
+        {
+          "id": "meeting-059-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-059-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-059-document-2",
+          "pageCount": 52,
+          "title": "Budget proposal"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-059-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-059",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-05-16T14:00:00.000Z",
+      "title": "Board of directors: Annual budget, session 3"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-060-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-060-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the half-year financial statements.",
+          "id": "meeting-060-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-12T18:00:00.000Z",
+            "description": "The board approves the consolidated financial statements for the first half of the year, as presented by the chief financial officer.",
+            "id": "meeting-060-resolution-subject",
+            "status": "closed",
+            "title": "Approve the half-year financial statements"
+          },
+          "title": "Half-year financial statements"
+        },
+        {
+          "id": "meeting-060-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-060-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-060-document-2",
+          "pageCount": 38,
+          "title": "Consolidated half-year financial statements"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-060-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-060",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-05-12T16:00:00.000Z",
+      "title": "Audit committee: Half-year financial statements, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-061-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-061-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-05-08T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-061-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the five-year strategic plan.",
+          "id": "meeting-061-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-08T11:00:00.000Z",
+            "description": "The committee approves the strategic plan and recommends it to the board of directors.",
+            "id": "meeting-061-resolution-subject",
+            "status": "closed",
+            "title": "Approve the five-year strategic plan"
+          },
+          "title": "Five-year strategic plan"
+        },
+        {
+          "id": "meeting-061-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-061-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-061-document-2",
+          "pageCount": 80,
+          "title": "Strategic plan"
+        }
+      ],
+      "id": "meeting-061",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-05-08T09:00:00.000Z",
+      "title": "Strategy committee: Five-year strategic plan, session 1"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-062-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-062-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the regulatory compliance update.",
+          "id": "meeting-062-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-05-04T12:00:00.000Z",
+            "description": "The committee approves the compliance programme for the new regulatory requirements.",
+            "id": "meeting-062-resolution-subject",
+            "status": "closed",
+            "title": "Approve the compliance programme"
+          },
+          "title": "Regulatory compliance update"
+        },
+        {
+          "id": "meeting-062-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-062-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-062-document-2",
+          "pageCount": 15,
+          "title": "Compliance dashboard"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-062-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-062",
+      "location": "Paris head office, Seine room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-05-04T10:00:00.000Z",
+      "title": "Risk committee: Regulatory compliance update, session 1"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-063-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-063-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-04-30T16:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-063-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the credit facility renewal.",
+          "id": "meeting-063-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-04-30T16:00:00.000Z",
+            "description": "The board authorises the chief financial officer to renew the revolving credit facility on the terms presented.",
+            "id": "meeting-063-resolution-subject",
+            "status": "closed",
+            "title": "Authorise the renewal of the credit facility"
+          },
+          "title": "Credit facility renewal"
+        },
+        {
+          "id": "meeting-063-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-063-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-063-document-2",
+          "pageCount": 9,
+          "title": "Credit facility term sheet"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-063-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-063",
+      "location": "Video conference",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        }
+      ],
+      "scheduledAt": "2026-04-30T14:00:00.000Z",
+      "title": "Board of directors: Credit facility renewal, session 2"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-064-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-064-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the board succession planning.",
+          "id": "meeting-064-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-04-26T18:00:00.000Z",
+            "description": "The committee approves the succession plan for the directors whose term ends next year.",
+            "id": "meeting-064-resolution-subject",
+            "status": "closed",
+            "title": "Approve the board succession plan"
+          },
+          "title": "Board succession planning"
+        },
+        {
+          "id": "meeting-064-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-064-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "confidential",
+          "id": "meeting-064-document-2",
+          "pageCount": 22,
+          "title": "Candidate profiles"
+        }
+      ],
+      "id": "meeting-064",
+      "location": "London office, Thames room",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "chair",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "member",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Hugo Bernard",
+          "role": "guest",
+          "userId": "user-hugo"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        }
+      ],
+      "scheduledAt": "2026-04-26T16:00:00.000Z",
+      "title": "Nominations committee: Board succession planning, session 1"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-065-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-065-item-2",
+          "position": 2,
+          "resolution": {
+            "closesAt": "2026-04-22T11:00:00.000Z",
+            "description": "The board approves the minutes of its previous meeting as they were circulated.",
+            "id": "meeting-065-resolution-minutes",
+            "status": "closed",
+            "title": "Approve the minutes of the previous meeting"
+          },
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the internal audit plan.",
+          "id": "meeting-065-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-04-22T11:00:00.000Z",
+            "description": "The committee approves the programme of internal audits for the next twelve months.",
+            "id": "meeting-065-resolution-subject",
+            "status": "closed",
+            "title": "Approve the internal audit plan"
+          },
+          "title": "Internal audit plan"
+        },
+        {
+          "id": "meeting-065-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-065-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-065-document-2",
+          "pageCount": 18,
+          "title": "Internal audit plan"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-065-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-065",
+      "location": "Hotel Marais, Opera suite",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Bruno Durand",
+          "role": "chair",
+          "userId": "user-bruno"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Emma Laurent",
+          "role": "member",
+          "userId": "user-emma"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        }
+      ],
+      "scheduledAt": "2026-04-22T09:00:00.000Z",
+      "title": "Audit committee: Internal audit plan, session 1"
+    },
+    {
+      "agenda": [
+        {
+          "id": "meeting-066-item-1",
+          "position": 1,
+          "title": "Opening and attendance"
+        },
+        {
+          "id": "meeting-066-item-2",
+          "position": 2,
+          "title": "Approval of the minutes of the previous meeting"
+        },
+        {
+          "description": "Presentation and discussion of the sustainability report.",
+          "id": "meeting-066-item-3",
+          "position": 3,
+          "resolution": {
+            "closesAt": "2026-04-18T12:00:00.000Z",
+            "description": "The board approves the sustainability report published with the annual report.",
+            "id": "meeting-066-resolution-subject",
+            "status": "open",
+            "title": "Approve the sustainability report"
+          },
+          "title": "Sustainability report"
+        },
+        {
+          "id": "meeting-066-item-4",
+          "position": 4,
+          "title": "Any other business"
+        }
+      ],
+      "documents": [
+        {
+          "confidentiality": "internal",
+          "id": "meeting-066-document-1",
+          "pageCount": 24,
+          "title": "Agenda and board pack"
+        },
+        {
+          "confidentiality": "internal",
+          "id": "meeting-066-document-2",
+          "pageCount": 44,
+          "title": "Sustainability report draft"
+        },
+        {
+          "confidentiality": "public",
+          "id": "meeting-066-document-3",
+          "pageCount": 6,
+          "title": "Minutes of the previous meeting"
+        }
+      ],
+      "id": "meeting-066",
+      "location": "Boardroom, 12th floor",
+      "participants": [
+        {
+          "fullName": "Alice Martin",
+          "role": "member",
+          "userId": "user-alice"
+        },
+        {
+          "fullName": "Chloe Petit",
+          "role": "secretary",
+          "userId": "user-chloe"
+        },
+        {
+          "fullName": "David Roux",
+          "role": "member",
+          "userId": "user-david"
+        },
+        {
+          "fullName": "Farid Haddad",
+          "role": "guest",
+          "userId": "user-farid"
+        },
+        {
+          "fullName": "Grace Okafor",
+          "role": "member",
+          "userId": "user-grace"
+        }
+      ],
+      "scheduledAt": "2026-04-18T10:00:00.000Z",
+      "title": "Board of directors: Sustainability report, session 1"
+    }
+  ]
+}

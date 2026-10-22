@@ -1,0 +1,22 @@
+{
+  "referenceDate": "2026-10-01T08:00:00.000Z",
+  "accounts": [
+    {
+      "password": "boardroom-demo",
+      "user": {
+        "email": "alice.martin@boardroom.example",
+        "fullName": "Alice Martin",
+        "id": "user-alice"
+      }
+    },
+    {
+      "password": "boardroom-demo",
+      "user": {
+        "email": "bruno.durand@boardroom.example",
+        "fullName": "Bruno Durand",
+        "id": "user-bruno"
+      }
+    }
+  ],
+  "demoUserId": "user-alice"
+}
