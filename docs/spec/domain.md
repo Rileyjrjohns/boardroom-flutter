@@ -124,7 +124,7 @@ Helpers:
 
 - `findResolution(meeting, resolutionId)`: the resolution with this id, wherever it sits in the agenda, or absent.
 - `findParticipant(meeting, userId)`: the participant with this user id, or absent.
-- `withVoteRecorded(meeting, vote)`: a copy of the meeting in which `vote.choice` is the `recordedVote` of the resolution `vote.resolutionId`. The meeting is returned unchanged when `vote.meetingId` is another meeting or the meeting has no such resolution. It keeps a cached copy truthful once the server has accepted a vote.
+- `withVoteRecorded(meeting, vote)`: a copy of the meeting in which `vote.choice` is the `recordedVote` of the resolution `vote.resolutionId`. When `vote.meetingId` is another meeting, the same meeting is returned; when the meeting has no such resolution, an equal meeting is returned (a copy with no change). Either way nothing is recorded. It keeps a cached copy truthful once the server has accepted a vote.
 
 ### `AgendaItem`
 
