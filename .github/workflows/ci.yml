@@ -1,0 +1,118 @@
+# The checks every change has to pass, in two jobs that run in parallel (the import rules of the
+# architecture, and everything else) and in steps, so that the one that fails is the first thing the
+# run page shows. They are the commands listed in the "Checks" section of the README, so anyone can
+# run them locally.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to a branch cancels the run of the previous one. The group has the ref in it, so a pull
+# request and main never cancel each other.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Reads the code and nothing else. No secret is used here, so a pull request from a fork runs the
+# same checks.
+permissions:
+  contents: read
+
+jobs:
+  # Pinned to ubuntu-24.04: GitHub began moving ubuntu-latest to Ubuntu 26 on 19 October 2026.
+
+  # The layers may only import what the architecture allows (see lib/*/README.md). This job runs the
+  # checker alone, beside the job below, so that a broken boundary fails a check of its own that is
+  # named after it.
+  imports:
+    name: Import rules
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      # The Flutter version is read from environment.flutter in pubspec.yaml, the one place where
+      # it is pinned. The SDK is cached between runs.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      - name: Install the dependencies
+        run: flutter pub get
+
+      - name: Check the import rules
+        run: dart run tool/check_imports.dart
+
+  checks:
+    name: Analyze, format, tests, coverage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      # Also generates the localization classes (lib/l10n/app_localizations*.dart, not committed):
+      # gen-l10n runs as part of `flutter pub get`, so no separate step is needed.
+      - name: Install the dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      # The tests of the pure Dart folders run with `dart test`, not `flutter test`: that is the proof
+      # that the domain, the application and the tooling need no Flutter. A folder with no test file
+      # yet is skipped, because `dart test` fails on a folder that has none.
+      - name: Pure Dart tests (without Flutter)
+        run: |
+          folders=()
+          for folder in test/domain test/application test/tool; do
+            if [ -n "$(find "$folder" -name '*_test.dart' -print -quit 2>/dev/null)" ]; then
+              folders+=("$folder")
+            fi
+          done
+          if [ "${#folders[@]}" -eq 0 ]; then
+            echo "No pure Dart test yet."
+            exit 0
+          fi
+          echo "dart test ${folders[*]}"
+          dart test "${folders[@]}"
+
+      # Writes test/coverage_helper_test.dart, which imports every library of lib/: a file that no
+      # test loads would be missing from the coverage report instead of counting as 0 percent.
+      - name: Load every library for the coverage
+        run: dart run tool/coverage_helper.dart
+
+      - name: Flutter tests with coverage
+        run: flutter test --coverage
+
+      # The coverage as a table on the page of the run, and the gates: 90 percent of lines for each
+      # of the domain and application layers, 70 percent for the rest together. The table goes to
+      # the summary, the failures to the log, and the exit code of the script fails the step (a
+      # redirection does not hide it).
+      - name: Coverage gate
+        run: dart run tool/coverage_gate.dart >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          if-no-files-found: ignore
+          retention-days: 14
