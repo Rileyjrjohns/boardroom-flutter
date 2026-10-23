@@ -33,6 +33,16 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Native build outputs. Gradle is redirected to /build/ by android/build.gradle.kts, so these are for
+# a build started from Android Studio or Xcode with another configuration; the pods are rebuilt by
+# `pod install` from ios/Podfile.lock, which is committed.
+/android/build/
+/android/app/build/
+/android/.cxx/
+/ios/build/
+/ios/Pods/
+/ios/.symlinks/
+
 # Symbolication related
 app.*.symbols
 
