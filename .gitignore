@@ -31,6 +31,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/packages/*/build/
 /coverage/
 
 # Native build outputs. Gradle is redirected to /build/ by android/build.gradle.kts, so these are for
@@ -83,3 +84,6 @@ app.*.map.json
 .env
 .env.*
 !.env.example
+
+# The generated Dart of the screen protection plugin is the exception to the rule above: the native builds need it, so it is committed and CI checks that regenerating it changes nothing (packages/screen_protection/README.md)
+!/packages/screen_protection/lib/src/messages.g.dart

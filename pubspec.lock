@@ -153,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  code_builder:
+    dependency: transitive
+    description:
+      name: code_builder
+      sha256: "811709c1badd02fc054039a13f66e0db1961865f9a314175f68c3eaeebec786f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.13.0"
   collection:
     dependency: "direct main"
     description:
@@ -693,6 +701,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.1.0"
+  pigeon:
+    dependency: transitive
+    description:
+      name: pigeon
+      sha256: "9c4b979de1ed662c8f66a921b7b42ab31c366da5141f3996590c52a8a70baf74"
+      url: "https://pub.dev"
+    source: hosted
+    version: "29.0.11"
   platform:
     dependency: transitive
     description:
