@@ -21,7 +21,7 @@ Out of scope for step 3: `native/NativeScreenProtection.test.ts` (36 tests, the 
 | `shared/attempt.ts` | `core/infrastructure/shared/attempt.dart` | `ATTEMPT_FAILURE` is `AttemptFailureKind` |
 | `shared/clonePlain.ts` | (none) | Entities are immutable |
 | `shared/issuePaths.ts` | `core/infrastructure/shared/issue_paths.dart` | Takes the paths, not a zod error |
-| `shared/rejectionSchemas.ts` | `core/infrastructure/shared/rejection_schemas.dart` | Hand-written discriminated union (`VotingErrorWire`, `UndeliverableWire`) |
+| `shared/rejectionSchemas.ts` | `features/votes/infrastructure/rejection_schemas.dart` | Hand-written discriminated union (`VotingErrorWire`, `UndeliverableWire`) |
 | `shared/results.ts` | `core/infrastructure/shared/results.dart` | |
 | `shared/serialQueue.ts` | `core/infrastructure/shared/serial_queue.dart` | |
 | `shared/sha256.ts` | `core/infrastructure/shared/sha256.dart` | Package `crypto` |
@@ -86,7 +86,7 @@ Out of scope for step 3: `native/NativeScreenProtection.test.ts` (36 tests, the 
 | `shared/attempt.test.ts` | `core/infrastructure/shared/attempt_test.dart` | 14 | 11 | `describeFailure keeps the code of a failure that has one in the form of a code`, `... says nothing specific about a code with free text`, `... about a code that is not a string`, `... about an error code that is not an integer`: JavaScript error objects with a `code` property, Dart exceptions are typed; `... says nothing specific about undefined`: Dart has no `undefined` (`null` is the row "null") |
 | `shared/clonePlain.test.ts` | (none) | 3 | 0 | The 3 scenarios: `clonePlain` is not ported, Dart values are immutable |
 | `shared/issuePaths.test.ts` | `core/infrastructure/shared/issue_paths_test.dart` | 3 | 3 | |
-| `shared/rejectionSchemas.test.ts` | `core/infrastructure/shared/rejection_schemas_test.dart` | 29 | 30 | |
+| `shared/rejectionSchemas.test.ts` | `features/votes/infrastructure/rejection_schemas_test.dart` | 29 | 30 | |
 | `shared/results.test.ts` | `core/infrastructure/shared/results_test.dart` | 3 | 3 | |
 | `shared/serialQueue.test.ts` | `core/infrastructure/shared/serial_queue_test.dart` | 5 | 5 | |
 | `shared/sha256.test.ts` | `core/infrastructure/shared/sha256_test.dart` | 19 | 19 | |
@@ -123,13 +123,13 @@ These tests check something that exists only in Dart, or code that React Native 
 | Dart test file (under `test/`) | Tests | What |
 | --- | --- | --- |
 | `core/infrastructure/shared/attempt_test.dart` | 2 | `describeFailure` reads the error number of a `FileSystemException` |
-| `core/infrastructure/shared/rejection_schemas_test.dart` | 1 | The failure names the place of the flaw and no value |
+| `features/votes/infrastructure/rejection_schemas_test.dart` | 1 | The failure names the place of the flaw and no value |
 | `features/auth/infrastructure/dto/session_dto_test.dart` | 1 | The wire classes never print the token nor the password |
 | `core/infrastructure/http/dto/wire_test.dart` | 8 | The parser and the writer of instants (impossible days, 24:00:00, offsets, the year range, `-000001`), `decodeWire` on a body that is not an object |
 | `app/dev/in_memory/fixtures/load_fixtures_test.dart` | 2 | A text that is not JSON; the seed prints no password |
 | `core/infrastructure/files/io_file_volume_test.dart` | 3 | The location of the volume, a location it is told to say, the choice of the storage by platform |
 | `core/infrastructure/secure_storage/device_secure_storage_test.dart` | 5 | Forgetting a key that is not there; the options of `write`, `read` and `delete` on iOS and on macOS (the service of the app, readable on this device only); `resetOnError` off on Android for the three calls; the error of a read reaches the caller |
-| `core/infrastructure/device/device_folders_test.dart` | 4 | The documents go to the caches folder on iOS and to the support folder on Android, the database to the support folder, and no other folder (documents, library, temporary) is asked of `path_provider` |
+| `core/infrastructure/files/device_folders_test.dart` | 4 | The documents go to the caches folder on iOS and to the support folder on Android, the database to the support folder, and no other folder (documents, library, temporary) is asked of `path_provider` |
 | `core/infrastructure/monitoring/console_monitoring_test.dart` | 1 | The three channels are told apart in the lines the default sink prints |
 | `features/auth/infrastructure/session_vault_test.dart` | 1 | The vault never prints the token |
 | `app/dev/pdf/create_document_pdf_test.dart` | 1 | `hasPdfSignature` |
@@ -158,8 +158,8 @@ The biometrics, the connectivity, the platform bundle, and the adapters of the m
 | `connectivity/ExpoConnectivity.ts` | `core/infrastructure/connectivity/device_connectivity.dart` | `DeviceConnectivity`, with `NetworkSnapshot`, `NetworkStateApi` and `statusOf` |
 | `connectivity/ExpoNetworkState.ts` | `core/infrastructure/connectivity/connectivity_plus_network_state.dart` | `connectivity_plus`; `snapshotOf` reads its list of connections |
 | `connectivity/SimulatedConnectivity.ts` | `app/dev/in_memory/simulated_connectivity.dart` | Over a `NetworkControl` |
-| `device/DevicePlatform.ts` | `core/infrastructure/device/device_platform.dart` | Adds `databaseOpener` and `randomBytes`; the native module of the screen protection is for the plugin step |
-| `device/createExpoPlatform.ts` | `core/infrastructure/device/create_device_platform.dart` | A `Future`: the folder of the databases is asked of the platform |
+| `device/DevicePlatform.ts` | `app/device/device_platform.dart` | Adds `databaseOpener` and `randomBytes`; the native module of the screen protection is for the plugin step |
+| `device/createExpoPlatform.ts` | `app/device/create_device_platform.dart` | A `Future`: the folder of the databases is asked of the platform |
 | `in-memory/InMemoryAuthSession.ts` | `app/dev/in_memory/in_memory_auth_session.dart` | `DemoAccount` is the one of the foundations, in the same file |
 | `in-memory/InMemoryBiometricGate.ts` | `app/dev/in_memory/in_memory_biometric_gate.dart` | |
 | `in-memory/InMemoryMeetingCache.ts` | `features/meetings/infrastructure/in_memory_meeting_cache.dart` | No copies: the values are immutable |
@@ -180,7 +180,7 @@ The biometrics, the connectivity, the platform bundle, and the adapters of the m
 | `connectivity/ExpoConnectivity.test.ts` | `core/infrastructure/connectivity/device_connectivity_test.dart` | 27 | 27 | The group is named `DeviceConnectivity`. The nine `statusOf` rows end with the status they give (`as online`) where the React Native names are computed at run time |
 | `connectivity/ExpoNetworkState.test.ts` | `core/infrastructure/connectivity/connectivity_plus_network_state_test.dart` | 2 | 6 | The group is named `ConnectivityPlusNetworkState` |
 | `connectivity/SimulatedConnectivity.test.ts` | `app/dev/in_memory/simulated_connectivity_test.dart` | 11 | 11 | |
-| `device/createExpoPlatform.test.ts` | `core/infrastructure/device/create_device_platform_test.dart` | 2 | 3 | The group is named `createDevicePlatform` |
+| `device/createExpoPlatform.test.ts` | `app/device/create_device_platform_test.dart` | 2 | 3 | The group is named `createDevicePlatform` |
 | `in-memory/InMemoryAuthSession.test.ts` | `app/dev/in_memory/in_memory_auth_session_test.dart` | 19 | 19 | |
 | `in-memory/InMemoryBiometricGate.test.ts` | `app/dev/in_memory/in_memory_biometric_gate_test.dart` | 4 | 4 | |
 | `in-memory/InMemoryDocumentCache.test.ts` | `features/documents/infrastructure/in_memory_document_cache_test.dart` | 32 | 30 | The two scenarios of the contract about changing a document after it was saved and after it was read: a document has no setter in Dart (the same two are in [`exceptions.md`](exceptions.md) for the fake) |
@@ -197,7 +197,7 @@ The biometrics, the connectivity, the platform bundle, and the adapters of the m
 | --- | --- | --- |
 | `features/auth/infrastructure/biometrics/device_local_authentication_test.dart` | 23 | The enrolment counts a biometric that is not `weak` and nothing else (nothing, only `weak`, a face, a fingerprint, a strong one that Android also reports as `weak`); each exception of `local_auth` becomes the outcome the gate understands (all 14, and a test that the table is complete); the passcode and the fallback button of iOS in the prompt; what `false` means; anything else the plugin throws goes to the gate |
 | `core/infrastructure/connectivity/connectivity_plus_network_state_test.dart` | 4 | `snapshotOf` reads no connection, wifi, a mobile network and several connections |
-| `core/infrastructure/device/create_device_platform_test.dart` | 1 | The databases are in a folder of the private storage |
+| `app/device/create_device_platform_test.dart` | 1 | The databases are in a folder of the private storage |
 | `features/auth/infrastructure/biometrics/local_authentication_values_test.dart` | 6 | `PromptText`, `AuthenticationPrompt` and `LocalAuthenticationResult` compare by what they hold and print (React Native compares plain objects); `AuthenticationPrompt` prints its level and fallback, not the text |
 | `core/infrastructure/connectivity/network_snapshot_test.dart` | 2 | `NetworkSnapshot` compares by its two flags and prints a flag that is not set as null |
 
@@ -258,16 +258,16 @@ The client over dio and the four adapters of the remote ports (`AuthSession`, `M
 
 ## Persistence
 
-The database, its key and its caches. drift stands where React Native has its own thin layer over the SQL engine (`SqlDatabase`), so the adapters are written against `BoardroomDatabase`, the drift database; the classes `Sqlite…` are `Drift…`, and the tests of a class keep the name of its Dart class in their full names (`SqliteMeetingCache honours the MeetingCache contract …` is `DriftMeetingCache honours the MeetingCache contract …`). The reasons are in [`open-questions.md`](open-questions.md), section "Infrastructure (step 3)", bullets that start with "persistence".
+The database, its key and its caches. drift stands where React Native has its own thin layer over the SQL engine (`SqlDatabase`), so the adapters are written against a drift `GeneratedDatabase` and the tables their feature owns, and `BoardroomDatabase` (in `lib/app/persistence`) is the drift database of the whole file that lists those tables; the classes `Sqlite…` are `Drift…`, and the tests of a class keep the name of its Dart class in their full names (`SqliteMeetingCache honours the MeetingCache contract …` is `DriftMeetingCache honours the MeetingCache contract …`). The reasons are in [`open-questions.md`](open-questions.md), section "Infrastructure (step 3)", bullets that start with "persistence".
 
 ### Files
 
 | React Native (`src/infrastructure/persistence/`) | Dart (under `lib/`) | Note |
 | --- | --- | --- |
-| `schema.ts` | `app/persistence/schema.dart` | `TABLE`, `COLUMN`, `INDEX` are the enums `StoredTable`, `StoredColumn`, `StoredIndex`; `OUTBOX_QUARANTINED` is `outboxQuarantined` |
-| (the SQL of the queries) | `app/persistence/tables.dart` | The tables as drift knows them, for the queries that write; the file is made by the migrations |
-| `SqlDatabase.ts` | `app/persistence/boardroom_database.dart` | `BoardroomDatabase`: the drift database replaces `createSqlDatabase` (serial statements, transactions) |
-| `migrations.ts` | `app/persistence/migrations.dart` | `Migration`, `migrations`; the SQL is the same text |
+| `schema.ts` | `features/{meetings,documents,votes}/infrastructure/persistence/schema.dart` | `TABLE`, `COLUMN`, `INDEX` are split by feature: `MeetingStoredTable` and `MeetingStoredColumn`, `DocumentStoredTable`, `DocumentStoredColumn` and `DocumentStoredIndex`, `VoteStoredTable`, `VoteStoredColumn` and `VoteStoredIndex`; `OUTBOX_QUARANTINED` is `outboxQuarantined` (votes) |
+| (the SQL of the queries) | `features/{meetings,documents,votes}/infrastructure/persistence/tables.dart` | The tables each feature owns, as drift knows them, for the queries that write; the file is made by the migrations |
+| `SqlDatabase.ts` | `app/persistence/boardroom_database.dart` | `BoardroomDatabase`: the drift database replaces `createSqlDatabase` (serial statements, transactions); it lists the tables of the features |
+| `migrations.ts` | `app/persistence/migrations.dart`, `core/infrastructure/persistence/migrate.dart` | `migrations` (the history of the file, which reads the names of the features) is the app's; the class `Migration` is the machinery's, in the core; the SQL is the same text |
 | `migrate.ts` | `core/infrastructure/persistence/migrate.dart` | `migrationStrategyOf` (drift runs it when it opens the file), `MigrationFailure`, `migrationsAreInOrder`; there is no `runMigrations` nor outcome |
 | `DatabaseOpener.ts` | `core/infrastructure/persistence/database_opener.dart` | `DatabaseOpener`, `EngineConnection` (`exec`, `all`, `close`, `toExecutor`), `connectionPragmas` |
 | `ExpoSqliteOpener.ts` | `core/infrastructure/persistence/sqlite3_opener.dart` | `Sqlite3Opener` over `sqlite3` (SQLite3MultipleCiphers), `createDeviceDatabaseOpener` |
@@ -336,7 +336,7 @@ The contract suites of `MeetingCache`, `DocumentCache` and `VoteOutbox` run agai
 | `core/infrastructure/persistence/guarded_test.dart` | 15 | `guardedRead`, `guardedWrite`, `engineFailureOf` (the failure under the wrapper drift puts on it, a rollback that fails after the work failed) (no test file in React Native) |
 | `core/infrastructure/persistence/random_key_test.dart` | 11 | `keyFromBytes` and `secureRandomBytes` on their own (React Native tests them through `openProtectedDatabase` only) |
 | `core/infrastructure/persistence/stored_payload_test.dart` | 8 | `decodePayload`, `instantOf`, `Unreadable` (inside the caches in React Native) |
-| `app/persistence/tables_test.dart` | 4 | The tables of drift are the tables the migrations create, with the names of `lib/app/persistence/schema.dart`, the same columns, types and nullability (no counterpart: the queries are text in React Native) |
+| `app/persistence/tables_test.dart` | 4 | The tables of drift are the tables the migrations create, with the names of the `schema.dart` of the features, the same columns, types and nullability (no counterpart: the queries are text in React Native) |
 
 The persistence folder has 625 Dart tests in the files above, besides `core/infrastructure/persistence/encrypted_sqlite_test.dart` (foundations, 8 tests, listed in the first table of Dart-only tests); `flutter test test/core/infrastructure/persistence test/features/*/infrastructure test/app/persistence` runs them all.
 
