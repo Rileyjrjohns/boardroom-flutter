@@ -5,6 +5,9 @@ publish_to: 'none'
 
 version: 1.0.0+1
 
+workspace:
+  - packages/screen_protection
+
 environment:
   sdk: ^3.13.3
   # Read by subosito/flutter-action (flutter-version-file: pubspec.yaml), so CI and local use one version.
@@ -44,6 +47,9 @@ dependencies:
   meta: ^1.19.0
   # Folders of the application (documents, support) for the database file and the downloaded documents.
   path_provider: ^2.1.6
+  # The local plugin that blocks screenshots and screen recording and reports attempts (FLAG_SECURE, privacy cover, secure view), behind the ScreenProtection port.
+  screen_protection:
+    path: packages/screen_protection
   # Opens the SQLite database of drift directly (NativeDatabase) and, through its build hook, bundles SQLite3MultipleCiphers, which reads and writes SQLCipher databases.
   sqlite3: ^3.7.1
 

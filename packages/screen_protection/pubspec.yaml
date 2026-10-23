@@ -1,0 +1,29 @@
+name: screen_protection
+description: "Blocks screenshots and screen recording of the app and reports attempts: FLAG_SECURE on Android, a privacy cover and a secure view on iOS."
+version: 0.1.0
+# Local plugin of the Boardroom app, never published to pub.dev.
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ^3.13.3
+  flutter: '>=3.47.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Generates the Dart, Kotlin and Swift sides of the channel from pigeons/screen_protection_api.dart: see README.md.
+  pigeon: ^29.0.11
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.boardroom.screenprotection
+        pluginClass: ScreenProtectionPlugin
+      ios:
+        pluginClass: ScreenProtectionPlugin

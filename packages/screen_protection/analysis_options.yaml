@@ -1,0 +1,8 @@
+# The rules of the app apply to the plugin too (the generated Dart file is excluded by the pattern of the root file).
+include: ../../analysis_options.yaml
+
+analyzer:
+  exclude:
+    # Pigeon reads plain Dart: the classes of the API use the classic constructor syntax and positional arguments,
+    # which the lint rules of the app refuse. Nothing but Pigeon reads this file.
+    - pigeons/**
