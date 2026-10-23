@@ -455,10 +455,14 @@ import 'package:drifting/drifting.dart';
     const secureContent =
         'lib/features/documents/presentation/secure_content.dart';
     const widgetEntry = 'package:screen_protection/screen_protection_view.dart';
+    const pdfView =
+        'lib/features/documents/presentation/components/pdf_view.dart';
+    const pdfEngine = 'package:pdfrx/pdfrx.dart';
 
     test('is listed for one file and one URI only', () {
       expect(presentationExemptions, {
         secureContent: {widgetEntry},
+        pdfView: {pdfEngine},
       });
     });
 
@@ -492,6 +496,58 @@ import 'package:screen_protection/screen_protection.dart';
         'lib/features/documents/presentation/other.dart:1',
         'lib/features/votes/presentation/secure_content.dart:1',
       ]);
+    });
+  });
+
+  group('the exemption of the PDF viewer', () {
+    const pdfView =
+        'lib/features/documents/presentation/components/pdf_view.dart';
+    const pdfEngine = 'package:pdfrx/pdfrx.dart';
+
+    test('pdfrx is an adapter package', () {
+      expect(adapterPackages, contains('pdfrx'));
+    });
+
+    test('lets the PDF view import the engine', () {
+      write(pdfView, "import '$pdfEngine';\n");
+
+      expect(checkImports(root).violations, isEmpty);
+    });
+
+    test('does not let it import another file of the engine', () {
+      write(pdfView, """
+import '$pdfEngine';
+import 'package:pdfrx_engine/pdfrx_engine.dart';
+""");
+
+      expect(violationsAt(), ['$pdfView:2']);
+      expect(messages().single, contains('belongs to the adapters'));
+    });
+
+    test('does not let another file of the presentation import the engine', () {
+      write(
+        'lib/features/documents/presentation/components/other_view.dart',
+        "import '$pdfEngine';\n",
+      );
+      write(
+        'lib/features/meetings/presentation/components/pdf_view.dart',
+        "import '$pdfEngine';\n",
+      );
+
+      expect(violationsAt(), [
+        'lib/features/documents/presentation/components/other_view.dart:1',
+        'lib/features/meetings/presentation/components/pdf_view.dart:1',
+      ]);
+    });
+
+    test('does not check a test of the presentation, which fakes the '
+        'document', () {
+      write(
+        'test/features/documents/presentation/components/pdf_view_test.dart',
+        "import '$pdfEngine';\n",
+      );
+
+      expect(checkImports(root).violations, isEmpty);
     });
   });
 
