@@ -135,10 +135,13 @@ void main() {
         hasNotices: Provider<bool>((ref) => true),
         builder: (context) => const Text('plugged'),
       );
+      // A scope of its own: the app already fills this slot (the votes).
       await pumpScreen(
         tester,
-        const StatusBanner(),
-        extra: [bannerNoticesProvider.overrideWithValue(notices)],
+        ProviderScope(
+          overrides: [bannerNoticesProvider.overrideWithValue(notices)],
+          child: const StatusBanner(),
+        ),
       );
 
       expect(find.text('plugged'), findsOneWidget);

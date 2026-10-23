@@ -29,6 +29,7 @@ void main() {
     final created = ProviderContainer(
       overrides: [sessionEpochProvider.overrideWith((ref) => ref.watch(epoch))],
     );
+    dropQueriesWhenSessionMoves(created);
     addTearDown(created.dispose);
     return created;
   }
@@ -88,19 +89,70 @@ void main() {
     });
   });
 
-  test('drops the data when the user leaves the open app', () {
+  test('drops the data of a query nobody listens to when the user leaves the '
+      'open app, without anything reading the epoch', () {
     fakeAsync((async) {
       final providers = container();
-      final first = providers.listen(query, (_, _) {});
+      providers.listen(query, (_, _) {}).close();
       async.flushMicrotasks();
-      first.close();
 
       expect(providers.exists(query), isTrue);
       providers.read(epoch.notifier).bump();
-      providers.read(sessionEpochProvider);
       async.elapse(const Duration(milliseconds: 10));
 
       expect(providers.exists(query), isFalse);
+    });
+  });
+
+  test('a second user asks again and never gets the data of the first', () {
+    fakeAsync((async) {
+      final providers = container();
+      providers.listen(query, (_, _) {}).close();
+      async.flushMicrotasks();
+
+      providers.read(epoch.notifier).bump();
+      async.elapse(const Duration(milliseconds: 10));
+      final seen = <AsyncValue<int>>[];
+      providers.listen(
+        query,
+        (_, next) => seen.add(next),
+        fireImmediately: true,
+      );
+      async.flushMicrotasks();
+
+      expect(seen.first.hasValue, isFalse);
+      expect(loads, 2);
+      expect(providers.read(query).value, 2);
+    });
+  });
+
+  test('drops the data of a query a screen listened to once that screen is '
+      'gone, after the user left the open app', () {
+    fakeAsync((async) {
+      final providers = container();
+      final screen = providers.listen(query, (_, _) {});
+      async.flushMicrotasks();
+
+      providers.read(epoch.notifier).bump();
+      async.elapse(const Duration(milliseconds: 10));
+      screen.close();
+      async.elapse(const Duration(milliseconds: 10));
+
+      expect(providers.exists(query), isFalse);
+    });
+  });
+
+  test('keeps the queries in the registry only while they live', () {
+    fakeAsync((async) {
+      final providers = container();
+      providers.listen(query, (_, _) {}).close();
+      async.flushMicrotasks();
+      expect(providers.read(queryRegistryProvider).length, 1);
+
+      providers.read(epoch.notifier).bump();
+      async.elapse(const Duration(milliseconds: 10));
+
+      expect(providers.read(queryRegistryProvider).length, 0);
     });
   });
 }
