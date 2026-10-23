@@ -451,6 +451,50 @@ import 'package:drifting/drifting.dart';
     });
   });
 
+  group('the exemption of the secure view', () {
+    const secureContent =
+        'lib/features/documents/presentation/secure_content.dart';
+    const widgetEntry = 'package:screen_protection/screen_protection_view.dart';
+
+    test('is listed for one file and one URI only', () {
+      expect(presentationExemptions, {
+        secureContent: {widgetEntry},
+      });
+    });
+
+    test('lets the secure content import the widget entry point', () {
+      write(secureContent, "import '$widgetEntry';\n");
+
+      expect(checkImports(root).violations, isEmpty);
+    });
+
+    test('does not let it import the calls and the events of the plugin', () {
+      write(secureContent, """
+import '$widgetEntry';
+import 'package:screen_protection/screen_protection.dart';
+""");
+
+      expect(violationsAt(), ['$secureContent:2']);
+      expect(messages().single, contains('belongs to the adapters'));
+    });
+
+    test('does not let another file of the presentation import the widget', () {
+      write(
+        'lib/features/documents/presentation/other.dart',
+        "import '$widgetEntry';\n",
+      );
+      write(
+        'lib/features/votes/presentation/secure_content.dart',
+        "import '$widgetEntry';\n",
+      );
+
+      expect(violationsAt(), [
+        'lib/features/documents/presentation/other.dart:1',
+        'lib/features/votes/presentation/secure_content.dart:1',
+      ]);
+    });
+  });
+
   group('app', () {
     test('may import every layer of the core and of the features, itself, '
         'l10n, any dart: and any package', () {

@@ -144,6 +144,20 @@ const Set<String> adapterPackages = {
   'sqlite3',
 };
 
+/// The imports of an adapter package that a file of the presentation is let
+/// through, by file and then by URI: nothing else. A screen reaches an adapter
+/// through its port, but a native *view* cannot cross a port (a port carries
+/// data and calls, not an element of the widget tree), so the one file that
+/// mounts it imports the widget entry point of the plugin. The exemption is
+/// by exact path and exact URI, so a second file, or a second import in the
+/// same file (the calls and the events of the plugin, which stay behind the
+/// port), is still refused.
+const Map<String, Set<String>> presentationExemptions = {
+  'lib/features/documents/presentation/secure_content.dart': {
+    'package:screen_protection/screen_protection_view.dart',
+  },
+};
+
 /// Packages that the pure tests add to the rules of their layer: the test
 /// runner itself. package:flutter_test is deliberately absent, so these tests
 /// run with plain `dart test`.
@@ -528,6 +542,9 @@ CheckResult checkImports(
       );
     }
     for (final ref in _directiveUris(parsed)) {
+      if (presentationExemptions[relative]?.contains(ref.value) ?? false) {
+        continue;
+      }
       final target = _resolve(ref.value, relative);
       final reason = _areaDenial(area, target, graph) ?? _denial(rule, target);
       if (reason == null) {
