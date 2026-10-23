@@ -6,8 +6,8 @@ import 'package:boardroom/core/domain/value_objects/page.dart';
 import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
 import 'package:boardroom/core/infrastructure/http/dto/wire.dart';
 import 'package:boardroom/core/infrastructure/shared/results.dart';
-import 'package:boardroom/features/documents/infrastructure/dto/document_dto.dart';
 import 'package:boardroom/features/meetings/domain/entities/agenda_item.dart';
+import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
 import 'package:boardroom/features/meetings/domain/entities/participant.dart';
@@ -149,6 +149,43 @@ final class ParticipantWire {
   Map<String, dynamic> toJson() => _$ParticipantWireToJson(this);
 }
 
+/// A document as a meeting lists it: its description, as the API writes it in
+/// the meeting. The `Document` is an entity of the meetings, so the meetings
+/// read it themselves; the documents have a form of their own for the
+/// answer of `GET /documents/{id}` (an adapter does not import the adapter of
+/// another feature).
+@JsonSerializable(checked: true)
+final class MeetingDocumentWire {
+  /// Creates the wire form of a document of a meeting.
+  const new({
+    required this.id,
+    required this.title,
+    required this.confidentiality,
+    required this.pageCount,
+  });
+
+  /// Reads the wire form of a document of a meeting, or throws a
+  /// `CheckedFromJsonException` at the first field that is missing or has the
+  /// wrong type.
+  factory fromJson(Map<String, dynamic> json) =>
+      _$MeetingDocumentWireFromJson(json);
+
+  /// The identifier of the document.
+  final String id;
+
+  /// The title of the document.
+  final String title;
+
+  /// The confidentiality level, as the API names it.
+  final String confidentiality;
+
+  /// The number of pages the document says it has.
+  final num pageCount;
+
+  /// The JSON object of this document.
+  Map<String, dynamic> toJson() => _$MeetingDocumentWireToJson(this);
+}
+
 /// A summary of a meeting, an item of `GET /meetings`.
 @JsonSerializable(checked: true)
 final class MeetingSummaryWire implements MeetingSummaryFields {
@@ -218,7 +255,7 @@ final class MeetingWire implements MeetingSummaryFields {
   final List<AgendaItemWire> agenda;
 
   /// The documents of the meeting.
-  final List<DocumentWire> documents;
+  final List<MeetingDocumentWire> documents;
 
   /// The people of the meeting.
   final List<ParticipantWire> participants;
@@ -329,13 +366,36 @@ Result<Participant, ValidationError> _toParticipant(ParticipantWire wire) =>
       ),
     );
 
+Result<Document, ValidationError> _toDocument(MeetingDocumentWire wire) =>
+    andThen(
+      parseDocumentId(wire.id),
+      (id) => andThen(
+        parseConfidentialityLevel(wire.confidentiality),
+        (confidentiality) => createDocument(
+          DocumentInput(
+            id: id,
+            title: wire.title,
+            confidentiality: confidentiality,
+            pageCount: wire.pageCount,
+          ),
+        ),
+      ),
+    );
+
+MeetingDocumentWire _toDocumentWire(Document document) => MeetingDocumentWire(
+  id: document.id,
+  title: document.title,
+  confidentiality: document.confidentiality.value,
+  pageCount: document.pageCount,
+);
+
 /// The meeting a wire form describes, through the factories of the domain.
 Result<Meeting, ValidationError> toMeeting(MeetingWire wire) => andThen(
   toMeetingSummary(wire),
   (summary) => andThen(
     collect(wire.agenda.map(_toAgendaItem)),
     (agenda) => andThen(
-      collect(wire.documents.map(toDocument)),
+      collect(wire.documents.map(_toDocument)),
       (documents) => andThen(
         collect(wire.participants.map(_toParticipant)),
         (participants) => createMeeting(
@@ -397,7 +457,7 @@ MeetingWire toMeetingWire(Meeting meeting) => MeetingWire(
   scheduledAt: meeting.scheduledAt,
   location: meeting.location,
   agenda: meeting.agenda.map(_toAgendaItemWire).toList(),
-  documents: meeting.documents.map(toDocumentWire).toList(),
+  documents: meeting.documents.map(_toDocumentWire).toList(),
   participants: [
     for (final participant in meeting.participants)
       ParticipantWire(

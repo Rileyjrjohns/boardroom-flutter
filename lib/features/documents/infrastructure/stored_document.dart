@@ -14,7 +14,8 @@ part 'stored_document.g.dart';
 // devices unreadable, and a change of what is stored is a decision of the
 // cache. It happens to look like what the API wrote when the cache was first
 // written, and a test holds a row exactly as that version wrote it and reads
-// it.
+// it. The meeting cache keeps the same four fields in the row of a meeting
+// (`StoredMeetingDocument`): the two formats are each their own.
 //
 // The class checks that each field is there with the type that was stored and
 // ignores the ones it does not know. The values themselves are checked by the
