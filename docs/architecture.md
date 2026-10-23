@@ -16,6 +16,7 @@ lib/
     domain/                    Result, ids, Instant, Page, AppError and its core families, policies
     application/               ports (Clock, Monitoring, Connectivity, SessionGate), the offline policy
     infrastructure/            the HTTP client, the persistence machinery, files, secure storage, clock
+    presentation/              theme, shared components, the query layer, the error catalog, the formatters, the routes and the test ids
   features/
     auth/                    who the user is: the account, the session, the app lock
     meetings/                the meetings, their agenda, resolutions, participants and documents
@@ -23,7 +24,11 @@ lib/
     votes/                   casting a vote, the outbox, synchronising it
       domain/  application/  infrastructure/  presentation/     the layers of every feature
   app/                       the composition: the only place that knows every feature
-    composition/               the glue between features (pure Dart): the lists and the objects that wire the ports
+    composition/               the glue between features (pure Dart): the lists and the objects that wire the ports, and the use cases
+    container/                 the composition root: the configuration (dev or http), the adapters, the AppContainer
+    providers/                 the overrides of the root ProviderScope (what each feature's providers get)
+    router/                    go_router: the routes, the guards, the redirect driven by the access state
+    shell/                     the startup gate, the session controller, the app lifecycle, the connectivity observer
     persistence/               the one drift database of the file, and the history of its migrations
     device/                    the seams of the phone (database engine, keychain, biometrics, network state)
     dev/                       the simulated world of the development build (fixture server, in-memory adapters)
@@ -54,7 +59,7 @@ graph TD
 An arrow is "may import". The graph is the constant `featureGraph` of `tool/check_imports.dart`, which also says why each edge exists.
 
 - **`core` imports no feature and not `app`.** It holds what several features use and none owns. A rule of a feature does not go in `core` to dodge a cycle: the feature that owns it declares the port it needs.
-- **A feature imports `core`, and the features the graph names for it, by their `domain` and `application` only.** Never their `infrastructure`, never their `presentation`: an adapter is chosen by the composition.
+- **A feature imports `core`, and the features the graph names for it, by their `domain` and `application`.** Never their `infrastructure`: an adapter is chosen by the composition. The `presentation` of a feature may also import the `presentation` of the features it depends on (its screens use their providers and components); no other layer may.
 - **`app` imports everything**, and `main.dart` imports `app`. Nothing imports `app`.
 - **There is no cycle** between features. The checker reads the graph as well as the imports, and fails if an edge closes a cycle.
 
@@ -67,7 +72,7 @@ An arrow is "may import". The graph is the constant `featureGraph` of `tool/chec
 | `domain`         | Entities, value objects, policies, the errors of the feature | `domain`, pure Dart                                                           |
 | `application`    | Use cases and ports                                          | `domain`, `application`, pure Dart                                            |
 | `infrastructure` | Adapters (dio, drift, secure storage, local_auth)            | `domain`, `application`, `infrastructure`; never `presentation` nor `lib/app` |
-| `presentation`   | Widgets, screens, notifiers                                  | `domain`, `application`, `presentation`; never `infrastructure`               |
+| `presentation`   | Widgets, screens, notifiers, providers                       | `domain`, `application`, `presentation` (its own and the feature's dependencies' presentation); never `infrastructure`, never `lib/app` |
 
 A native plugin of the app lives in `packages/`, is a dependency by path like any other, and is an adapter package: only `infrastructure` and `app` import it. The one exception is a native *view*, which is an element of the widget tree and cannot cross a port: `lib/features/documents/presentation/secure_content.dart` may import the widget entry point of `screen_protection` (`presentationExemptions` in the checker, by file and by URI, tested).
 
@@ -87,7 +92,7 @@ When a feature needs something of one that the graph does not allow it to import
 
 The first four are the inversions that remove the edges of the first layout; the last one is the same pattern for a rule that was hidden behind a shared deps interface. A port declared like this is Dart-only: the specification (`docs/spec`) does not know it, and the conformance test lists it (`_dartOnlyPorts` in `test/tool/spec_conformance_test.dart`).
 
-The composition root that builds the use cases from these pieces comes with the providers (the next steps). Until then the glue is in `lib/app/composition` and `createFakes` (`test/support/fakes/create_fakes.dart`) assembles the same objects for the tests of the use cases.
+The composition root builds the use cases from these pieces (`wireUseCases` in `lib/app/composition`, the adapters of a configuration in `lib/app/container`), and `lib/app/providers/app_overrides.dart` hands them to the screens as Riverpod providers: each feature's presentation declares the providers of what it needs and throws until the composition overrides them (docs/presentation.md). `createFakes` (`test/support/fakes/create_fakes.dart`) assembles the same objects for the tests.
 
 Three other splits follow the same idea:
 

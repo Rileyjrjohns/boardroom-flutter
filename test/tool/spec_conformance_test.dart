@@ -2,14 +2,18 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:boardroom/app/composition/retryable_codes.dart';
+import 'package:boardroom/app/composition/settings.dart';
+import 'package:boardroom/app/test_ids.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/duration.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
 import 'package:boardroom/core/domain/value_objects/page_request.dart';
+import 'package:boardroom/core/presentation/navigation/routes.dart';
 import 'package:boardroom/features/auth/domain/entities/user.dart';
 import 'package:boardroom/features/auth/domain/value_objects/email_address.dart';
+import 'package:boardroom/features/auth/presentation/state/access.dart';
 import 'package:boardroom/features/documents/domain/value_objects/document_location.dart';
 import 'package:boardroom/features/meetings/domain/entities/agenda_item.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
@@ -38,18 +42,6 @@ import 'support/spec_markdown.dart';
 // `VoteChoice`, `SESSION_ENDING_CODES` is the list `sessionEndingCodes`,
 // `SESSION_CHECK_INTERVAL_MILLIS` is `sessionCheckIntervalMillis`. The
 // operations and their parameters keep their names (lowerCamelCase).
-
-/// Why the screens are not checked yet.
-const String _screensOutOfScope =
-    'The screens, the routes and the test ids are specified in screens.md and '
-    'belong to the presentation layer, which is built from step 5; this test '
-    'covers the domain, the use cases and the ports.';
-
-/// Why the settings are not checked yet.
-const String _settingsOutOfScope =
-    'The settings are the defaults of the composition root (the React Native '
-    'src/di/config.ts), which is built with the providers, after the '
-    'infrastructure; this test covers the domain, the use cases and the ports.';
 
 /// The part of the project the conformance test reads. A `*` stands for any
 /// one folder: the code of a layer is in the core and in every feature.
@@ -161,6 +153,13 @@ void expectSameSet(List<String> inCode, List<String> inSpec) {
     }),
   );
 }
+
+/// The path of a route as the specification writes it: the dynamic segments in
+/// brackets, as expo-router does (`/meetings/[meetingId]`).
+String _specPath(AppRoute route) => route.path.replaceAllMapped(
+  RegExp(r':(\w+)'),
+  (match) => '[${match.group(1)}]',
+);
 
 /// The subject of a table for a message, or a note that it has none.
 String _subjectOf(SpecTable table) => table.subject ?? '(no subject)';
@@ -665,22 +664,174 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('the routes', () {
-    test('are the screen files of the presentation layer', () {
-      fail(_screensOutOfScope);
+    final routeTables = spec.screens.tablesOfKind([TableKind.route]);
+    final rows = [for (final table in routeTables) ...table.rows];
+
+    test('are the routes of AppRoutes, no more, no fewer', () {
+      expect(routeTables, hasLength(1));
+      expectSameSet([
+        for (final route in AppRoutes.specified) _specPath(route),
+      ], routeTables.expand((table) => table.identifiers).toList());
     });
-  }, skip: _screensOutOfScope);
+
+    test('give the dynamic segments of each route', () {
+      final inSpec = {
+        for (final row in rows)
+          firstCode(row.first)!: (allCodes(row[1])..sort()),
+      };
+      final inCode = {
+        for (final route in AppRoutes.specified)
+          _specPath(route): ([...route.parameters]..sort()),
+      };
+
+      expect(inSpec, equals(inCode));
+      expect(
+        {for (final route in AppRoutes.specified) ...route.parameters},
+        {RouteParams.meetingId, RouteParams.documentId},
+      );
+    });
+
+    test('have a name and a path of their own in the router', () {
+      final all = [...AppRoutes.specified, AppRoutes.screenProtectionDemo];
+
+      expect(all.map((route) => route.name).toSet(), hasLength(all.length));
+      expect(all.map((route) => route.path).toSet(), hasLength(all.length));
+    });
+
+    test('are all drawn on the navigation map', () {
+      final maps = spec.screens.fences.where(
+        (fence) => fence.language == 'mermaid',
+      );
+
+      expect(maps, isNotEmpty);
+      expect([
+        for (final route in AppRoutes.specified)
+          if (!maps.any((map) => map.body.contains(_specPath(route)))) route,
+      ], isEmpty);
+    });
+
+    test('keep the development screen out of the specification', () {
+      expect(
+        AppRoutes.specified.map((route) => route.path),
+        isNot(contains(AppRoutes.screenProtectionDemo.path)),
+      );
+    });
+  });
+
+  group('the access', () {
+    test('are the values of the Access enumeration', () {
+      final tables = spec.screens
+          .tablesOfKind([TableKind.value])
+          .where((table) => table.subject == 'ACCESS')
+          .toList();
+
+      expect(tables, hasLength(1));
+      expectSameSet([
+        for (final access in Access.values) access.value,
+      ], tables.single.identifiers);
+    });
+  });
 
   group('the test ids', () {
-    test('are the values of the test ids of the presentation layer', () {
-      fail(_screensOutOfScope);
+    final idTables = spec.screens.tablesOfKind([TableKind.testId]);
+    final rows = [for (final table in idTables) ...table.rows];
+
+    test('are the values of the registry, each once, no more, no fewer', () {
+      expect(idTables, isNotEmpty);
+      expectSameSet(testIds.values.toList(), [
+        for (final row in rows) firstCode(row.first) ?? '',
+      ]);
     });
-  }, skip: _screensOutOfScope);
+
+    for (final row in rows) {
+      final id = firstCode(row.first) ?? '';
+      final constant = firstCode(row.length > 1 ? row[1] : '') ?? '(none)';
+      test('names the constant of $id', () {
+        expect(testIds[constant], id);
+      });
+    }
+  });
 
   group('the test id builders', () {
-    test('are the builder functions of the test ids', () {
-      fail(_screensOutOfScope);
+    final builderTables = spec.screens.tablesOfKind([TableKind.builder]);
+    final rows = [for (final table in builderTables) ...table.rows];
+    final builders = <String, Function>{
+      'demoAccountTestId': demoAccountTestId,
+      'meetingRowTestId': meetingRowTestId,
+      'periodOptionTestId': periodOptionTestId,
+      'agendaItemTestId': agendaItemTestId,
+      'resolutionTestId': resolutionTestId,
+      'documentTestId': documentTestId,
+      'participantTestId': participantTestId,
+      'voteChoicesTestId': voteChoicesTestId,
+      'voteChoiceTestId': voteChoiceTestId,
+      'voteNoticeTestId': voteNoticeTestId,
+      'voteOutcomeTestId': voteOutcomeTestId,
+      'acknowledgeTestId': acknowledgeTestId,
+      'pendingVoteTestId': pendingVoteTestId,
+      'rejectedVoteTestId': rejectedVoteTestId,
+      'openVoteMeetingTestId': openVoteMeetingTestId,
+    };
+
+    test('are the builder functions of the test ids, no more, no fewer', () {
+      expect(builderTables, hasLength(1));
+      expectSameSet(builders.keys.toList(), [
+        for (final row in rows) firstCode(row.first) ?? '',
+      ]);
     });
-  }, skip: _screensOutOfScope);
+
+    test('are all the functions the test id files declare', () {
+      final declared = <String>{};
+      for (final file in _files([
+        'lib/core/presentation',
+        'lib/features/*/presentation',
+      ])) {
+        if (!file.path.endsWith('test_ids.dart')) {
+          continue;
+        }
+        declared.addAll(
+          RegExp(
+            r'^String (\w+)\(',
+            multiLine: true,
+          ).allMatches(file.readAsStringSync()).map((m) => m.group(1)!),
+        );
+      }
+
+      expect(declared, builders.keys.toSet());
+    });
+
+    for (final MapEntry(:key, :value) in builders.entries) {
+      test('gives the parameters and the pattern of $key', () {
+        final row = rows.firstWhere((row) => firstCode(row.first) == key);
+        final parameters = row[1]
+            .split(',')
+            .map((parameter) => parameter.trim())
+            .where((parameter) => parameter.isNotEmpty)
+            .toList();
+        final pattern = firstCode(row[2]);
+
+        // Each parameter gets a sentinel; reading them back by name gives the
+        // pattern of the id.
+        final sentinels = [
+          for (final parameter in parameters) '\u0001$parameter\u0002',
+        ];
+        var built = Function.apply(value, sentinels) as String;
+        for (final parameter in parameters) {
+          built = built.replaceAll('\u0001$parameter\u0002', '{$parameter}');
+        }
+
+        expect(built, pattern);
+      });
+    }
+
+    test('the prefix of the rows of the list is exposed', () {
+      expect(
+        meetingRowTestId('x'),
+        '$meetingRowTestIdPrefix'
+        'x',
+      );
+    });
+  });
 
   // -------------------------------------------------------------------------
   // Limits, settings and constants
@@ -860,10 +1011,42 @@ void main() {
   });
 
   group('the settings', () {
-    test('have the default value in the composition root', () {
-      fail(_settingsOutOfScope);
+    final rows = [
+      for (final table in spec.useCases.tablesOfKind([TableKind.setting]))
+        ...table.rows,
+    ];
+    // The name of each setting in the specification and the value of the
+    // constant of the composition that carries it.
+    final inCode = <String, Object>{
+      'MAX_CACHE_AGE': maxCacheAge,
+      'MAX_VOTE_DELIVERY_ATTEMPTS': maxVoteDeliveryAttempts,
+      'APP_LOCK_GRACE_PERIOD': appLockGracePeriod,
+      'MEETINGS_PAGE_SIZE': meetingsPageSize,
+      'HTTP_REQUEST_TIMEOUT': httpRequestTimeout,
+      'DOCUMENT_DOWNLOAD_TIMEOUT': documentDownloadTimeout,
+      'MIN_HTTP_REQUEST_TIMEOUT': minHttpRequestTimeout,
+      'MAX_HTTP_REQUEST_TIMEOUT': maxHttpRequestTimeout,
+      'ALLOW_DEVICE_PASSCODE_FALLBACK': allowDevicePasscodeFallback,
+      'MOCK_SESSION_LIFETIME': devSessionLifetime,
+    };
+
+    test('are documented, no more, no fewer', () {
+      expect(rows.length, greaterThan(5));
+      expectSameSet(inCode.keys.toList(), [
+        for (final row in rows) firstCode(row.first) ?? '',
+      ]);
     });
-  }, skip: _settingsOutOfScope);
+
+    for (final row in rows) {
+      final name = firstCode(row.first) ?? '';
+      test('has the default value of $name in the code', () {
+        expect(
+          '${inCode[name]}',
+          (row.length > 1 ? row[1] : '').replaceAll('`', '').trim(),
+        );
+      });
+    }
+  });
 
   group('the constants of the application', () {
     final inCode = numericConstantsIn(_sharedFiles());
