@@ -99,11 +99,21 @@ jobs:
           echo "dart test ${folders[*]}"
           dart test "${folders[@]}"
 
+      # The adapters, on their own so that a failure of one is named after it: dio against the fixture
+      # server, drift on files and in memory, the contract suites of the ports run against every adapter.
+      # The tests open an encrypted SQLite file. The native library (SQLite3MultipleCiphers) comes from the
+      # build hook of package:sqlite3, which downloads the prebuilt library for the runner and checks its
+      # hash, so the runner installs no package. They need Flutter (plugins, assets), so `dart test` cannot
+      # run them.
+      - name: Infrastructure tests (dio on the fixtures, drift, encrypted SQLite)
+        run: flutter test test/infrastructure
+
       # Writes test/coverage_helper_test.dart, which imports every library of lib/: a file that no
       # test loads would be missing from the coverage report instead of counting as 0 percent.
       - name: Load every library for the coverage
         run: dart run tool/coverage_helper.dart
 
+      # Runs every test again, the ones of test/infrastructure included, to measure the coverage.
       - name: Flutter tests with coverage
         run: flutter test --coverage
 
