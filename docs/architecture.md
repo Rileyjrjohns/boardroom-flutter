@@ -7,6 +7,8 @@ The React Native app is still layered first (`src/domain`, `src/application`, `s
 ## The layout
 
 ```text
+packages/
+  screen_protection/         the local plugin (Pigeon, Kotlin, Swift) behind the ScreenProtection port: docs/native-module.md
 lib/
   main.dart                  the entry point: hands control to app
   l10n/                      the ARB files and the generated localizations
@@ -67,6 +69,8 @@ An arrow is "may import". The graph is the constant `featureGraph` of `tool/chec
 | `infrastructure` | Adapters (dio, drift, secure storage, local_auth)            | `domain`, `application`, `infrastructure`; never `presentation` nor `lib/app` |
 | `presentation`   | Widgets, screens, notifiers                                  | `domain`, `application`, `presentation`; never `infrastructure`               |
 
+A native plugin of the app lives in `packages/`, is a dependency by path like any other, and is an adapter package: only `infrastructure` and `app` import it. The one exception is a native *view*, which is an element of the widget tree and cannot cross a port: `lib/features/documents/presentation/secure_content.dart` may import the widget entry point of `screen_protection` (`presentationExemptions` in the checker, by file and by URI, tested).
+
 `lib/app/composition` is a layer of its own, pure Dart like an application: it knows every feature and reaches the adapters through ports. The test fakes (`test/support/fakes`) may import it, so that the fakes assemble the same glue as the app instead of copying it.
 
 ## Inversions
@@ -98,6 +102,7 @@ The job `Import rules` runs `dart run tool/check_imports.dart`, which reads ever
 - a layer imports what it may not (the layer rules above, and the allowlists of Dart libraries and packages for `domain` and `application`);
 - a file imports across features against `featureGraph`, imports the `infrastructure` or the `presentation` of another feature, or is in `core` and imports a feature or `app`;
 - `featureGraph` names something that is no feature, a feature of `lib/features` is not in the graph, or the graph has a cycle;
-- a pure test imports a test of another folder (a test of a feature may use `test/support` only).
+- a pure test imports a test of another folder (a test of a feature may use `test/support` only);
+- a file of the presentation imports the package of an adapter, except the exact file and URI of `presentationExemptions`.
 
 `test/tool/check_imports_test.dart` tests every rule both ways (an allowed import passes, a forbidden one fails on the right line), a fabricated cycle included, and runs the checker on the real tree. To add a dependency between two features, add the edge to `featureGraph` with the reason; if it closes a cycle, invert it with a port instead.

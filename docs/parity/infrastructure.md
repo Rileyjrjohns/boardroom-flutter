@@ -12,7 +12,7 @@ This page covers the whole of step 3, in five parts:
 4. the persistence (drift, the encrypted database, the caches and the outbox);
 5. the contract suites: which adapter of which port runs which suite, and the totals of the step, at the end of the page.
 
-Out of scope for step 3: `native/NativeScreenProtection.test.ts` (36 tests, the screen protection plugin is step 4), and the tests of the standalone Node program of `tooling/mock-api` (11 tests, the program is not ported: the development build talks to the dio adapter in process).
+Out of scope for step 3: `native/NativeScreenProtection.test.ts` (36 tests, the screen protection plugin: they are ported in step 4, see [Screen protection plugin (step 4)](#screen-protection-plugin-step-4)), and the tests of the standalone Node program of `tooling/mock-api` (11 tests, the program is not ported: the development build talks to the dio adapter in process).
 
 ## Files
 
@@ -83,7 +83,7 @@ Out of scope for step 3: `native/NativeScreenProtection.test.ts` (36 tests, the 
 
 | React Native test file | Dart test file (under `test/`) | RN | Dart | Not ported (RN scenario: reason) |
 | --- | --- | --- | --- | --- |
-| `shared/attempt.test.ts` | `core/infrastructure/shared/attempt_test.dart` | 14 | 11 | `describeFailure keeps the code of a failure that has one in the form of a code`, `... says nothing specific about a code with free text`, `... about a code that is not a string`, `... about an error code that is not an integer`: JavaScript error objects with a `code` property, Dart exceptions are typed; `... says nothing specific about undefined`: Dart has no `undefined` (`null` is the row "null") |
+| `shared/attempt.test.ts` | `core/infrastructure/shared/attempt_test.dart` | 14 | 13 | `describeFailure ... about a code that is not a string`, `... about an error code that is not an integer`: JavaScript error objects with a `code` property, Dart exceptions are typed (the `code` of a `PlatformException` is the one that is kept, step 4: the two scenarios about a code that is or is not written like one run on it); `... says nothing specific about undefined`: Dart has no `undefined` (`null` is the row "null") |
 | `shared/clonePlain.test.ts` | (none) | 3 | 0 | The 3 scenarios: `clonePlain` is not ported, Dart values are immutable |
 | `shared/issuePaths.test.ts` | `core/infrastructure/shared/issue_paths_test.dart` | 3 | 3 | |
 | `shared/rejectionSchemas.test.ts` | `features/votes/infrastructure/rejection_schemas_test.dart` | 29 | 30 | |
@@ -122,7 +122,7 @@ These tests check something that exists only in Dart, or code that React Native 
 
 | Dart test file (under `test/`) | Tests | What |
 | --- | --- | --- |
-| `core/infrastructure/shared/attempt_test.dart` | 2 | `describeFailure` reads the error number of a `FileSystemException` |
+| `core/infrastructure/shared/attempt_test.dart` | 2 | `describeFailure` reads the error number of a `FileSystemException` (the two tests on a `PlatformException` are the scenarios of the table above) |
 | `features/votes/infrastructure/rejection_schemas_test.dart` | 1 | The failure names the place of the flaw and no value |
 | `features/auth/infrastructure/dto/session_dto_test.dart` | 1 | The wire classes never print the token nor the password |
 | `core/infrastructure/http/dto/wire_test.dart` | 8 | The parser and the writer of instants (impossible days, 24:00:00, offsets, the year range, `-000001`), `decodeWire` on a body that is not an object |
@@ -158,7 +158,7 @@ The biometrics, the connectivity, the platform bundle, and the adapters of the m
 | `connectivity/ExpoConnectivity.ts` | `core/infrastructure/connectivity/device_connectivity.dart` | `DeviceConnectivity`, with `NetworkSnapshot`, `NetworkStateApi` and `statusOf` |
 | `connectivity/ExpoNetworkState.ts` | `core/infrastructure/connectivity/connectivity_plus_network_state.dart` | `connectivity_plus`; `snapshotOf` reads its list of connections |
 | `connectivity/SimulatedConnectivity.ts` | `app/dev/in_memory/simulated_connectivity.dart` | Over a `NetworkControl` |
-| `device/DevicePlatform.ts` | `app/device/device_platform.dart` | Adds `databaseOpener` and `randomBytes`; the native module of the screen protection is for the plugin step |
+| `device/DevicePlatform.ts` | `app/device/device_platform.dart` | Adds `databaseOpener` and `randomBytes`; the native side of the screen protection is the plugin of step 4 (`features/documents/infrastructure/native`) |
 | `device/createExpoPlatform.ts` | `app/device/create_device_platform.dart` | A `Future`: the folder of the databases is asked of the platform |
 | `in-memory/InMemoryAuthSession.ts` | `app/dev/in_memory/in_memory_auth_session.dart` | `DemoAccount` is the one of the foundations, in the same file |
 | `in-memory/InMemoryBiometricGate.ts` | `app/dev/in_memory/in_memory_biometric_gate.dart` | |
@@ -340,6 +340,46 @@ The contract suites of `MeetingCache`, `DocumentCache` and `VoteOutbox` run agai
 
 The persistence folder has 625 Dart tests in the files above, besides `core/infrastructure/persistence/encrypted_sqlite_test.dart` (foundations, 8 tests, listed in the first table of Dart-only tests); `flutter test test/core/infrastructure/persistence test/features/*/infrastructure test/app/persistence` runs them all.
 
+## Screen protection plugin (step 4)
+
+The local plugin `packages/screen_protection` (Pigeon, Kotlin, Swift: [`../native-module.md`](../native-module.md)) and its adapter. It replaces the local Expo module `modules/screen-protection` of React Native and the folder `src/features/documents/infrastructure/native`. The native code has no React Native test (it is checked on a device); the Dart side of the plugin and the Kotlin and Swift logic that can run without a device have tests of their own, listed below.
+
+### Files
+
+| React Native | Dart (under `lib/` unless it says `packages/`) | Note |
+| --- | --- | --- |
+| `native/NativeScreenProtection.ts` | `features/documents/infrastructure/native/native_screen_protection.dart` | `NativeScreenProtection`, over `ScreenProtectionModuleApi`. `DEFAULT_NATIVE_TIMEOUT_MILLIS` is `defaultNativeTimeoutMillis`. The module is `null` where the platform has no plugin (`undefined` in React Native). The two events of the module (`onScreenshotTaken`, `onCaptureChanged`) are one stream of typed messages (`CaptureEventMessage`, sealed), so there is one native listener, not two |
+| `native/ScreenProtectionModuleApi.ts` | `features/documents/infrastructure/native/screen_protection_module_api.dart` | The seam: `setProtectionEnabled`, `isCaptured`, `addListener` (with an `onError` for the stream, which an Expo event has not). `NATIVE_EVENT` and `NativeSubscription` have no counterpart: the stream is typed, and the subscription is a function (`Unsubscribe`) |
+| `native/loadScreenProtectionModule.ts` | `features/documents/infrastructure/native/pigeon_screen_protection_module.dart` | `PigeonScreenProtectionModule` (the module over the typed channel Pigeon generates) and `loadScreenProtectionModule` (null on a platform that is not Android or iOS, where React Native tests whether the module loaded) |
+| `modules/screen-protection/index.ts`, `src/ScreenProtectionModule.ts`, `src/ScreenProtection.types.ts` | `packages/screen_protection/lib/screen_protection.dart`, `lib/src/messages.g.dart` (generated), `pigeons/screen_protection_api.dart` | The calls and the events, declared once and generated for Dart, Kotlin and Swift. `CaptureChangedEvent` is `CaptureChangedMessage`; the screenshot event, which has no payload, is `ScreenshotTakenMessage`; `SecureLayerFallbackEvent` is `SecureLayerFallbackMessage`. `capabilities()` is new (what the platform can do) |
+| `modules/screen-protection/src/ScreenProtectionSecureView.tsx` | `packages/screen_protection/lib/src/secure_view.dart`, `lib/screen_protection_view.dart` | `SecureView` |
+| `features/documents/presentation/components/SecureContent.tsx` | `features/documents/presentation/secure_content.dart` | The one file of the presentation allowed to import the plugin, and only its widget entry point: `presentationExemptions` in `tool/check_imports.dart`, tested in `test/tool/check_imports_test.dart` (the counterpart of the lint rule of React Native) |
+| `modules/screen-protection/ios/ScreenProtectionModule.swift`, `ScreenProtectionSecureView.swift` | `packages/screen_protection/ios/screen_protection/Sources/screen_protection/` | The app switcher cover, the screenshot and recording detection, the secure view. The selection of a `PDFView` is not ported: it belongs to the PDF viewer, which is not chosen yet ([`../native-module.md`](../native-module.md)) |
+| `modules/screen-protection/android/.../*.kt` | `packages/screen_protection/android/src/main/kotlin/com/boardroom/screenprotection/` | `FLAG_SECURE`, `ScreenshotDetector`, `RecordingDetector`; the manifest declares the same two permissions |
+| `features/documents/infrastructure/testing/FakeScreenProtectionModule.ts` | `test/support/infrastructure/fake_screen_protection_module.dart` | The stand-in of the native side. `listenerCount` is the number of listeners of the one stream; `captured`, `failure`, `throwsSynchronously`, `hanging`, `captureFailure`, `addFailure`, `removeFailure` are the switches of the React Native fake |
+| (the demo screen: none) | `features/documents/presentation/screen_protection_demo_screen.dart` | New in Flutter: a screen to try the plugin on a device, reached from the placeholder home screen until the router |
+
+### Tests
+
+| React Native test file | Dart test file (under `test/`) | RN | Dart | Not ported (RN scenario: reason) |
+| --- | --- | --- | --- | --- |
+| `native/NativeScreenProtection.test.ts` | `features/documents/infrastructure/native/native_screen_protection_test.dart` | 36 | 36 | `NativeScreenProtection, the events ignores a report that is not a state`: the events are typed (`CaptureEventMessage`), a payload that is not a state cannot be written. One Dart test takes its place: `... when something goes wrong says so when the stream of events fails, and the events that follow still come`. In `... does not throw when the module cannot be listened to, and says so` the monitoring hears one failure, not two, as there is one listener. Same names otherwise (35), the contract suite included (9) |
+
+The suite `describeScreenProtectionContract` runs against `NativeScreenProtection` over `FakeScreenProtectionModule`, whose `setProtectionEnabled` turns the protection on later than it turns it off, so the order of the calls is really tested (as the React Native fake does).
+
+### Dart tests with no React Native scenario
+
+| Test file | Tests | What |
+| --- | --- | --- |
+| `test/features/documents/infrastructure/native/pigeon_screen_protection_module_test.dart` | 8 | The module over a fake of the generated host API: the calls reach it, its failure reaches the adapter, the events of the stream reach the listener from one stream made once, a failure of the stream reaches `onError`, and `loadScreenProtectionModule` by platform |
+| `test/features/documents/presentation/screen_protection_demo_screen_test.dart` | 8 | The demo screen over a fake port: the switch, the errors (unsupported, failed), the list of captures, the French texts, and that leaving the screen turns the protection off |
+| `test/app/app_test.dart` | 1 | The home screen opens the demo screen |
+| `test/tool/check_imports_test.dart` | 4 | The exemption of `SecureContent`: one file, one URI, nothing else |
+| `packages/screen_protection/test/screen_protection_api_test.dart` | 6 | The plugin's Dart side over a mocked channel: the calls, a native error as `PlatformException`, `capabilities`, the typed events, equality |
+| `packages/screen_protection/test/secure_view_test.dart` | 7 | `SecureView`: the child alone on Android and elsewhere, the native view on iOS only while secure, mounted and removed as `secure` changes, the fallback reason, and that it stops listening when it is not secure |
+| `packages/screen_protection/android/src/test/kotlin/...` | 9 | `ProtectionState` (the flag is applied to the window of each activity, remembered without one), `CaptureStateTracker` (a state is told once), `Capabilities` (by API level); JVM, `./gradlew :screen_protection:testDebugUnitTest` |
+| `packages/screen_protection/ios/screen_protection/Tests/` | 6 | `CaptureDecision` (what the scenes and the screens say about a capture) and `CaptureMask` (the private mask value); XCTest, run on a simulator by the owner (the logic itself was run on macOS in a scratch package) |
+
 ## Contract suites: port, adapters, run
 
 The contract suites of `test/support/contracts` are written once and run against every adapter of their port, as in React Native (`fakes.contracts.test.ts` for the fakes, one test file per adapter for the others). A suite that runs against an adapter is called with the name of the adapter, so its tests are named `<Adapter> honours the <Port> contract …`. "Tests" is the number of tests the suite has for that adapter, "skipped" the ones its options switch off (a store in memory cannot fail a statement nor be reopened).
@@ -369,7 +409,7 @@ The contract suites of `test/support/contracts` are written once and run against
 | `Connectivity` | `DeviceConnectivity` | `test/core/infrastructure/connectivity/device_connectivity_test.dart` | 10 | 0 |
 |  | `SimulatedConnectivity` | `test/app/dev/in_memory/simulated_connectivity_test.dart` | 10 | 0 |
 | `ScreenProtection` | `InMemoryScreenProtection` | `test/features/documents/infrastructure/in_memory_screen_protection_test.dart` | 9 | 0 |
-|  | `NativeScreenProtection` | (step 4, the screen protection plugin) | | |
+|  | `NativeScreenProtection` | `test/features/documents/infrastructure/native/native_screen_protection_test.dart` | 9 | 0 |
 
 The fakes of `test/support/fakes` run the same nine suites in `test/support/fakes/fakes_contracts_test.dart`, so a contract is checked against the fake and against every real adapter. Three ports have no contract suite, in React Native either, and their adapters have their own test files: `BiometricGate` (`DeviceBiometricGate`, `InMemoryBiometricGate`), `Monitoring` (`ConsoleMonitoring`, `SentryMonitoring`) and `Clock` (`SystemClock`). The drift adapters run each suite three times: on a plain file, where the groups that reopen the database run; in memory, where the key cannot be set (see [`open-questions.md`](open-questions.md), "persistence"); and on the encrypted database that `openProtectedDatabase` gives, which is the one of the app. The skipped tests of the adapters in memory come from the options their test file passes to the suite (no failing statement, no reopening, no unreadable entry), the same flags React Native passes as `IN_MEMORY_STORE`.
 
@@ -381,12 +421,12 @@ React Native tests of `src/infrastructure` in scope, the ones that have a Dart t
 
 | Part | RN tests | With a Dart test of the same name | Not ported |
 | --- | --- | --- | --- |
-| Foundations, fixture server, simulated server | 789 | 776 | 13 |
+| Foundations, fixture server, simulated server | 789 | 778 | 11 |
 | Device and in-memory adapters | 298 | 288 | 10 |
 | HTTP client and repositories | 313 | 309 | 4 |
 | Persistence | 349 | 334 | 15 |
-| **Step 3** | **1749** | **1707** | **42** |
+| **Step 3** | **1749** | **1709** | **40** |
 
-The 42 are, by reason: 15 about values that are changed after they were handed over (3 `clonePlain`, and the 6 scenarios of the contract suites that `exceptions.md` lists, for each of the in-memory adapters and the Drift adapters: 12), because Dart values are immutable; 9 about JavaScript values that Dart typing cannot hold (5 of `describeFailure`, 4 truthiness tests of the biometric prompt); 2 page limits (`1.5`, `NaN`) that an `int` cannot be; 5 Expo-specific (3 `ExpoFileVolume`, 2 `ExpoSqliteOpener`); 4 for a platform that gives no stream (dio always gives one); 7 about what drift does by itself or a type that cannot be wrong (3 `migrate`, 2 `protectedDatabase`, 1 `unlockDatabase`, 1 `SqlDatabase`).
+The 40 are, by reason: 15 about values that are changed after they were handed over (3 `clonePlain`, and the 6 scenarios of the contract suites that `exceptions.md` lists, for each of the in-memory adapters and the Drift adapters: 12), because Dart values are immutable; 7 about JavaScript values that Dart typing cannot hold (3 of `describeFailure`, 4 truthiness tests of the biometric prompt); 2 page limits (`1.5`, `NaN`) that an `int` cannot be; 5 Expo-specific (3 `ExpoFileVolume`, 2 `ExpoSqliteOpener`); 4 for a platform that gives no stream (dio always gives one); 7 about what drift does by itself or a type that cannot be wrong (3 `migrate`, 2 `protectedDatabase`, 1 `unlockDatabase`, 1 `SqlDatabase`).
 
 The infrastructure tests (the folder `test/infrastructure` before the move to the feature layout, now `test/core/infrastructure`, `test/features/*/infrastructure`, `test/app` and `test/support/infrastructure`) have 2424 Dart tests in 81 files, 52 of them skipped by the options of the contract suites above; `flutter test` runs 3902 tests with the domain, the application, the tooling and the fakes (110 skipped). The counter that `flutter test` prints (`+2423 ~52` and `+3843 ~110`) is higher: it also counts the `tearDownAll` hook of the 51 files that make a temporary directory. Line coverage of the infrastructure code (before the move, `lib/infrastructure`) is 96.3 % (the gate asks 70 % of the layers other than the domain and the application).
