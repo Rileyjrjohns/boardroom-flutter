@@ -22,7 +22,7 @@ The app depends on it by path (`screen_protection` in `pubspec.yaml`) and the tw
 - Android before 14 has **no screenshot detection**, and before 15 **no recording detection**: the system tells apps nothing there, the plugin reports nothing (`capabilities()` says so), and the protection itself works on every version. A build without the two permissions has the detection off: the plugin catches the `SecurityException`.
 - `FLAG_SECURE` belongs to one window. A window of its own over the app (a system dialog) is not covered by the flag of the activity.
 - The iOS cover is also up while a system prompt (Face ID) is on screen, because the scene is then inactive, and only while the protection is on.
-- Not ported from React Native: the clearing of the text selection of a `PDFView`. It belongs to the PDF viewer, which this port has not chosen yet; when it does, the same observer goes in the plugin, or in the viewer.
+- The text selection of the PDF is not cleared by the plugin, as the React Native one is for a `PDFView`: the viewer (`pdfrx`, in `lib/features/documents/presentation/components/pdf_view.dart`) is built with the text selection disabled (`PdfTextSelectionParams(enabled: false)`), so there is nothing to clear and no copy menu to open.
 - Nothing was run on a device by this change. What was verified is in [What was verified](#what-was-verified).
 
 **The events.** One stream of typed messages: `ScreenshotTakenMessage` (no payload) and `CaptureChangedMessage(captured)`, sent when the state changes and not repeated. The adapter maps them to the three `ScreenCaptureKind` of the port (`screenshotTaken`, `recordingStarted`, `recordingStopped`) and reads `isCaptured` once when it starts listening, so a document opened during a recording knows about it.
