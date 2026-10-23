@@ -1,5 +1,6 @@
 package com.boardroom.flutterdemo
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// local_auth shows the biometric prompt from a FragmentActivity.
+class MainActivity : FlutterFragmentActivity()

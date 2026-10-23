@@ -1,5 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The calls to the API (dio). The debug and profile manifests already ask for it for the tools of Flutter;
+         a release build needs it here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The biometric unlock of the app (local_auth). -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <!-- No backup of the data of the app: the keys of the secure storage and the encrypted database must not
+         leave the device (flutter_secure_storage cannot read a restored key). -->
     <application
+        android:allowBackup="false"
         android:label="Boardroom"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
