@@ -6,8 +6,8 @@ import 'package:boardroom/core/domain/value_objects/page.dart';
 import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
 import 'package:boardroom/core/infrastructure/http/dto/wire.dart';
 import 'package:boardroom/core/infrastructure/shared/results.dart';
-import 'package:boardroom/features/documents/infrastructure/stored_document.dart';
 import 'package:boardroom/features/meetings/domain/entities/agenda_item.dart';
+import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
 import 'package:boardroom/features/meetings/domain/entities/participant.dart';
@@ -143,6 +143,42 @@ final class StoredParticipant {
   Map<String, dynamic> toJson() => _$StoredParticipantToJson(this);
 }
 
+/// A document of a meeting as the cache keeps it in the row of the meeting: its
+/// description. The documents keep a form of their own in the row of a document
+/// (an adapter does not import the adapter of another feature, and the two rows
+/// have each their own format).
+@JsonSerializable(checked: true)
+final class StoredMeetingDocument {
+  /// Creates the stored form of a document of a meeting.
+  const new({
+    required this.id,
+    required this.title,
+    required this.confidentiality,
+    required this.pageCount,
+  });
+
+  /// Reads the stored form of a document of a meeting, or throws a
+  /// `CheckedFromJsonException` at the first field that is missing or has the
+  /// wrong type.
+  factory fromJson(Map<String, dynamic> json) =>
+      _$StoredMeetingDocumentFromJson(json);
+
+  /// The identifier of the document.
+  final String id;
+
+  /// The title of the document.
+  final String title;
+
+  /// The level of confidentiality, as the cache names it.
+  final String confidentiality;
+
+  /// The number of pages.
+  final num pageCount;
+
+  /// The JSON object of this document.
+  Map<String, dynamic> toJson() => _$StoredMeetingDocumentToJson(this);
+}
+
 /// The fields of a summary of a meeting, which a meeting has too.
 abstract interface class StoredSummaryFields {
   /// The identifier of the meeting.
@@ -227,7 +263,7 @@ final class StoredMeeting implements StoredSummaryFields {
   final List<StoredAgendaItem> agenda;
 
   /// The documents of the meeting.
-  final List<StoredDocument> documents;
+  final List<StoredMeetingDocument> documents;
 
   /// The people of the meeting.
   final List<StoredParticipant> participants;
@@ -319,6 +355,30 @@ Result<Participant, ValidationError> _participantOf(StoredParticipant stored) =>
       ),
     );
 
+Result<Document, ValidationError> _documentOf(StoredMeetingDocument stored) =>
+    andThen(
+      parseDocumentId(stored.id),
+      (id) => andThen(
+        parseConfidentialityLevel(stored.confidentiality),
+        (confidentiality) => createDocument(
+          DocumentInput(
+            id: id,
+            title: stored.title,
+            confidentiality: confidentiality,
+            pageCount: stored.pageCount,
+          ),
+        ),
+      ),
+    );
+
+StoredMeetingDocument _storedDocumentOf(Document document) =>
+    StoredMeetingDocument(
+      id: document.id,
+      title: document.title,
+      confidentiality: document.confidentiality.value,
+      pageCount: document.pageCount,
+    );
+
 Result<MeetingSummary, ValidationError> _summaryOf(
   StoredSummaryFields stored,
 ) => andThen(
@@ -342,7 +402,7 @@ Result<Meeting, ValidationError> meetingOf(StoredMeeting stored) => andThen(
   (summary) => andThen(
     collect(stored.agenda.map(_agendaItemOf)),
     (agenda) => andThen(
-      collect(stored.documents.map(documentOf)),
+      collect(stored.documents.map(_documentOf)),
       (documents) => andThen(
         collect(stored.participants.map(_participantOf)),
         (participants) => createMeeting(
@@ -402,7 +462,7 @@ StoredMeeting storedMeetingOf(Meeting meeting) => StoredMeeting(
   scheduledAt: meeting.scheduledAt,
   location: meeting.location,
   agenda: meeting.agenda.map(_storedAgendaItem).toList(),
-  documents: meeting.documents.map(storedDocumentOf).toList(),
+  documents: meeting.documents.map(_storedDocumentOf).toList(),
   participants: [
     for (final participant in meeting.participants)
       StoredParticipant(

@@ -8,7 +8,9 @@ part 'document_dto.g.dart';
 
 // The metadata of a document of the API: `GET /documents/{id}`. Its content,
 // `GET /documents/{id}/content`, is a file and not JSON: it has no schema (see
-// `HttpClient.download`).
+// `HttpClient.download`). The same four fields are written in a meeting, which
+// lists its documents: that form is the meetings' (`MeetingDocumentWire`), as
+// an adapter does not import the adapter of another feature.
 
 /// The metadata of a document as the API writes it.
 @JsonSerializable(checked: true)
