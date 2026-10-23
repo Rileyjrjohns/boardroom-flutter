@@ -1,17 +1,26 @@
+import 'package:boardroom/app/composition/meeting_cache_vote_recorder.dart';
+import 'package:boardroom/app/composition/session_data_purgers.dart'
+    as composition;
 import 'package:boardroom/core/application/offline/load_with_cache_fallback.dart';
+import 'package:boardroom/core/application/ports/session_gate.dart';
 import 'package:boardroom/core/application/use_cases/observe_connectivity.dart';
 import 'package:boardroom/core/domain/value_objects/duration.dart';
+import 'package:boardroom/features/auth/application/ports/session_data_purger.dart';
 import 'package:boardroom/features/auth/application/session/app_lock.dart';
+import 'package:boardroom/features/auth/application/session/auth_session_gate.dart';
 import 'package:boardroom/features/auth/application/session/end_session.dart';
 import 'package:boardroom/features/auth/application/session/purge_caches.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
 import 'package:boardroom/features/auth/application/use_cases/unlock_app.dart';
+import 'package:boardroom/features/documents/application/document_cache_evictor.dart';
 import 'package:boardroom/features/documents/application/screen_protection_coordinator.dart';
 import 'package:boardroom/features/documents/application/use_cases/close_document.dart';
 import 'package:boardroom/features/documents/application/use_cases/observe_screen_capture.dart';
 import 'package:boardroom/features/documents/application/use_cases/open_document.dart';
 import 'package:boardroom/features/meetings/application/load_meeting.dart';
+import 'package:boardroom/features/meetings/application/ports/meeting_document_evictor.dart';
 import 'package:boardroom/features/meetings/application/use_cases/list_meetings.dart';
+import 'package:boardroom/features/votes/application/ports/recorded_vote_sink.dart';
 import 'package:boardroom/features/votes/application/use_cases/acknowledge_rejected_vote.dart';
 import 'package:boardroom/features/votes/application/use_cases/cast_vote.dart';
 import 'package:boardroom/features/votes/application/use_cases/discard_unreadable_votes.dart';
@@ -145,6 +154,31 @@ final class Fakes
   /// The local cache of documents.
   @override
   final FakeDocumentCache documentCache;
+
+  /// What the offline policy asks of the session, answered by the session
+  /// guards of auth over these same fakes.
+  @override
+  SessionGate get sessionGate => AuthSessionGate(this);
+
+  /// What a session leaves on the device, as the composition lists it: the
+  /// meeting cache, then the document cache.
+  @override
+  List<SessionDataPurger> get sessionDataPurgers =>
+      composition.sessionDataPurgers(
+        meetingCache: meetingCache,
+        documentCache: documentCache,
+      );
+
+  /// Writes a vote the server recorded into the cached meeting, the way the
+  /// app does.
+  @override
+  RecordedVoteSink get recordedVoteSink =>
+      MeetingCacheVoteRecorder(meetingCache: meetingCache, session: this);
+
+  /// Drops the documents of a refused meeting from the document cache.
+  @override
+  MeetingDocumentEvictor get documentEvictor =>
+      DocumentCacheEvictor(documentCache);
 
   /// The server that records votes.
   @override

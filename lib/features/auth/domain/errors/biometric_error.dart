@@ -1,4 +1,9 @@
-part of 'app_error.dart';
+// The biometric errors: what an authentication with the fingerprint or the face
+// can fail with. They extend the open `AppError` of the core, and the family is
+// sealed here, in the feature that owns it.
+
+import 'package:boardroom/core/domain/errors/app_error.dart';
+import 'package:boardroom/core/domain/shared/constants.dart';
 
 /// The codes of the biometric errors.
 enum BiometricErrorCode implements StableValue {

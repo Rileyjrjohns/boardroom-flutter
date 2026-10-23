@@ -7,6 +7,7 @@ import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/page.dart';
 import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
 import 'package:boardroom/core/domain/value_objects/page_request.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
 import 'package:boardroom/features/meetings/application/use_cases/list_meetings.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';

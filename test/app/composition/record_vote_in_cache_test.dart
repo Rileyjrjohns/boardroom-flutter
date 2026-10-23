@@ -1,53 +1,36 @@
+import 'package:boardroom/app/composition/meeting_cache_vote_recorder.dart';
 import 'package:boardroom/core/application/offline/cache_resource.dart';
-import 'package:boardroom/core/application/ports/clock.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
-import 'package:boardroom/features/auth/application/ports/auth_session.dart';
-import 'package:boardroom/features/auth/application/session/app_lock.dart';
 import 'package:boardroom/features/auth/application/session/end_session.dart';
-import 'package:boardroom/features/auth/application/session/require_session.dart';
-import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
-import 'package:boardroom/features/votes/application/record_vote_in_cache.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
 import 'package:test/test.dart';
 
-import '../../../support/builders/builders.dart';
-import '../../../support/fakes/create_fakes.dart';
-import '../../../support/fakes/fake_monitoring.dart';
-import '../../../support/fakes/holding_meeting_cache.dart';
+import '../../support/builders/builders.dart';
+import '../../support/fakes/create_fakes.dart';
+import '../../support/fakes/fake_monitoring.dart';
+import '../../support/fakes/holding_meeting_cache.dart';
 
-/// The fakes, with another cache of meetings: the Dart counterpart of
-/// `{ ...fakes, meetingCache: cache }`, for a cache that is not a
-/// `FakeMeetingCache`.
-final class _DepsWithCache implements RequireSessionDeps {
-  const new(this._fakes, this.meetingCache);
+// The scenarios of `recordVoteInCache` in React Native. In Dart the function is
+// the `MeetingCacheVoteRecorder` of the composition, the implementation of the
+// `RecordedVoteSink` port of the votes (see docs/architecture.md), so the
+// scenarios, with the same names, run against it. The file keeps the name of
+// the React Native test file, which `tool/scenario_parity.dart` maps by name.
 
-  final Fakes _fakes;
-
-  @override
-  final MeetingCache meetingCache;
-
-  @override
-  AuthSession get auth => _fakes.auth;
-
-  @override
-  Clock get clock => _fakes.clock;
-
-  @override
-  AppLock get appLock => _fakes.appLock;
-
-  @override
-  DocumentCache get documentCache => _fakes.documentCache;
-
-  @override
-  Monitoring get monitoring => _fakes.monitoring;
-}
+/// Records [vote] with the recorder of the app, over the cache of meetings of
+/// [fakes] or over [cache], the Dart counterpart of
+/// `{ ...fakes, meetingCache: cache }`.
+Future<void> _record(Fakes fakes, Vote vote, {MeetingCache? cache}) =>
+    MeetingCacheVoteRecorder(
+      meetingCache: cache ?? fakes.meetingCache,
+      session: fakes,
+    ).record(vote);
 
 final Vote _vote = aVote(choice: VoteChoice.abstain);
 final Instant _cachedAt = at(-5000);
@@ -64,7 +47,7 @@ void main() {
       await fakes.meetingCache.saveMeeting(aUserId(), aMeeting(), _cachedAt);
       fakes.clock.advance(60000);
 
-      await recordVoteInCache(fakes, _vote);
+      await _record(fakes, _vote);
 
       final cached = unwrap(
         await fakes.meetingCache.readMeeting(aUserId(), aMeetingId()),
@@ -86,7 +69,7 @@ void main() {
         _cachedAt,
       );
 
-      await recordVoteInCache(fakes, _vote);
+      await _record(fakes, _vote);
 
       final cached = await fakes.meetingCache.readMeeting(
         aUserId('user-2'),
@@ -101,7 +84,7 @@ void main() {
     test('does nothing when the meeting is not cached', () async {
       final fakes = createFakes();
 
-      await recordVoteInCache(fakes, _vote);
+      await _record(fakes, _vote);
 
       expect(fakes.meetingCache.isEmpty(), isTrue);
       expect(fakes.monitoring.errors, isEmpty);
@@ -111,7 +94,7 @@ void main() {
       final fakes = createFakes();
       fakes.meetingCache.readFailure = storageReadFailed();
 
-      await recordVoteInCache(fakes, _vote);
+      await _record(fakes, _vote);
 
       expect(
         fakes.monitoring.errors,
@@ -132,7 +115,7 @@ void main() {
         await fakes.meetingCache.saveMeeting(aUserId(), aMeeting(), _cachedAt);
         fakes.meetingCache.writeFailure = storageWriteFailed();
 
-        await recordVoteInCache(fakes, _vote);
+        await _record(fakes, _vote);
 
         expect(
           fakes.monitoring.errors,
@@ -155,10 +138,7 @@ void main() {
         final cache = HoldingMeetingCache(fakes.meetingCache);
         final held = cache.holdNextRead();
 
-        final recording = recordVoteInCache(
-          _DepsWithCache(fakes, cache),
-          _vote,
-        );
+        final recording = _record(fakes, _vote, cache: cache);
         await held.hasAnswered;
         await closeSession(fakes);
         expect(fakes.meetingCache.isEmpty(), isTrue);
@@ -174,10 +154,7 @@ void main() {
         final cache = HoldingMeetingCache(fakes.meetingCache);
         final held = cache.holdNextRead();
 
-        final recording = recordVoteInCache(
-          _DepsWithCache(fakes, cache),
-          _vote,
-        );
+        final recording = _record(fakes, _vote, cache: cache);
         await held.hasAnswered;
         fakes.auth.session = aSession(user: aUser(id: aUserId('user-2')));
         await fakes.meetingCache.purge();
@@ -193,10 +170,7 @@ void main() {
         final cache = HoldingMeetingCache(fakes.meetingCache);
         final held = cache.holdNextRead();
 
-        final recording = recordVoteInCache(
-          _DepsWithCache(fakes, cache),
-          _vote,
-        );
+        final recording = _record(fakes, _vote, cache: cache);
         await held.hasAnswered;
         fakes.appLock.lock();
         await fakes.meetingCache.purge();
@@ -213,10 +187,7 @@ void main() {
         final cache = HoldingMeetingCache(fakes.meetingCache);
         final held = cache.holdNextRead();
 
-        final recording = recordVoteInCache(
-          _DepsWithCache(fakes, cache),
-          _vote,
-        );
+        final recording = _record(fakes, _vote, cache: cache);
         await held.hasAnswered;
         held.release();
         await recording;

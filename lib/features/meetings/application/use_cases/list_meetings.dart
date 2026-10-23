@@ -8,18 +8,20 @@ import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/page.dart';
 import 'package:boardroom/core/domain/value_objects/page_request.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart'
+    show SessionChangedError;
 import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_repository.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/meeting_period.dart';
 
 /// What [ListMeetings] needs, on top of what the cache fallback needs.
-abstract interface class ListMeetingsDeps implements CacheFallbackDeps {
+abstract interface class ListMeetingsDeps
+    implements CacheFallbackDeps, RequireSessionDeps {
   /// The remote meetings.
   MeetingRepository get meetings;
 
   /// The local cache of meetings.
-  @override
   MeetingCache get meetingCache;
 }
 

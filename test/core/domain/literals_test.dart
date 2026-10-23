@@ -5,6 +5,9 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/domain/value_objects/page_request.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:boardroom/features/meetings/domain/entities/participant.dart';
 import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
@@ -12,6 +15,7 @@ import 'package:boardroom/features/meetings/domain/value_objects/meeting_period.
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:test/test.dart';
 
 import '../../support/builders/builders.dart';

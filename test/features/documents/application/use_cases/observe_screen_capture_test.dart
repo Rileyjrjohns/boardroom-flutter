@@ -1,7 +1,7 @@
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/application/ports/types/unsubscribe.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/documents/application/ports/screen_protection.dart';
 import 'package:boardroom/features/documents/application/use_cases/observe_screen_capture.dart';
 import 'package:test/test.dart';

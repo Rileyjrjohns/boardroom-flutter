@@ -9,6 +9,7 @@ import 'package:boardroom/core/infrastructure/http/protocol.dart';
 import 'package:boardroom/core/infrastructure/http/status_cause.dart';
 import 'package:boardroom/features/auth/application/ports/auth_session.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
 import 'package:boardroom/features/auth/infrastructure/dto/session_dto.dart';
 import 'package:boardroom/features/auth/infrastructure/session_vault.dart';

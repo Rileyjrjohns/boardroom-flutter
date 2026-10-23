@@ -1,4 +1,4 @@
-// Checks the import rules of the hexagonal layers.
+// Checks the import rules of the hexagonal layers and of the features.
 //
 // The code of lib/ is organised feature first: lib/core is the shared kernel,
 // lib/features/<feature> holds one folder per feature, and lib/app is the
@@ -13,9 +13,17 @@
 // expressions, so comments, strings, multi-line directives and conditional
 // imports cannot fool it) and fails when a file steps outside its layer.
 //
-// The rules are about layers only: an import counts by the layer of its target,
-// whatever the feature or core it sits in. Which feature may depend on which
-// other one is not checked here (yet).
+// Two kinds of rule apply to an import of lib/:
+//
+// - The layer of the target (domain, application...), whatever the feature or
+//   core it sits in: see [layerRules].
+// - The feature of the target: see [featureGraph]. The core imports no feature
+//   and not app; a feature imports the core, and the features [featureGraph]
+//   names for it, by their domain and their application only, never their
+//   infrastructure nor their presentation; only app (and main.dart) knows them
+//   all. When a feature needs something of another that the graph does not
+//   allow, it declares a port and the composition wires it, instead of the
+//   graph growing a cycle: the graph itself is checked to have none.
 //
 // Usage: dart run tool/check_imports.dart [project-root]
 // Exit code 0 when every rule holds, 1 with one line per violation otherwise.
@@ -44,6 +52,14 @@ const String featuresFolder = 'features';
 /// Folder of lib/ that holds the composition, and name of its layer: the one
 /// place that knows every other layer.
 const String appFolder = 'app';
+
+/// Folder of lib/app (and of test/app) that holds the glue between features:
+/// the objects that implement the port of one feature over the ports of
+/// others, and the assembly of the lists the features contribute to. It is a
+/// layer of its own, pure Dart, so that the test fakes can assemble the same
+/// glue as the app without Flutter. The rest of lib/app (the app itself, the
+/// persistence, the simulated world) is free to use any package.
+const String compositionFolder = 'composition';
 
 /// Folder of test/ that holds the helpers shared by the tests (builders, fakes,
 /// contract suites...).
@@ -133,35 +149,43 @@ const Set<String> adapterPackages = {
 /// run with plain `dart test`.
 const Set<String> pureTestPackages = {'test'};
 
-/// The imports of infrastructure code that reach into lib/app, which the layer
-/// rules refuse, listed until they are removed: the key is the importing file,
-/// the value the files of lib/app it imports. They are the adapters and the
-/// opening of the database, which are written against the concrete database of
-/// the whole file (`BoardroomDatabase`) that lives in lib/app/persistence.
+/// Which feature may depend on which other one, and why: the feature, then each
+/// feature it may import (its domain and its application, never its
+/// infrastructure nor its presentation) with the reason the edge exists. Every
+/// feature of lib/features is a key; the core is below all of them and app is
+/// above, so neither is here.
 ///
-/// This table is temporary. The imports it lists are removed when the database
-/// is split per feature, and the entries with them. An entry whose file no
-/// longer has the import is itself a violation, so the table cannot outlive the
-/// debt it records.
-const Map<String, Set<String>> temporaryExemptions = {
-  'lib/core/infrastructure/persistence/migrate.dart': {
-    'lib/app/persistence/migrations.dart',
+/// The graph has no cycle, and the checker fails if an edge makes one: when two
+/// features need each other, the one that owns the rule declares a port and the
+/// other implements it, and `lib/app` wires them (see docs/architecture.md).
+/// Adding an edge is a decision: write here what the dependency is.
+const Map<String, Map<String, String>> featureGraph = {
+  // The account and the session depend on nothing but the core: the others
+  // ask them who the user is, never the other way round. What a session leaves
+  // on the device is purged through the `SessionDataPurger` port, which the
+  // features implement.
+  'auth': {},
+  'meetings': {
+    'auth':
+        'a meeting is read for the signed-in user: the session guard '
+        '(`requireSession`) and the user ids of its participants',
   },
-  'lib/core/infrastructure/persistence/protected_database.dart': {
-    'lib/app/persistence/boardroom_database.dart',
-    'lib/app/persistence/migrations.dart',
+  'documents': {
+    'auth':
+        'a document is opened for the signed-in user, and its watermark '
+        'carries the name and the email of that `User`',
+    'meetings':
+        'the `Document` is an entity of the meetings, which list them: the '
+        'documents implement the `MeetingDocumentEvictor` port of the '
+        'meetings',
   },
-  'lib/features/documents/infrastructure/drift_document_cache.dart': {
-    'lib/app/persistence/boardroom_database.dart',
-    'lib/app/persistence/schema.dart',
-  },
-  'lib/features/meetings/infrastructure/drift_meeting_cache.dart': {
-    'lib/app/persistence/boardroom_database.dart',
-    'lib/app/persistence/schema.dart',
-  },
-  'lib/features/votes/infrastructure/drift_vote_outbox.dart': {
-    'lib/app/persistence/boardroom_database.dart',
-    'lib/app/persistence/schema.dart',
+  'votes': {
+    'auth':
+        'a vote is cast by the signed-in user, after the session guard and '
+        'the biometric confirmation',
+    'meetings':
+        'a vote is cast on a resolution of a meeting: the `Meeting`, its '
+        '`Resolution` and the `VoteChoice` belong to the meetings',
   },
 };
 
@@ -210,7 +234,7 @@ class LayerRule {
   final Set<String> allowedTestScopes;
 }
 
-/// The rules of the five layers.
+/// The rules of the six layers.
 ///
 /// A layer is the folder under `lib/core/`, under `lib/features/<feature>/` or,
 /// for the composition, `lib/app` itself. Dependencies point inward, so the
@@ -270,6 +294,23 @@ const Map<String, LayerRule> layerRules = {
       _unknownLayer: 'the UI depends on the domain and application only',
     },
   ),
+  // The glue between features (app/composition): it implements the port of one
+  // feature over the ports of others, so it knows every feature, but it is
+  // pure Dart and reaches the adapters through ports like an application does.
+  compositionFolder: LayerRule(
+    label: compositionFolder,
+    allowedLayers: {'domain', 'application', compositionFolder},
+    whyNotLayer: {
+      'infrastructure':
+          'the glue between features is pure Dart: it reaches an '
+          'adapter through a port, and the app chooses the adapter',
+      'presentation': 'the glue between features does not depend on the UI',
+      appFolder: 'the rest of app builds on the glue, not the other way round',
+      _unknownLayer: 'the glue depends on the domain and application only',
+    },
+    dartLibraries: pureDartLibraries,
+    packages: purePackages,
+  ),
   // The composition: the only place that knows every layer, so it chooses which
   // adapter stands behind each port. It may use any package.
   appFolder: LayerRule(
@@ -279,6 +320,7 @@ const Map<String, LayerRule> layerRules = {
       'application',
       'infrastructure',
       'presentation',
+      compositionFolder,
       appFolder,
     },
     allowL10n: true,
@@ -299,12 +341,20 @@ const Map<String, String> pureSupportLayers = {
   'fakes': 'application',
 };
 
+/// The layers of lib/ that a pure folder of test/support may import on top of
+/// the layer whose rules it follows. The fakes assemble the glue of
+/// app/composition the way the app does, instead of copying it.
+const Map<String, Set<String>> pureSupportExtraLayers = {
+  'fakes': {compositionFolder},
+};
+
 /// Folders of test/support that a pure test may import, by layer of the test:
 /// the same layer and the layers below it (a domain test never needs a fake of
 /// a port).
 const Map<String, Set<String>> pureTestSupport = {
   'domain': {'builders'},
   'application': {'builders', 'contracts', 'fakes'},
+  compositionFolder: {'builders', 'contracts', 'fakes'},
 };
 
 /// One broken rule.
@@ -352,15 +402,17 @@ class _Target {
     : package = null,
       layer = null,
       path = null,
+      area = null,
       problem = null;
 
   const new package(this.package)
     : dartLibrary = null,
       layer = null,
       path = null,
+      area = null,
       problem = null;
 
-  const new project(this.layer, this.path)
+  const new project(this.layer, this.path, this.area)
     : dartLibrary = null,
       package = null,
       problem = null;
@@ -369,7 +421,8 @@ class _Target {
     : dartLibrary = null,
       package = null,
       layer = null,
-      path = null;
+      path = null,
+      area = null;
 
   /// Name of the `dart:` library, for example `io`.
   final String? dartLibrary;
@@ -383,18 +436,23 @@ class _Target {
   /// Project-relative path of a file of the project.
   final String? path;
 
+  /// Where a file of lib/ sits: `core`, `app`, or the name of its feature. Null
+  /// for a file outside those (the entry point, l10n, test code).
+  final String? area;
+
   /// Why the URI could not be resolved.
   final String? problem;
 }
 
 /// Checks every Dart file of lib/ and test/ under [root] and returns the
-/// violations. [exemptions] lists the imports that the layer rules refuse but
-/// that are tolerated for now (see [temporaryExemptions]).
+/// violations. [graph] says which feature may import which other one (see
+/// [featureGraph]).
 CheckResult checkImports(
   Directory root, {
-  Map<String, Set<String>> exemptions = temporaryExemptions,
+  Map<String, Map<String, String>> graph = featureGraph,
 }) {
-  final violations = <Violation>[];
+  final violations = <Violation>[...graphProblems(graph)];
+  final undeclared = <String>{};
   var filesChecked = 0;
 
   for (final relative in _dartFiles(root)) {
@@ -453,17 +511,26 @@ CheckResult checkImports(
       continue;
     }
 
-    final exempted = exemptions[relative] ?? const <String>{};
-    final used = <String>{};
+    final area = inLib ? _areaOfLibFile(relative) : null;
+    if (area != null &&
+        area != coreFolder &&
+        area != appFolder &&
+        !graph.containsKey(area) &&
+        undeclared.add(area)) {
+      violations.add(
+        Violation(
+          path: '$libFolder/$featuresFolder/$area',
+          line: 1,
+          message:
+              'the feature $area is not in featureGraph: declare it, with the '
+              'features it may import',
+        ),
+      );
+    }
     for (final ref in _directiveUris(parsed)) {
       final target = _resolve(ref.value, relative);
-      final reason = _denial(rule, target);
+      final reason = _areaDenial(area, target, graph) ?? _denial(rule, target);
       if (reason == null) {
-        continue;
-      }
-      final targetPath = target.path;
-      if (targetPath != null && exempted.contains(targetPath)) {
-        used.add(targetPath);
         continue;
       }
       violations.add(
@@ -471,17 +538,6 @@ CheckResult checkImports(
           path: relative,
           line: ref.line,
           message: '${rule.label} may not import ${ref.value} ($reason)',
-        ),
-      );
-    }
-    for (final target in exempted.difference(used)) {
-      violations.add(
-        Violation(
-          path: relative,
-          line: 1,
-          message:
-              'stale exemption: the file no longer imports $target, remove '
-              'the entry from temporaryExemptions',
         ),
       );
     }
@@ -529,6 +585,11 @@ String _layerOfLibFile(String relative) {
   }
   final segments = relative.split('/');
   // A file directly under lib/ has only two segments.
+  if (segments.length >= 4 &&
+      segments[1] == appFolder &&
+      segments[2] == compositionFolder) {
+    return compositionFolder;
+  }
   if (segments.length >= 3 && segments[1] == appFolder) {
     return appFolder;
   }
@@ -545,6 +606,137 @@ String _layerOfLibFile(String relative) {
   return _unknownLayer;
 }
 
+/// Where a file of lib/ sits: [coreFolder], [appFolder], the name of its
+/// feature, or null for the entry point and the localization code.
+String? _areaOfLibFile(String relative) {
+  if (relative == entryPointFile || _isGeneratedL10n(relative)) {
+    return null;
+  }
+  final segments = relative.split('/');
+  if (segments.length >= 3 && segments[1] == coreFolder) {
+    return coreFolder;
+  }
+  if (segments.length >= 4 && segments[1] == featuresFolder) {
+    return segments[2];
+  }
+  if (segments.length >= 3 && segments[1] == appFolder) {
+    return appFolder;
+  }
+  return null;
+}
+
+/// Why a file in [area] may not import [target] because of the feature or the
+/// core the target sits in, or null when it may (the layers are [_denial]'s).
+String? _areaDenial(
+  String? area,
+  _Target target,
+  Map<String, Map<String, String>> graph,
+) {
+  final targetArea = target.area;
+  if (area == null || targetArea == null || area == targetArea) {
+    return null;
+  }
+  // The composition knows every feature: that is what it is for.
+  if (area == appFolder) {
+    return null;
+  }
+  if (area == coreFolder) {
+    return targetArea == appFolder
+        ? 'the core imports not app: it is below the composition'
+        : 'the core imports no feature: a feature that the core policy needs '
+              'is reached through a port the core declares, and the feature '
+              'implements it';
+  }
+  // From here on the file belongs to a feature.
+  if (targetArea == coreFolder) {
+    return null;
+  }
+  if (targetArea == appFolder) {
+    return 'a feature imports not app: the composition builds the features, '
+        'not the other way round';
+  }
+  final allowed = graph[area];
+  if (allowed == null || !allowed.containsKey(targetArea)) {
+    final names = allowed == null || allowed.isEmpty
+        ? 'no other feature'
+        : allowed.keys.join(', ');
+    return 'the feature $area does not depend on the feature $targetArea '
+        '(featureGraph: $area depends on $names); if it needs something of '
+        '$targetArea, the feature that owns the rule declares a port and the '
+        'composition wires it';
+  }
+  final layer = target.layer;
+  if (layer == 'infrastructure' || layer == 'presentation') {
+    return 'never the $layer of another feature: depend on the domain and the '
+        'application of $targetArea, and let the composition choose the '
+        'adapter';
+  }
+  return null;
+}
+
+/// The problems of the graph itself: a feature that depends on one that is not
+/// a key, and a cycle. Reported at the file of the tool, since the graph is a
+/// constant of it.
+List<Violation> graphProblems(Map<String, Map<String, String>> graph) {
+  final problems = <Violation>[];
+  void add(String message) => problems.add(
+    Violation(path: 'tool/check_imports.dart', line: 1, message: message),
+  );
+  for (final MapEntry(:key, :value) in graph.entries) {
+    for (final dependency in value.keys) {
+      if (!graph.containsKey(dependency)) {
+        add('featureGraph: $key depends on $dependency, which is no feature');
+      }
+    }
+  }
+  final cycle = findCycle({
+    for (final MapEntry(:key, :value) in graph.entries) key: value.keys,
+  });
+  if (cycle != null) {
+    add(
+      'featureGraph has a cycle: ${cycle.join(' -> ')} (two features that '
+      'need each other: the one that owns the rule declares a port, the other '
+      'implements it, and lib/app wires them)',
+    );
+  }
+  return problems;
+}
+
+/// A cycle of [graph] (node to the nodes it points at) as the path that closes
+/// it, `a -> b -> a`, or null when there is none. Nodes that are not keys have
+/// no edge.
+List<String>? findCycle(Map<String, Iterable<String>> graph) {
+  final finished = <String>{};
+  final path = <String>[];
+  List<String>? visit(String node) {
+    final at = path.indexOf(node);
+    if (at >= 0) {
+      return [...path.sublist(at), node];
+    }
+    if (finished.contains(node)) {
+      return null;
+    }
+    path.add(node);
+    for (final next in graph[node] ?? const <String>[]) {
+      final cycle = visit(next);
+      if (cycle != null) {
+        return cycle;
+      }
+    }
+    path.removeLast();
+    finished.add(node);
+    return null;
+  }
+
+  for (final node in graph.keys) {
+    final cycle = visit(node);
+    if (cycle != null) {
+      return cycle;
+    }
+  }
+  return null;
+}
+
 /// Whether [relative] is a file written by `flutter gen-l10n`.
 bool _isGeneratedL10n(String relative) =>
     relative.startsWith(generatedL10nPrefix) &&
@@ -554,17 +746,23 @@ bool _isGeneratedL10n(String relative) =>
 /// The rule of a file under test/ that has to run without Flutter, or null when
 /// its folder is free.
 ///
-/// Three kinds of folder are pure, and follow the rules of one layer:
+/// Four kinds of folder are pure, and follow the rules of one layer:
 /// `test/core/<layer>`, `test/features/<feature>/<layer>` (the layer is the
-/// folder, `domain` or `application`) and the pure folders of `test/support`
-/// ([pureSupportLayers]). Such a file may import the lib code of its layer and
-/// of the layers below it, the support folders of [pureTestSupport], and the
-/// files of its own folder.
+/// folder, `domain` or `application`), `test/app/composition` (the glue between
+/// features) and the pure folders of `test/support` ([pureSupportLayers]). Such
+/// a file may import the lib code of its layer and of the layers below it, the
+/// support folders of [pureTestSupport], and the files of its own folder.
 LayerRule? _pureTestRule(String relative) {
   final segments = relative.split('/');
   final String layer;
   final int depth;
+  var extraLayers = const <String>{};
   if (segments.length >= 4 &&
+      segments[1] == appFolder &&
+      segments[2] == compositionFolder) {
+    layer = compositionFolder;
+    depth = 3;
+  } else if (segments.length >= 4 &&
       segments[1] == coreFolder &&
       pureTestLayers.contains(segments[2])) {
     layer = segments[2];
@@ -579,6 +777,7 @@ LayerRule? _pureTestRule(String relative) {
       pureSupportLayers.containsKey(segments[2])) {
     layer = pureSupportLayers[segments[2]]!;
     depth = 3;
+    extraLayers = pureSupportExtraLayers[segments[2]] ?? const {};
   } else {
     return null;
   }
@@ -586,7 +785,7 @@ LayerRule? _pureTestRule(String relative) {
   final folder = segments.take(depth).join('/');
   return LayerRule(
     label: folder,
-    allowedLayers: base.allowedLayers,
+    allowedLayers: {...base.allowedLayers, ...extraLayers},
     whyNotLayer: base.whyNotLayer,
     dartLibraries: base.dartLibraries,
     packages: {...?base.packages, ...pureTestPackages},
@@ -675,12 +874,12 @@ _Target _resolve(String uri, String from) {
 /// Classifies a project-relative path.
 _Target _projectTarget(String path) {
   if (path.startsWith('$testFolder/')) {
-    return _Target.project(_testLayer, path);
+    return _Target.project(_testLayer, path, null);
   }
   if (!path.startsWith('$libFolder/')) {
     return const _Target.unresolved('the file is outside lib/ and test/');
   }
-  return _Target.project(_layerOfLibFile(path), path);
+  return _Target.project(_layerOfLibFile(path), path, _areaOfLibFile(path));
 }
 
 /// Why [rule] refuses [target], or null when the import is allowed.

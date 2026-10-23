@@ -2,6 +2,7 @@ import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/votes/application/use_cases/discard_unreadable_votes.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:test/test.dart';

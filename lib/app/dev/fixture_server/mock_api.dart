@@ -15,14 +15,15 @@ import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
 import 'package:boardroom/core/domain/value_objects/page_request.dart';
 import 'package:boardroom/core/infrastructure/http/dto/wire.dart';
 import 'package:boardroom/core/infrastructure/http/protocol.dart';
-import 'package:boardroom/core/infrastructure/shared/rejection_schemas.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
 import 'package:boardroom/features/auth/domain/value_objects/email_address.dart';
 import 'package:boardroom/features/auth/infrastructure/dto/session_dto.dart';
 import 'package:boardroom/features/documents/infrastructure/dto/document_dto.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/meeting_period.dart';
 import 'package:boardroom/features/meetings/infrastructure/dto/meeting_dto.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:boardroom/features/votes/infrastructure/dto/vote_dto.dart';
+import 'package:boardroom/features/votes/infrastructure/rejection_schemas.dart';
 import 'package:meta/meta.dart';
 
 /// The `code` of the body of an error: `{ "error": { "code": "..." } }`.

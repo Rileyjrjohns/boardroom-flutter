@@ -1,15 +1,18 @@
-import 'package:boardroom/app/persistence/schema.dart';
+import 'package:boardroom/core/domain/shared/constants.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/schema.dart';
 import 'package:drift/drift.dart';
 import 'package:test/test.dart';
 
 import '../../support/infrastructure/test_database.dart';
 
-// The tables of drift (`tables.dart`) are the names and the types of the
-// columns the queries write to; the file is created by the migrations
-// (`migrations.dart`). Nothing but these tests makes sure the two describe the
-// same tables, and that the names drift derives from the Dart names are the
-// ones written in the file (`schema.dart`). They have no React Native
-// counterpart: there the queries are text.
+// The tables of drift (the `tables.dart` of each feature) are the names and the
+// types of the columns the queries write to; the file is created by the
+// migrations (`migrations.dart`). Nothing but these tests makes sure the two
+// describe the same tables, and that the names drift derives from the Dart
+// names are the ones written in the file (the `schema.dart` of each feature).
+// They have no React Native counterpart: there the queries are text.
 
 /// The type SQLite declares for a column of this type.
 String _declaredType(Object type) {
@@ -43,10 +46,10 @@ void main() {
       expect(
         {for (final table in test.database.allTables) table.actualTableName},
         equals({
-          StoredTable.meetingPages.value,
-          StoredTable.meetingDetails.value,
-          StoredTable.documentEntries.value,
-          StoredTable.outboxVotes.value,
+          MeetingStoredTable.meetingPages.value,
+          MeetingStoredTable.meetingDetails.value,
+          DocumentStoredTable.documentEntries.value,
+          VoteStoredTable.outboxVotes.value,
         }),
       );
     });
@@ -83,7 +86,11 @@ void main() {
 
     test('have columns the schema names', () async {
       final test = await openTestDatabase();
-      final names = {for (final column in StoredColumn.values) column.value};
+      final names = {
+        ...valuesOf(MeetingStoredColumn.values),
+        ...valuesOf(DocumentStoredColumn.values),
+        ...valuesOf(VoteStoredColumn.values),
+      };
 
       for (final table in test.database.allTables) {
         expect(

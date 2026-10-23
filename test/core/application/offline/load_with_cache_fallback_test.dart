@@ -7,6 +7,7 @@ import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:test/test.dart';
 

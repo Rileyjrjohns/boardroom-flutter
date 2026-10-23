@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
@@ -11,6 +10,7 @@ import 'package:boardroom/core/infrastructure/files/file_store.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/documents/domain/value_objects/document_location.dart';
 import 'package:boardroom/features/documents/infrastructure/drift_document_cache.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/schema.dart';
 import 'package:boardroom/features/documents/infrastructure/stored_document.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:test/test.dart';
@@ -73,7 +73,7 @@ final String _rowWrittenBefore = [
   '"confidentiality":"internal","pageCount":3}',
 ].join();
 
-String get _entries => StoredTable.documentEntries.value;
+String get _entries => DocumentStoredTable.documentEntries.value;
 
 void main() {
   final databases = databaseDirectory();

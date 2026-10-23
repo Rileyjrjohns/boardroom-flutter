@@ -5,6 +5,7 @@ import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/use_cases/sign_out.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/meetings/application/use_cases/get_meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';

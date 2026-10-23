@@ -731,6 +731,121 @@ describeXContract('RealX', () => 2, { enabled: false });
       ]);
     });
 
+    group('with a React Native file split over several Dart files', () {
+      const meetingFile = 'src/domain/entities/Meeting.test.ts';
+      const meetingDart =
+          'test/features/meetings/domain/entities/'
+          'meeting_test.dart';
+      const votesDart =
+          'test/features/votes/domain/'
+          'with_vote_recorded_test.dart';
+      const splits = {
+        meetingFile: [
+          SplitPart(
+            dartFileName: 'with_vote_recorded_test.dart',
+            scenarioPrefixes: ['withVoteRecorded '],
+          ),
+        ],
+      };
+
+      ParityReport compare({
+        required List<String> rn,
+        required Map<String, List<String>> dart,
+        List<ParityNote> exceptions = const [],
+        Map<String, List<SplitPart>> splitFiles = splits,
+      }) => compareScenarios(
+        rnTests: {
+          meetingFile: [for (final name in rn) rnTest(name)],
+        },
+        dartTests: dart,
+        exceptions: exceptions,
+        splits: splitFiles,
+      );
+
+      test('expects the scenarios of the split in the other Dart file, and '
+          'the rest in the file of the name', () {
+        final report = compare(
+          rn: ['createMeeting a', 'withVoteRecorded b', 'findResolution c'],
+          dart: {
+            meetingDart: ['createMeeting a', 'findResolution c'],
+            votesDart: ['withVoteRecorded b'],
+          },
+        );
+
+        expect(report.ok, isTrue);
+        expect(report.rnCount, 3);
+        expect(report.dartCount, 3);
+        expect(
+          [for (final file in report.files) (file.rnFile, file.dartFile)],
+          [(meetingFile, votesDart), (meetingFile, meetingDart)],
+        );
+      });
+
+      test('reports a scenario of the split that stayed in the file of the '
+          'name, and one that is missing from the split file', () {
+        final report = compare(
+          rn: ['createMeeting a', 'withVoteRecorded b', 'withVoteRecorded c'],
+          dart: {
+            meetingDart: ['createMeeting a', 'withVoteRecorded b'],
+            votesDart: ['withVoteRecorded c'],
+          },
+        );
+
+        expect(report.ok, isFalse);
+        final byFile = {for (final file in report.files) file.dartFile: file};
+        expect(byFile[votesDart]!.missing, ['withVoteRecorded b']);
+        expect(byFile[meetingDart]!.extra, ['withVoteRecorded b']);
+      });
+
+      test('follows an exception to the Dart file of its scenario', () {
+        final report = compare(
+          rn: ['createMeeting a', 'withVoteRecorded type level'],
+          dart: {
+            meetingDart: ['createMeeting a'],
+            votesDart: ['withVoteRecorded other'],
+          },
+          exceptions: [note(meetingFile, 'withVoteRecorded type level')],
+        );
+        final byFile = {for (final file in report.files) file.dartFile: file};
+
+        expect(byFile[votesDart]!.excepted, ['withVoteRecorded type level']);
+        expect(byFile[meetingDart]!.staleExceptions, isEmpty);
+      });
+
+      test('refuses a split that matches no scenario', () {
+        final report = compare(
+          rn: ['createMeeting a'],
+          dart: {
+            meetingDart: ['createMeeting a'],
+            votesDart: const [],
+          },
+        );
+
+        expect(report.ok, isFalse);
+        expect(
+          report.files.first.problems.single,
+          contains('"withVoteRecorded "'),
+        );
+      });
+
+      test('does not split anything when no split is declared', () {
+        final report = compare(
+          rn: ['createMeeting a', 'withVoteRecorded b'],
+          dart: {
+            meetingDart: ['createMeeting a', 'withVoteRecorded b'],
+          },
+          splitFiles: const {},
+        );
+
+        expect(report.ok, isTrue);
+        expect(report.files, hasLength(1));
+      });
+
+      test('declares the split of Meeting.test.ts for the real tool', () {
+        expect(splitScenarioFiles.keys, contains(meetingFile));
+      });
+    });
+
     test('reports a Dart file that does not load', () {
       final report = compareScenarios(
         rnTests: {

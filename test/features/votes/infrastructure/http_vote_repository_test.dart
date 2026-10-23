@@ -4,6 +4,7 @@ import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/http/protocol.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 

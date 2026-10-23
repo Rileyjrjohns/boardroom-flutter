@@ -1,5 +1,4 @@
 import 'package:boardroom/app/persistence/migrations.dart' as schema;
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
@@ -7,7 +6,9 @@ import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:boardroom/features/votes/infrastructure/drift_vote_outbox.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/schema.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 import 'package:test/test.dart';
 
@@ -45,19 +46,19 @@ VoteOutboxHarness _harnessOf(TestDatabase test, FakeMonitoring monitoring) {
   );
 }
 
-String get _votes => StoredTable.outboxVotes.value;
-String get _sequenceColumn => StoredColumn.sequence.value;
-String get _keyColumn => StoredColumn.idempotencyKey.value;
-String get _voterColumn => StoredColumn.voterId.value;
-String get _resolutionColumn => StoredColumn.resolutionId.value;
-String get _meetingColumn => StoredColumn.meetingId.value;
-String get _choiceColumn => StoredColumn.choice.value;
-String get _castAtColumn => StoredColumn.castAt.value;
-String get _enqueuedAtColumn => StoredColumn.enqueuedAt.value;
-String get _attemptsColumn => StoredColumn.attempts.value;
-String get _statusColumn => StoredColumn.status.value;
-String get _reasonColumn => StoredColumn.rejectionReason.value;
-String get _rejectedAtColumn => StoredColumn.rejectedAt.value;
+String get _votes => VoteStoredTable.outboxVotes.value;
+String get _sequenceColumn => VoteStoredColumn.sequence.value;
+String get _keyColumn => VoteStoredColumn.idempotencyKey.value;
+String get _voterColumn => VoteStoredColumn.voterId.value;
+String get _resolutionColumn => VoteStoredColumn.resolutionId.value;
+String get _meetingColumn => VoteStoredColumn.meetingId.value;
+String get _choiceColumn => VoteStoredColumn.choice.value;
+String get _castAtColumn => VoteStoredColumn.castAt.value;
+String get _enqueuedAtColumn => VoteStoredColumn.enqueuedAt.value;
+String get _attemptsColumn => VoteStoredColumn.attempts.value;
+String get _statusColumn => VoteStoredColumn.status.value;
+String get _reasonColumn => VoteStoredColumn.rejectionReason.value;
+String get _rejectedAtColumn => VoteStoredColumn.rejectedAt.value;
 
 // What the contract cannot say: the shape of the rows, the checks of the
 // database, and what the outbox does with a row that is not a vote.
@@ -555,7 +556,7 @@ void main() {
 
       expect([
         for (final row in indexes) row['name'],
-      ], contains(StoredIndex.outboxByResolution.value));
+      ], contains(VoteStoredIndex.outboxByResolution.value));
     });
 
     test('leaves no table behind that the migration used', () async {
@@ -567,7 +568,7 @@ void main() {
 
       expect([
         for (final row in tables) row['name'],
-      ], isNot(contains(StoredTable.outboxVotesRebuilt.value)));
+      ], isNot(contains(VoteStoredTable.outboxVotesRebuilt.value)));
     });
 
     final accepted = <(String, String)>[

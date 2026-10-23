@@ -1,4 +1,9 @@
-part of 'app_error.dart';
+// The authentication errors: who the user is and whether the app is open to
+// them. They extend the open `AppError` of the core, and the family is sealed
+// here, in the feature that owns it.
+
+import 'package:boardroom/core/domain/errors/app_error.dart';
+import 'package:boardroom/core/domain/shared/constants.dart';
 
 /// The codes of the authentication errors.
 enum AuthenticationErrorCode implements StableValue {
@@ -23,7 +28,8 @@ enum AuthenticationErrorCode implements StableValue {
   final String value;
 }
 
-/// What can go wrong with who the user is.
+/// What can go wrong with who the user is. The family is sealed in this
+/// library, so a `switch` over it is checked to be exhaustive.
 sealed class AuthenticationError extends AppError {
   /// Creates an authentication error.
   const new();

@@ -8,6 +8,7 @@ import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dar
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:test/test.dart';
 
 import '../builders/builders.dart';

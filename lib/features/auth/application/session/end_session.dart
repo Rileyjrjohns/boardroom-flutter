@@ -16,9 +16,10 @@ abstract interface class EndSessionDeps implements PurgeCachesDeps {
   AppLock get appLock;
 }
 
-/// Ends the session on the device: the app is locked, both caches are emptied,
-/// and the session is forgotten. It is what signing out is (see `SignOut`), and
-/// the part of it that a session the server refused shares.
+/// Ends the session on the device: the app is locked, what the session left on
+/// the device is emptied (see [purgeCaches]), and the session is forgotten. It
+/// is what signing out is (see `SignOut`), and the part of it that a session
+/// the server refused shares.
 Future<Result<void, StorageWriteFailedError>> closeSession(
   EndSessionDeps deps,
 ) async {

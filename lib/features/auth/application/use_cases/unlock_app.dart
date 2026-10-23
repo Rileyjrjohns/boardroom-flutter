@@ -1,8 +1,8 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
 import 'package:boardroom/features/auth/application/session/app_lock.dart';
 import 'package:boardroom/features/auth/application/session/confirm_with_biometrics.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 
 /// What [UnlockApp] needs.
 abstract interface class UnlockAppDeps {

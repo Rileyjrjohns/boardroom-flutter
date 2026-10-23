@@ -8,7 +8,6 @@ import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
 import 'package:boardroom/features/meetings/domain/entities/participant.dart';
 import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
-import 'package:boardroom/features/votes/domain/entities/vote.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'meeting.freezed.dart';
@@ -121,27 +120,4 @@ Participant? findParticipant(Meeting meeting, UserId userId) {
     }
   }
   return null;
-}
-
-/// A copy of the meeting in which the vote is recorded on its resolution, as
-/// the server records it once the vote is accepted. Used to keep a cached copy
-/// truthful, so that the voter cannot vote again from it. The meeting is
-/// returned unchanged when the vote belongs to another meeting or to a
-/// resolution it does not have.
-Meeting withVoteRecorded(Meeting meeting, Vote vote) {
-  if (vote.meetingId != meeting.id) {
-    return meeting;
-  }
-  return meeting.copyWith(
-    agenda: [
-      for (final item in meeting.agenda)
-        if (item.resolution case final resolution?
-            when resolution.id == vote.resolutionId)
-          item.copyWith(
-            resolution: resolution.copyWith(recordedVote: vote.choice),
-          )
-        else
-          item,
-    ],
-  );
 }

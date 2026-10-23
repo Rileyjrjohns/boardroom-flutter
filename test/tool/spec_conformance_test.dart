@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:boardroom/app/composition/retryable_codes.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/duration.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
@@ -61,7 +62,10 @@ const List<String> _applicationFolders = [
   'lib/core/application',
   'lib/features/*/application',
 ];
-const List<String> _errorsFolders = ['lib/core/domain/errors'];
+const List<String> _errorsFolders = [
+  'lib/core/domain/errors',
+  'lib/features/*/domain/errors',
+];
 const List<String> _portsFolders = [
   'lib/core/application/ports',
   'lib/features/*/application/ports',
@@ -70,6 +74,38 @@ const List<String> _useCasesFolders = [
   'lib/core/application/use_cases',
   'lib/features/*/application/use_cases',
 ];
+
+/// The ports that the Dart port adds to those of the specification. The feature
+/// that owns a rule declares the port it needs from the others, and the
+/// composition (`lib/app`) wires them (see docs/architecture.md): the React
+/// Native app is layered, not split by feature, so it has no such ports and
+/// docs/spec has no table for them. They are told apart here, by name, and the
+/// test below checks that each one exists and that the specification does not
+/// know it: the list cannot go stale. Each entry is the port and the reason it
+/// exists.
+const Map<String, String> _dartOnlyPorts = {
+  'RecordedVoteSink':
+      'votes keeps the cached meeting truthful after a vote, and the '
+      'composition writes it with the meetings',
+  'SessionGate':
+      'the offline policy is in core and asks the session, which auth '
+      'answers',
+  'SessionDataPurger':
+      'auth ends the session and empties what it left, and the features that '
+      'keep data for a user say how',
+  'MeetingDocumentEvictor':
+      'meetings drops the documents of a meeting the server refuses, and '
+      'documents keeps them',
+};
+
+/// The sets of retryable codes that the core and the features each declare. The
+/// specification has one table for `RETRYABLE_CODES`: the set that the
+/// composition assembles from them, which is compared instead, read from the
+/// code itself since a static reading does not follow sets put together.
+const Set<String> _partialRetryableSets = {
+  'coreRetryableCodes',
+  'documentsRetryableCodes',
+};
 
 /// The names of the folders of the application that hold the ports and the use
 /// cases. The rest of the application code is the shared code (the rules of the
@@ -369,7 +405,16 @@ void main() {
     ];
     for (final (document, files) in sources) {
       group('documented in ${document.file}', () {
-        final enumerations = enumerationsIn(_root, files, knownEnums);
+        final enumerations = [
+          for (final enumeration in enumerationsIn(_root, files, knownEnums))
+            if (!_partialRetryableSets.contains(enumeration.name)) enumeration,
+          if (document == spec.useCases)
+            Enumeration(
+              name: 'retryableCodes',
+              file: 'lib/app/composition/retryable_codes.dart',
+              values: retryableCodes.toList(),
+            ),
+        ];
         final tables = document.tablesOfKind([TableKind.code, TableKind.value]);
 
         test('has at least one constant to compare', () {
@@ -515,12 +560,30 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('the ports', () {
-    final inCode = portsIn(_files(_portsFolders));
+    final allInCode = portsIn(_files(_portsFolders));
+    final inCode = [
+      for (final port in allInCode)
+        if (!_dartOnlyPorts.containsKey(port.name)) port,
+    ];
     final indexTables = spec.ports.tablesOfKind([TableKind.port]);
     final operationTables = spec.ports.tablesOfKind([TableKind.operation]);
 
     test('are found in the code', () {
       expect(inCode.length, greaterThanOrEqualTo(10));
+    });
+
+    test('that the Dart port adds are ports of the code '
+        'and are not in the specification', () {
+      final names = [for (final port in allInCode) port.name];
+      final inSpec = [
+        for (final table in indexTables) ...table.identifiers,
+        for (final table in operationTables) table.subject ?? '',
+      ];
+
+      expect([
+        for (final name in _dartOnlyPorts.keys)
+          if (!names.contains(name) || inSpec.contains(name)) name,
+      ], isEmpty);
     });
 
     test('are the interfaces with operations of the ports folders, '

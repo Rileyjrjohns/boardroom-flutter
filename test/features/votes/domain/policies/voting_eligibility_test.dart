@@ -2,7 +2,6 @@
 // defaults of the builders.
 // ignore_for_file: avoid_redundant_argument_values
 
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
@@ -10,6 +9,7 @@ import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:boardroom/features/votes/domain/policies/voting_eligibility.dart';
 import 'package:test/test.dart';
 

@@ -1,6 +1,7 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/use_cases/get_current_user.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:test/test.dart';
 
 import '../../../../support/builders/builders.dart';

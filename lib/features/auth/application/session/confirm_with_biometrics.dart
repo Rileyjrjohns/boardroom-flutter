@@ -1,6 +1,6 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 
 /// Asks the user for a biometric proof. The capability is checked first, so
 /// that a device without biometrics, or without enrolment, is reported without

@@ -1,6 +1,6 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 
 /// Why the user is asked for a biometric proof. The application names a
 /// reason; the adapter (or the presentation) turns it into the text of the

@@ -5,6 +5,7 @@ import 'package:boardroom/features/auth/application/session/require_session.dart
 import 'package:boardroom/features/auth/domain/entities/session.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 
 /// What [AcknowledgeRejectedVote] needs: what the session guard needs, and the
 /// outbox.

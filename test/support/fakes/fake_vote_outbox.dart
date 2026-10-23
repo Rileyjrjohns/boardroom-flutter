@@ -7,6 +7,7 @@ import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 
 import 'copy_plain.dart';
 

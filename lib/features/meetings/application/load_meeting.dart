@@ -6,22 +6,32 @@ import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
+import 'package:boardroom/features/auth/application/session/require_session.dart';
+import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
+import 'package:boardroom/features/meetings/application/ports/meeting_document_evictor.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_repository.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 
-/// What [loadMeeting] needs, on top of what the cache fallback needs (which
-/// includes both caches).
-abstract interface class LoadMeetingDeps implements CacheFallbackDeps {
+/// What [loadMeeting] needs, on top of what the cache fallback needs.
+abstract interface class LoadMeetingDeps
+    implements CacheFallbackDeps, RequireSessionDeps {
   /// The remote meetings.
   MeetingRepository get meetings;
+
+  /// The local cache of meetings.
+  MeetingCache get meetingCache;
+
+  /// Where the documents of a refused meeting are dropped from the device.
+  MeetingDocumentEvictor get documentEvictor;
 }
 
 /// A meeting for [owner], from the remote source or, when it cannot be reached,
 /// from the cache of that owner (see [loadWithCacheFallback]). When the server
 /// refuses the meeting (`forbidden`, `notFound`), the cached copy goes, and so
-/// do the documents it lists from the document cache: a document of a meeting
-/// that the user can no longer see must not stay readable offline.
+/// do the documents it lists (through the [MeetingDocumentEvictor]): a document
+/// of a meeting that the user can no longer see must not stay readable
+/// offline.
 ///
 /// The failure is a [RepositoryError], a `SessionRequiredError` or a
 /// `SessionChangedError`.
@@ -61,7 +71,7 @@ Future<Result<void, StorageError>> _revokeMeeting(
   }
 
   for (final document in documents) {
-    final removed = await deps.documentCache.remove(owner, document.id);
+    final removed = await deps.documentEvictor.evict(owner, document.id);
     if (removed case Err(:final error)) {
       return err(error);
     }

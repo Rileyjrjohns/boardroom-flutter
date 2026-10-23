@@ -1,7 +1,7 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
 import 'package:boardroom/features/auth/application/use_cases/unlock_app.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 import 'package:test/test.dart';
 
 import '../../../../support/fakes/create_fakes.dart';

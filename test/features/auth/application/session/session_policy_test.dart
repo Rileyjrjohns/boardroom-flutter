@@ -1,5 +1,7 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/features/auth/application/session/session_policy.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 import 'package:test/test.dart';
 
 final List<String> _sessionEnding = [

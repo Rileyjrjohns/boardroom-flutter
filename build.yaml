@@ -1,0 +1,25 @@
+# Code generation.
+#
+# The database of the app is split across the features: each feature declares
+# its own tables (lib/features/<feature>/infrastructure/persistence/tables.dart)
+# and its drift adapter works against what it owns, while lib/app/persistence
+# lists the tables of the whole file. That is what drift's modular code
+# generation is for (https://drift.simonbinder.eu/generation_options/modular/):
+# the default builder writes every table of a database into one part file of
+# the database class, which the features could only reach by importing the app.
+# The modular builders write one library for each file that declares tables (a
+# `tables.drift.dart` next to `tables.dart`), which the feature imports and the
+# database of the app imports in its turn. The options are the defaults of
+# drift, the same for both builders.
+targets:
+  $default:
+    builders:
+      # The default builder of drift is replaced by the modular ones.
+      drift_dev:
+        enabled: false
+      drift_dev:analyzer:
+        enabled: true
+        options: &options {}
+      drift_dev:modular:
+        enabled: true
+        options: *options

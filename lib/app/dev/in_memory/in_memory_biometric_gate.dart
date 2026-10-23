@@ -1,6 +1,6 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 
 /// The biometrics of the mock configuration: always available, and the user is
 /// always recognised, so the demo runs on a simulator without enrolment. A test

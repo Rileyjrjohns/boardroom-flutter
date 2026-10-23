@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:boardroom/app/persistence/boardroom_database.dart';
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
@@ -15,6 +13,8 @@ import 'package:boardroom/core/infrastructure/shared/serial_queue.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/documents/domain/value_objects/document_location.dart';
 import 'package:boardroom/features/documents/infrastructure/document_content.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/tables.drift.dart';
 import 'package:boardroom/features/documents/infrastructure/stored_document.dart';
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
@@ -24,12 +24,12 @@ const String _resource = 'document';
 
 // The statements that read. A row is found by one column for each part of its
 // key. The writes go through the tables of drift (`tables.dart`).
-String get _entries => StoredTable.documentEntries.value;
-String get _owner => StoredColumn.owner.value;
-String get _documentId => StoredColumn.documentId.value;
-String get _cachedAt => StoredColumn.cachedAt.value;
-String get _location => StoredColumn.location.value;
-String get _payload => StoredColumn.payload.value;
+String get _entries => DocumentStoredTable.documentEntries.value;
+String get _owner => DocumentStoredColumn.owner.value;
+String get _documentId => DocumentStoredColumn.documentId.value;
+String get _cachedAt => DocumentStoredColumn.cachedAt.value;
+String get _location => DocumentStoredColumn.location.value;
+String get _payload => DocumentStoredColumn.payload.value;
 
 String get _key => '$_owner = ? AND $_documentId = ?';
 String get _read =>
@@ -59,8 +59,10 @@ final class DriftDocumentCacheOptions {
     this.timeoutMillis,
   });
 
-  /// The database the entries are in.
-  final BoardroomDatabase database;
+  /// The database the entries are in. Any drift database that holds the table
+  /// of the documents will do: the cache knows the table it owns, not the
+  /// database of the app that lists it.
+  final GeneratedDatabase database;
 
   /// Where the content of the documents is. The cache looks at it and deletes
   /// from it; it never writes to it, the repositories do.
@@ -115,11 +117,13 @@ final class DriftDocumentCache implements DocumentCache {
   /// Creates the cache.
   new(DriftDocumentCacheOptions options)
     : _database = options.database,
+      _entriesTable = $DocumentEntriesTable(options.database),
       _files = options.files,
       _monitoring = options.monitoring,
       _timeout = options.timeoutMillis ?? defaultStatementTimeoutMillis;
 
-  final BoardroomDatabase _database;
+  final GeneratedDatabase _database;
+  final $DocumentEntriesTable _entriesTable;
   final FileStore _files;
   final Monitoring _monitoring;
   final int _timeout;
@@ -213,7 +217,7 @@ final class DriftDocumentCache implements DocumentCache {
       }
     }
     await _database
-        .into(_database.documentEntries)
+        .into(_entriesTable)
         .insert(
           DocumentEntriesCompanion.insert(
             owner: owner,
@@ -276,7 +280,7 @@ final class DriftDocumentCache implements DocumentCache {
     await _database.transaction(() async {
       for (final location in deleted) {
         await (_database.delete(
-          _database.documentEntries,
+          _entriesTable,
         )..where((entry) => entry.location.equals(location))).go();
       }
     });
@@ -284,7 +288,7 @@ final class DriftDocumentCache implements DocumentCache {
       return err(failure);
     }
 
-    await _database.delete(_database.documentEntries).go();
+    await _database.delete(_entriesTable).go();
     // What no entry points at goes too: purging leaves nothing of any document
     // on the device.
     return await _files.deleteAll();
@@ -335,7 +339,7 @@ final class DriftDocumentCache implements DocumentCache {
   }
 
   Future<void> _deleteEntry(UserId owner, DocumentId id) async {
-    await (_database.delete(_database.documentEntries)..where(
+    await (_database.delete(_entriesTable)..where(
           (entry) => entry.owner.equals(owner) & entry.documentId.equals(id),
         ))
         .go();
@@ -416,7 +420,7 @@ final class DriftDocumentCache implements DocumentCache {
     DocumentId id,
     DocumentLocation location,
   ) async {
-    await (_database.delete(_database.documentEntries)..where(
+    await (_database.delete(_entriesTable)..where(
           (entry) =>
               entry.owner.equals(owner) &
               entry.documentId.equals(id) &

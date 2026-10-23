@@ -75,6 +75,10 @@ void main() {
         isGeneratedFile('lib/features/meetings/domain/entities/meeting.g.dart'),
         isTrue,
       );
+      expect(
+        isGeneratedFile('lib/app/persistence/boardroom_database.drift.dart'),
+        isTrue,
+      );
       expect(isGeneratedFile('lib/l10n/app_localizations.dart'), isTrue);
       expect(isGeneratedFile('lib/l10n/app_localizations_fr.dart'), isTrue);
       expect(
@@ -185,6 +189,7 @@ void main() {
           record('lib/core/domain/a.dart', covered: 10),
           record('lib/core/domain/a.freezed.dart', covered: 0, uncovered: 500),
           record('lib/core/domain/a.g.dart', covered: 0, uncovered: 500),
+          record('lib/app/a.drift.dart', covered: 0, uncovered: 500),
           record('lib/l10n/app_localizations.dart', covered: 0, uncovered: 50),
           record(
             'lib/l10n/app_localizations_fr.dart',

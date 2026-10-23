@@ -42,12 +42,12 @@ void main() {
   ];
 
   group('domain', () {
-    test('may import the domain of the core and of any feature, itself, '
-        'pure dart: libraries and allowlisted packages', () {
+    test('may import the domain of the core and of the features it depends '
+        'on, itself, pure dart: libraries and allowlisted packages', () {
       write('lib/core/domain/a.dart', '');
       write('lib/features/meetings/domain/m.dart', '');
       write('lib/features/auth/domain/a.dart', '');
-      write('lib/features/auth/domain/sub/b.dart', '''
+      write('lib/features/votes/domain/sub/b.dart', '''
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -65,7 +65,7 @@ import 'b.dart';
 export 'package:boardroom/core/domain/a.dart';
 part 'b.g.dart';
 ''');
-      write('lib/features/auth/domain/sub/b.g.dart', "part of 'b.dart';\n");
+      write('lib/features/votes/domain/sub/b.g.dart', "part of 'b.dart';\n");
 
       expect(checkImports(root).violations, isEmpty);
     });
@@ -261,17 +261,18 @@ import '/absolute.dart';
   });
 
   group('application', () {
-    test('may import the domain of any area, itself and pure packages', () {
+    test('may import the domain of the core and of the features it depends '
+        'on, itself and pure packages', () {
       write('lib/core/domain/a.dart', '');
       write('lib/features/meetings/application/m.dart', '');
-      write('lib/features/auth/application/u.dart', '''
+      write('lib/features/votes/application/u.dart', '''
 import 'package:boardroom/core/domain/a.dart';
 import 'package:boardroom/features/meetings/application/m.dart';
 import 'package:meta/meta.dart';
 import 'dart:async';
 import 'v.dart';
 ''');
-      write('lib/features/auth/application/v.dart', '');
+      write('lib/features/votes/application/v.dart', '');
 
       expect(checkImports(root).violations, isEmpty);
     });
@@ -304,7 +305,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
       () {
         write('lib/core/domain/a.dart', '');
         write('lib/features/meetings/application/u.dart', '');
-        write('lib/features/auth/infrastructure/i.dart', '''
+        write('lib/features/votes/infrastructure/i.dart', '''
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
@@ -312,7 +313,7 @@ import 'package:boardroom/core/domain/a.dart';
 import 'package:boardroom/features/meetings/application/u.dart';
 import 'j.dart';
 ''');
-        write('lib/features/auth/infrastructure/j.dart', '');
+        write('lib/features/votes/infrastructure/j.dart', '');
 
         expect(checkImports(root).violations, isEmpty);
       },
@@ -332,83 +333,21 @@ import '../../../app/d.dart';
       ]);
     });
 
-    test('may import the files of lib/app that the exemptions list', () {
+    test('may not import lib/app, from the core or from a feature', () {
       write('lib/app/persistence/db.dart', '');
-      write('lib/app/persistence/schema.dart', '');
       write('lib/core/infrastructure/persistence/open.dart', '''
 import 'package:boardroom/app/persistence/db.dart';
-import '../../../app/persistence/schema.dart';
-''');
-
-      final result = checkImports(
-        root,
-        exemptions: const {
-          'lib/core/infrastructure/persistence/open.dart': {
-            'lib/app/persistence/db.dart',
-            'lib/app/persistence/schema.dart',
-          },
-        },
-      );
-
-      expect(result.violations, isEmpty);
-    });
-
-    test('may not import the other files of lib/app, listed or not', () {
-      write('lib/app/persistence/db.dart', '');
-      write('lib/app/persistence/other.dart', '');
-      write('lib/core/infrastructure/persistence/open.dart', '''
-import 'package:boardroom/app/persistence/db.dart';
-import 'package:boardroom/app/persistence/other.dart';
 ''');
       write('lib/features/auth/infrastructure/i.dart', '''
 import 'package:boardroom/app/persistence/db.dart';
 ''');
 
-      final result = checkImports(
-        root,
-        exemptions: const {
-          'lib/core/infrastructure/persistence/open.dart': {
-            'lib/app/persistence/db.dart',
-          },
-        },
-      );
-
-      expect(
-        [for (final v in result.violations) '${v.path}:${v.line}'],
-        [
-          'lib/core/infrastructure/persistence/open.dart:2',
-          'lib/features/auth/infrastructure/i.dart:1',
-        ],
-      );
-      expect(
-        result.violations.first.message,
-        contains('must not depend on the composition'),
-      );
-    });
-
-    test('an exemption that its file no longer needs is a violation', () {
-      write('lib/app/persistence/db.dart', '');
-      write('lib/core/infrastructure/persistence/open.dart', '');
-
-      final result = checkImports(
-        root,
-        exemptions: const {
-          'lib/core/infrastructure/persistence/open.dart': {
-            'lib/app/persistence/db.dart',
-          },
-          'lib/core/infrastructure/persistence/missing.dart': {
-            'lib/app/persistence/db.dart',
-          },
-        },
-      );
-
-      expect(result.violations, hasLength(1));
-      expect(
-        result.violations.single.toString(),
-        'lib/core/infrastructure/persistence/open.dart:1: stale exemption: '
-        'the file no longer imports lib/app/persistence/db.dart, remove the '
-        'entry from temporaryExemptions',
-      );
+      expect(violationsAt(), [
+        'lib/core/infrastructure/persistence/open.dart:1',
+        'lib/features/auth/infrastructure/i.dart:1',
+      ]);
+      expect(messages().first, contains('the core imports not app'));
+      expect(messages().last, contains('a feature imports not app'));
     });
   });
 
@@ -419,7 +358,7 @@ import 'package:boardroom/app/persistence/db.dart';
         write('lib/core/domain/a.dart', '');
         write('lib/features/meetings/application/u.dart', '');
         write('lib/l10n/app_localizations.dart', '');
-        write('lib/features/auth/presentation/p.dart', '''
+        write('lib/features/votes/presentation/p.dart', '''
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -428,7 +367,7 @@ import 'package:boardroom/features/meetings/application/u.dart';
 import 'package:boardroom/l10n/app_localizations.dart';
 import 'q.dart';
 ''');
-        write('lib/features/auth/presentation/q.dart', '');
+        write('lib/features/votes/presentation/q.dart', '');
 
         expect(checkImports(root).violations, isEmpty);
       },
@@ -545,6 +484,458 @@ import '../../test/support/builders/builders.dart';
 ''');
 
       expect(violationsAt(), ['lib/app/d.dart:1', 'lib/app/d.dart:2']);
+    });
+  });
+
+  group('composition (lib/app/composition)', () {
+    test('may import the domain and the application of any feature, itself, '
+        'pure dart: libraries and allowlisted packages', () {
+      write('lib/core/domain/a.dart', '');
+      write('lib/features/meetings/application/m.dart', '');
+      write('lib/features/votes/domain/v.dart', '');
+      write('lib/app/composition/other.dart', '');
+      write('lib/app/composition/glue.dart', '''
+import 'dart:async';
+import 'package:meta/meta.dart';
+import 'package:boardroom/core/domain/a.dart';
+import 'package:boardroom/features/meetings/application/m.dart';
+import 'package:boardroom/features/votes/domain/v.dart';
+import 'package:boardroom/app/composition/other.dart';
+import 'other.dart';
+''');
+
+      expect(checkImports(root).violations, isEmpty);
+    });
+
+    test('may not import an adapter, the UI, the rest of app, dart:io nor an '
+        'adapter package', () {
+      write('lib/features/meetings/infrastructure/i.dart', '');
+      write('lib/features/meetings/presentation/p.dart', '');
+      write('lib/app/persistence/db.dart', '');
+      write('lib/app/composition/glue.dart', '''
+import 'package:boardroom/features/meetings/infrastructure/i.dart';
+import 'package:boardroom/features/meetings/presentation/p.dart';
+import 'package:boardroom/app/persistence/db.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+''');
+
+      expect(violationsAt(), [
+        'lib/app/composition/glue.dart:1',
+        'lib/app/composition/glue.dart:2',
+        'lib/app/composition/glue.dart:3',
+        'lib/app/composition/glue.dart:4',
+        'lib/app/composition/glue.dart:5',
+      ]);
+      expect(messages().first, contains('composition may not import'));
+      expect(messages().first, contains('pure Dart'));
+    });
+
+    test('is imported by the rest of app, and by no other layer', () {
+      write('lib/app/composition/glue.dart', '');
+      write('lib/app/app.dart', "import 'composition/glue.dart';\n");
+      for (final path in [
+        'lib/core/domain/a.dart',
+        'lib/core/application/a.dart',
+        'lib/features/auth/infrastructure/a.dart',
+        'lib/features/auth/presentation/a.dart',
+      ]) {
+        write(path, "import 'package:boardroom/app/composition/glue.dart';\n");
+      }
+
+      expect(violationsAt(), [
+        'lib/core/application/a.dart:1',
+        'lib/core/domain/a.dart:1',
+        'lib/features/auth/infrastructure/a.dart:1',
+        'lib/features/auth/presentation/a.dart:1',
+      ]);
+    });
+
+    test('is a layer of the pure test support: the fakes assemble the same '
+        'glue as the app, the builders and the contracts do not', () {
+      write('lib/app/composition/glue.dart', '');
+      write('test/support/fakes/f.dart', '''
+import 'package:boardroom/app/composition/glue.dart';
+''');
+      write('test/support/builders/b.dart', '''
+import 'package:boardroom/app/composition/glue.dart';
+''');
+      write('test/support/contracts/c.dart', '''
+import 'package:boardroom/app/composition/glue.dart';
+''');
+
+      expect(violationsAt(), [
+        'test/support/builders/b.dart:1',
+        'test/support/contracts/c.dart:1',
+      ]);
+    });
+
+    test('test/app/composition runs under dart test: the glue, the support '
+        'and its own folder, no Flutter', () {
+      write('lib/app/composition/glue.dart', '');
+      write('test/support/fakes/f.dart', '');
+      write('test/app/composition/helper.dart', '');
+      write('test/app/composition/glue_test.dart', '''
+import 'package:test/test.dart';
+import 'package:boardroom/app/composition/glue.dart';
+import '../../support/fakes/f.dart';
+import 'helper.dart';
+''');
+      write('test/app/composition/bad_test.dart', '''
+import 'package:flutter_test/flutter_test.dart';
+import 'dart:io';
+''');
+
+      expect(violationsAt(), [
+        'test/app/composition/bad_test.dart:1',
+        'test/app/composition/bad_test.dart:2',
+      ]);
+    });
+  });
+
+  group('features', () {
+    test('a feature may import the core, itself, and the domain and the '
+        'application of the features its graph names', () {
+      write('lib/core/domain/c.dart', '');
+      write('lib/core/application/c.dart', '');
+      write('lib/features/auth/domain/u.dart', '');
+      write('lib/features/auth/application/s.dart', '');
+      write('lib/features/meetings/domain/m.dart', '');
+      write('lib/features/meetings/application/m.dart', '');
+      write('lib/features/documents/application/d.dart', '''
+import 'package:boardroom/core/domain/c.dart';
+import 'package:boardroom/features/auth/domain/u.dart';
+import 'package:boardroom/features/auth/application/s.dart';
+import '../../meetings/domain/m.dart';
+import 'package:boardroom/features/meetings/application/m.dart';
+''');
+      write('lib/features/votes/application/v.dart', '''
+import 'package:boardroom/core/application/c.dart';
+import 'package:boardroom/features/auth/application/s.dart';
+import 'package:boardroom/features/meetings/domain/m.dart';
+''');
+      write('lib/features/meetings/application/uses.dart', '''
+import 'package:boardroom/features/auth/application/s.dart';
+''');
+
+      expect(checkImports(root).violations, isEmpty);
+    });
+
+    test('a feature may not import a feature its graph does not name, from '
+        'any layer', () {
+      write('lib/features/votes/domain/v.dart', '');
+      write('lib/features/documents/application/d.dart', '');
+      write('lib/features/meetings/domain/m.dart', '''
+import 'package:boardroom/features/votes/domain/v.dart';
+''');
+      write('lib/features/auth/application/a.dart', '''
+import 'package:boardroom/core/domain/x.dart';
+import 'package:boardroom/features/documents/application/d.dart';
+''');
+      write('lib/features/votes/application/v.dart', '''
+import '../../documents/application/d.dart';
+''');
+      write('lib/core/domain/x.dart', '');
+
+      expect(violationsAt(), [
+        'lib/features/auth/application/a.dart:2',
+        'lib/features/meetings/domain/m.dart:1',
+        'lib/features/votes/application/v.dart:1',
+      ]);
+      expect(
+        messages().first,
+        contains(
+          'the feature auth does not depend on the feature documents '
+          '(featureGraph: auth depends on no other feature)',
+        ),
+      );
+      expect(messages()[1], contains('meetings depends on auth'));
+    });
+
+    test('a feature may never import the infrastructure nor the presentation '
+        'of another, even one it depends on', () {
+      write('lib/features/auth/infrastructure/i.dart', '');
+      write('lib/features/auth/presentation/p.dart', '');
+      write('lib/features/meetings/infrastructure/i.dart', '');
+      write('lib/features/meetings/application/m.dart', '''
+import 'package:boardroom/features/auth/infrastructure/i.dart';
+import 'package:boardroom/features/auth/presentation/p.dart';
+''');
+      write('lib/features/documents/infrastructure/d.dart', '''
+import 'package:boardroom/features/meetings/infrastructure/i.dart';
+import '../../auth/infrastructure/i.dart';
+import 'package:boardroom/features/meetings/application/m.dart';
+''');
+      write('lib/features/documents/presentation/p.dart', '''
+import 'package:boardroom/features/meetings/presentation/q.dart';
+''');
+      write('lib/features/meetings/presentation/q.dart', '');
+
+      expect(violationsAt(), [
+        'lib/features/documents/infrastructure/d.dart:1',
+        'lib/features/documents/infrastructure/d.dart:2',
+        'lib/features/documents/presentation/p.dart:1',
+        'lib/features/meetings/application/m.dart:1',
+        'lib/features/meetings/application/m.dart:2',
+      ]);
+      expect(
+        messages().first,
+        contains('never the infrastructure of another feature'),
+      );
+      expect(
+        messages()[2],
+        contains('never the presentation of another feature'),
+      );
+    });
+
+    test('the core imports no feature and not app', () {
+      write('lib/features/auth/domain/u.dart', '');
+      write('lib/features/auth/application/s.dart', '');
+      write('lib/features/auth/infrastructure/i.dart', '');
+      write('lib/app/persistence/db.dart', '');
+      write('lib/core/domain/d.dart', '''
+import 'package:boardroom/features/auth/domain/u.dart';
+''');
+      write('lib/core/application/a.dart', '''
+import 'package:boardroom/features/auth/application/s.dart';
+import '../../app/persistence/db.dart';
+''');
+      write('lib/core/infrastructure/i.dart', '''
+import 'package:boardroom/features/auth/infrastructure/i.dart';
+import 'package:boardroom/features/auth/domain/u.dart';
+import 'package:boardroom/app/persistence/db.dart';
+''');
+
+      expect(violationsAt(), [
+        'lib/core/application/a.dart:1',
+        'lib/core/application/a.dart:2',
+        'lib/core/domain/d.dart:1',
+        'lib/core/infrastructure/i.dart:1',
+        'lib/core/infrastructure/i.dart:2',
+        'lib/core/infrastructure/i.dart:3',
+      ]);
+      expect(messages().first, contains('the core imports no feature'));
+      expect(messages()[1], contains('the core imports not app'));
+    });
+
+    test('a feature may not import app', () {
+      write('lib/app/composition/glue.dart', '');
+      write('lib/features/votes/application/v.dart', '''
+import 'package:boardroom/app/composition/glue.dart';
+''');
+
+      expect(violationsAt(), ['lib/features/votes/application/v.dart:1']);
+      expect(messages().single, contains('a feature imports not app'));
+    });
+
+    test('app, its composition and the entry point know every feature', () {
+      write('lib/features/auth/infrastructure/i.dart', '');
+      write('lib/features/votes/infrastructure/v.dart', '');
+      write('lib/features/votes/domain/v.dart', '');
+      write('lib/features/documents/application/d.dart', '');
+      write('lib/app/dev/backend.dart', '''
+import 'package:boardroom/features/auth/infrastructure/i.dart';
+import 'package:boardroom/features/votes/infrastructure/v.dart';
+import 'package:boardroom/features/documents/application/d.dart';
+''');
+      write('lib/app/composition/glue.dart', '''
+import 'package:boardroom/features/votes/domain/v.dart';
+import 'package:boardroom/features/documents/application/d.dart';
+''');
+      write('lib/main.dart', '''
+import 'package:boardroom/features/votes/infrastructure/v.dart';
+''');
+
+      expect(checkImports(root).violations, isEmpty);
+    });
+
+    test('a feature that the graph does not list is a violation', () {
+      write('lib/features/billing/domain/b.dart', '');
+
+      expect(violationsAt(), ['lib/features/billing:1']);
+      expect(
+        messages().single,
+        contains('the feature billing is not in featureGraph'),
+      );
+    });
+
+    test('follows the graph it is given', () {
+      write('lib/features/auth/domain/u.dart', '');
+      write('lib/features/votes/domain/v.dart', '''
+import 'package:boardroom/features/auth/domain/u.dart';
+''');
+      write('lib/features/auth/application/a.dart', '''
+import 'package:boardroom/features/votes/domain/v.dart';
+''');
+      const reversed = {
+        'auth': {'votes': 'for the test'},
+        'votes': <String, String>{},
+      };
+
+      final result = checkImports(root, graph: reversed);
+
+      expect(
+        [for (final v in result.violations) '${v.path}:${v.line}'],
+        ['lib/features/votes/domain/v.dart:1'],
+      );
+    });
+
+    test('refuses a graph with a cycle, and names it', () {
+      write('lib/features/auth/domain/u.dart', '');
+      write('lib/features/votes/domain/v.dart', '');
+      const cyclic = {
+        'auth': {'votes': 'for the test'},
+        'votes': {'auth': 'for the test'},
+      };
+
+      final result = checkImports(root, graph: cyclic);
+
+      expect(result.violations, hasLength(1));
+      expect(
+        result.violations.single.toString(),
+        startsWith(
+          'tool/check_imports.dart:1: featureGraph has a cycle: '
+          'auth -> votes -> auth (',
+        ),
+      );
+    });
+
+    test('refuses a graph that depends on something that is no feature', () {
+      write('lib/features/auth/domain/u.dart', '');
+      const unknown = {
+        'auth': {'ghost': 'for the test'},
+      };
+
+      final result = checkImports(root, graph: unknown);
+
+      expect(
+        result.violations.single.message,
+        'featureGraph: auth depends on ghost, which is no feature',
+      );
+    });
+
+    test('a test of a feature may not import the tests of another feature, '
+        'only the support', () {
+      write('test/support/builders/b.dart', '');
+      write('test/features/votes/domain/helper.dart', '');
+      write('test/features/auth/domain/helper.dart', '');
+      write('test/features/votes/domain/a_test.dart', '''
+import '../../../support/builders/b.dart';
+import 'helper.dart';
+import '../../auth/domain/helper.dart';
+''');
+      write('test/core/domain/c_test.dart', '''
+import '../../features/votes/domain/helper.dart';
+import '../../support/builders/b.dart';
+''');
+
+      expect(violationsAt(), [
+        'test/core/domain/c_test.dart:1',
+        'test/features/votes/domain/a_test.dart:3',
+      ]);
+      expect(messages().first, contains('test support is limited to'));
+    });
+  });
+
+  group('the declared graph of the features', () {
+    test('has no cycle', () {
+      expect(
+        findCycle({
+          for (final MapEntry(:key, :value) in featureGraph.entries)
+            key: value.keys,
+        }),
+        isNull,
+      );
+      expect(graphProblems(featureGraph), isEmpty);
+    });
+
+    test('is the graph of docs/architecture.md: auth below meetings, which '
+        'documents and votes build on', () {
+      expect(
+        {
+          for (final MapEntry(:key, :value) in featureGraph.entries)
+            key: value.keys.toSet(),
+        },
+        {
+          'auth': <String>{},
+          'meetings': {'auth'},
+          'documents': {'auth', 'meetings'},
+          'votes': {'auth', 'meetings'},
+        },
+      );
+    });
+
+    test('says why each edge exists', () {
+      for (final MapEntry(:key, value: edges) in featureGraph.entries) {
+        for (final MapEntry(key: dependency, value: why) in edges.entries) {
+          expect(why.trim(), isNotEmpty, reason: '$key -> $dependency');
+        }
+      }
+    });
+  });
+
+  group('findCycle', () {
+    test('finds none in a graph that points one way', () {
+      expect(
+        findCycle({
+          'a': ['b', 'c'],
+          'b': ['c'],
+          'c': <String>[],
+        }),
+        isNull,
+      );
+    });
+
+    test('finds a cycle between two nodes, and the path that closes it', () {
+      expect(
+        findCycle({
+          'a': ['b'],
+          'b': ['a'],
+        }),
+        ['a', 'b', 'a'],
+      );
+    });
+
+    test('finds a longer cycle behind a node that is not part of it', () {
+      expect(
+        findCycle({
+          'entry': ['a'],
+          'a': ['b'],
+          'b': ['c'],
+          'c': ['a'],
+        }),
+        ['a', 'b', 'c', 'a'],
+      );
+    });
+
+    test('finds a node that depends on itself', () {
+      expect(
+        findCycle({
+          'a': ['a'],
+        }),
+        ['a', 'a'],
+      );
+    });
+
+    test('does not mistake a node reached twice for a cycle', () {
+      expect(
+        findCycle({
+          'a': ['b', 'c'],
+          'b': ['d'],
+          'c': ['d'],
+          'd': <String>[],
+        }),
+        isNull,
+      );
+    });
+
+    test('ignores a node that is no key of the graph', () {
+      expect(
+        findCycle({
+          'a': ['ghost'],
+        }),
+        isNull,
+      );
     });
   });
 

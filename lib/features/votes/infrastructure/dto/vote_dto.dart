@@ -11,7 +11,7 @@ part 'vote_dto.g.dart';
 
 // Casting a vote: `POST /votes`. The answer carries no body; a business
 // rejection is a 422 whose body is described in
-// `core/infrastructure/shared/rejection_schemas.dart`.
+// `features/votes/infrastructure/rejection_schemas.dart`.
 
 /// The body of `POST /votes`.
 @JsonSerializable(checked: true)

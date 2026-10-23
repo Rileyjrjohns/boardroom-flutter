@@ -7,6 +7,7 @@ import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/http/protocol.dart';
 import 'package:boardroom/core/infrastructure/secure_storage/secure_storage.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
 import 'package:boardroom/features/auth/infrastructure/http_auth_session.dart';
 import 'package:boardroom/features/auth/infrastructure/session_vault.dart';
