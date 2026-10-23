@@ -1,5 +1,17 @@
 {
   "@@locale": "fr",
   "appTitle": "Boardroom",
-  "homeComingSoon": "Vos réunions, documents et votes de conseil arrivent bientôt."
+  "homeComingSoon": "Vos réunions, documents et votes de conseil arrivent bientôt.",
+  "homeOpenScreenProtectionDemo": "Essayer la protection d'écran",
+  "screenProtectionDemoTitle": "Protection d'écran",
+  "screenProtectionDemoSwitch": "Protéger l'écran",
+  "screenProtectionDemoSwitchHelp": "Tant qu'elle est activée, les captures et enregistrements d'écran de l'application sont bloqués ou laissés vides, et le sélecteur d'applications n'affiche aucun contenu.",
+  "screenProtectionDemoConfidential": "Confidentiel : le conseil a approuvé le budget de l'an prochain. Ne partagez pas ce texte.",
+  "screenProtectionDemoErrorUnsupported": "Cet appareil ne peut pas protéger l'écran.",
+  "screenProtectionDemoErrorFailed": "La protection n'a pas pu être modifiée. Réessayez.",
+  "screenProtectionDemoEventsTitle": "Captures signalées",
+  "screenProtectionDemoEventsEmpty": "Rien pour l'instant. Faites une capture d'écran ou lancez un enregistrement d'écran.",
+  "screenProtectionDemoScreenshot": "Capture d'écran réalisée",
+  "screenProtectionDemoRecordingStarted": "Enregistrement d'écran démarré",
+  "screenProtectionDemoRecordingStopped": "Enregistrement d'écran arrêté"
 }

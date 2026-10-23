@@ -36,10 +36,20 @@ void main() {
   testWidgets('falls back to English for an unsupported language', (
     tester,
   ) async {
-    await tester.pumpWidget(const BoardroomApp(locale: Locale('de')));
+    await tester.pumpWidget(BoardroomApp(locale: const Locale('de')));
     await tester.pumpAndSettle();
 
     final en = lookupAppLocalizations(const Locale('en'));
     expect(find.text(en.homeComingSoon), findsOneWidget);
+  });
+
+  testWidgets('opens the screen to try the screen protection', (tester) async {
+    final l10n = await pumpApp(tester, const Locale('en'));
+
+    await tester.tap(find.text(l10n.homeOpenScreenProtectionDemo));
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.screenProtectionDemoTitle), findsOneWidget);
+    expect(find.text(l10n.screenProtectionDemoConfidential), findsOneWidget);
   });
 }

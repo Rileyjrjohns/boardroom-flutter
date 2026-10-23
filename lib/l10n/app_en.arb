@@ -7,5 +7,53 @@
   "homeComingSoon": "Your board meetings, documents and votes are coming soon.",
   "@homeComingSoon": {
     "description": "Placeholder line of the home screen while the first feature is being built."
+  },
+  "homeOpenScreenProtectionDemo": "Try the screen protection",
+  "@homeOpenScreenProtectionDemo": {
+    "description": "Button of the home screen that opens the screen to try the screen protection on a device."
+  },
+  "screenProtectionDemoTitle": "Screen protection",
+  "@screenProtectionDemoTitle": {
+    "description": "Title of the screen to try the screen protection."
+  },
+  "screenProtectionDemoSwitch": "Protect the screen",
+  "@screenProtectionDemoSwitch": {
+    "description": "Label of the switch that turns the screen protection on and off."
+  },
+  "screenProtectionDemoSwitchHelp": "While it is on, screenshots and screen recordings of the app are blocked or left blank, and the app switcher shows no content.",
+  "@screenProtectionDemoSwitchHelp": {
+    "description": "Explanation under the switch of the screen protection."
+  },
+  "screenProtectionDemoConfidential": "Confidential: the board approved next year's budget. Do not share this text.",
+  "@screenProtectionDemoConfidential": {
+    "description": "Sample confidential text, shown in a container that is left out of captures when the protection is on."
+  },
+  "screenProtectionDemoErrorUnsupported": "This device cannot protect the screen.",
+  "@screenProtectionDemoErrorUnsupported": {
+    "description": "Shown when the platform cannot block captures."
+  },
+  "screenProtectionDemoErrorFailed": "The protection could not be changed. Try again.",
+  "@screenProtectionDemoErrorFailed": {
+    "description": "Shown when turning the screen protection on or off failed."
+  },
+  "screenProtectionDemoEventsTitle": "Captures reported",
+  "@screenProtectionDemoEventsTitle": {
+    "description": "Title of the list of captures the system reported."
+  },
+  "screenProtectionDemoEventsEmpty": "Nothing yet. Take a screenshot or start a screen recording.",
+  "@screenProtectionDemoEventsEmpty": {
+    "description": "Shown while the system has reported no capture."
+  },
+  "screenProtectionDemoScreenshot": "Screenshot taken",
+  "@screenProtectionDemoScreenshot": {
+    "description": "A screenshot of the app was taken."
+  },
+  "screenProtectionDemoRecordingStarted": "Screen recording started",
+  "@screenProtectionDemoRecordingStarted": {
+    "description": "The screen started being recorded or mirrored."
+  },
+  "screenProtectionDemoRecordingStopped": "Screen recording stopped",
+  "@screenProtectionDemoRecordingStopped": {
+    "description": "The screen stopped being recorded or mirrored."
   }
 }
