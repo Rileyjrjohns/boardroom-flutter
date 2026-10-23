@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:meta/meta.dart';
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 
@@ -50,13 +51,19 @@ const String unknownFailure = 'unknown failure';
 /// The cause of a call that did not settle in time.
 const String timeoutCause = 'timeout';
 
+/// What a code a plugin reports must look like to be kept: capital letters,
+/// digits and underscores (`ERR_ACTIVITY`), so that free text never gets in.
+final RegExp _codeFormat = RegExp(r'^[A-Z][A-Z0-9_]{0,63}$');
+
 /// A diagnostic for a failure of a native module or of a database, safe to
 /// keep: the code the failure carries when it has one (the result code of
-/// SQLite, the error number of the operating system), and nothing else. Their
+/// SQLite, the error number of the operating system, the code of a failure of
+/// a plugin when it is written like a code), and nothing else. Their
 /// messages are left out on purpose: they can quote the statement, a path or a
 /// value.
 String describeFailure(Object? error) => switch (error) {
   SqliteException(:final resultCode) => 'sqlite error $resultCode',
+  PlatformException(:final code) when _codeFormat.hasMatch(code) => code,
   FileSystemException(osError: OSError(:final errorCode)) =>
     'os error $errorCode',
   _ => unknownFailure,
