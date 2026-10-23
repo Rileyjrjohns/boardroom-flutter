@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:boardroom/app/device/device_platform.dart';
 import 'package:boardroom/core/infrastructure/connectivity/connectivity_plus_network_state.dart';
-import 'package:boardroom/core/infrastructure/device/device_platform.dart';
 import 'package:boardroom/core/infrastructure/persistence/random_key.dart';
 import 'package:boardroom/core/infrastructure/persistence/sqlite3_opener.dart';
 import 'package:boardroom/core/infrastructure/secure_storage/device_secure_storage.dart';
