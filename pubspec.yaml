@@ -51,6 +51,8 @@ dependencies:
   meta: ^1.19.0
   # Folders of the application (documents, support) for the database file and the downloaded documents.
   path_provider: ^2.1.6
+  # Renders the PDF of a document from a local file (pdfium), behind one small widget; its pages are drawn by Flutter so the watermark can be laid over them. Pinned: a young package that publishes often.
+  pdfrx: 2.6.5
   # The annotations (@riverpod) read by riverpod_generator, which writes the providers and the notifiers of the presentation.
   riverpod_annotation: ^4.0.7
   # The local plugin that blocks screenshots and screen recording and reports attempts (FLAG_SECURE, privacy cover, secure view), behind the ScreenProtection port.
