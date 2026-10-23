@@ -114,12 +114,15 @@ jobs:
       - name: Infrastructure tests (dio on the fixtures, drift, encrypted SQLite)
         run: flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure
 
-      # The screens (test/features/*/presentation): widget tests over fake ports. A folder with no test file yet is
-      # skipped, because `flutter test` fails on a folder that has none.
+      # The presentation (test/core/presentation, the shared components and the query layer, and
+      # test/features/*/presentation, the screens and their notifiers): widget tests over the real use
+      # cases wired on fake ports. The shell, the router and the providers of the app are in test/app, which
+      # the step above runs. A folder with no test file yet is skipped, because `flutter test` fails on a
+      # folder that has none.
       - name: Presentation tests
         run: |
           folders=()
-          for folder in test/features/*/presentation; do
+          for folder in test/core/presentation test/features/*/presentation; do
             if [ -n "$(find "$folder" -name '*_test.dart' -print -quit 2>/dev/null)" ]; then
               folders+=("$folder")
             fi

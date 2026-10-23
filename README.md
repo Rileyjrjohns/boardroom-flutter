@@ -19,7 +19,8 @@ Status: step 4 of 8, the screen protection plugin, done. The app shows a placeho
 flutter pub get      # installs the dependencies and generates the localization classes
 dart run build_runner build   # generates the freezed classes and the JSON code of the DTOs
 flutter gen-l10n     # regenerates the localization classes by hand (after editing an ARB file)
-flutter run          # runs the app on a connected device or emulator
+flutter run          # runs the app (the dev configuration: the fixtures behind the simulated server)
+flutter run --dart-define=BOARDROOM_ADAPTERS=http --dart-define=BOARDROOM_API_BASE_URL=https://api.example.com   # against a real API
 flutter test         # runs all the tests
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # runs the pure Dart tests, without Flutter
 ```
@@ -55,7 +56,7 @@ dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos --fatal-warnings
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # pure Dart tests, no Flutter
 flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure   # the adapters: dio on the fixtures, drift, encrypted SQLite
-flutter test test/features/*/presentation   # the screens
+flutter test test/core/presentation test/features/*/presentation   # the shared components and the screens
 (cd packages/screen_protection && flutter test)   # the Dart side of the screen protection plugin
 (cd android && ./gradlew :screen_protection:testDebugUnitTest)   # its Kotlin logic, on the JVM
 (cd packages/screen_protection && dart run pigeon --input pigeons/screen_protection_api.dart && dart format lib && git diff --exit-code .)   # the generated channel is up to date
@@ -123,7 +124,7 @@ graph TD
   meetings --> auth
 ```
 
-Every feature also depends on `core`, and `core` on no feature. A feature imports the `domain` and the `application` of the features it depends on, never their `infrastructure` nor their `presentation`. When a feature needs something of one it may not import, it declares a port and `lib/app` wires an implementation.
+Every feature also depends on `core`, and `core` on no feature. A feature imports the `domain` and the `application` of the features it depends on, never their `infrastructure`; its `presentation` may also import the `presentation` of those features (their providers and components). When a feature needs something of one it may not import, it declares a port and `lib/app` wires an implementation.
 
 Inside `lib/core` and each feature, the layers are folders and follow the same rules:
 
@@ -132,7 +133,7 @@ Inside `lib/core` and each feature, the layers are folders and follow the same r
 | `domain`         | Business rules, pure Dart                                     | `domain`                                            |
 | `application`    | Use cases and ports, pure Dart                                | `domain`, `application`                             |
 | `infrastructure` | Adapters (dio, drift, secure storage, local_auth)             | `domain`, `application`, `infrastructure`; never `presentation` nor `lib/app` |
-| `presentation`   | Widgets, screens, notifiers                                   | `domain`, `application`, `presentation`; never `infrastructure` |
+| `presentation`   | Widgets, screens, notifiers, providers                        | `domain`, `application`, `presentation` (and that of the features it depends on); never `infrastructure` nor `lib/app` |
 
 `lib/main.dart` and `lib/app` may import anything. A Dart file outside `lib/core`, `lib/features/<feature>/<layer>`, `lib/app`, `lib/l10n` and `lib/main.dart` is refused.
 

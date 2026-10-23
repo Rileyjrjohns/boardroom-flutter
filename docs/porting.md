@@ -286,3 +286,30 @@ dart run tool/scenario_parity.dart --rn ../boardroom --only src/features/votes/a
 ```
 
 `--rn` is a checkout of the React Native repository at the commit of [`parity/RN_COMMIT`](parity/RN_COMMIT). The checker reads its test sources (`*.test.ts` in the `domain` and `application` folders of `src/core` and `src/features/*`, in `src/composition/glue` and in `src/testing/application`), expands the `.each` tables the way Jest does (it follows the constants of the file and of the files it imports, and the contract suites a test file calls), asks `dart test --reporter json` for the names of the Dart tests, and compares the full names per file. It exits with 1 on any difference that no note explains.
+
+## 8. Presentation
+
+The screens, the shared components and the shell are specified in `docs/spec/screens.md` and built the way `docs/presentation.md` says. The mapping of the React Native pieces:
+
+| React Native (`src/...`)                                          | Dart (`lib/...`)                                                                                                         |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `core/presentation/theme/tokens.ts`                               | `core/presentation/theme/tokens.dart` (`AppColors`, `AppSpacing`...) and `app_theme.dart`                                |
+| `core/presentation/components/*.tsx`                              | `core/presentation/components/*.dart` (`Button` is `AppButton`, `Badge` is `AppBadge`, `TextField` is `AppTextField`, `Dialog`/`DialogHost` are `AppDialog` and `ContentHost`) |
+| `core/presentation/errors/ErrorCatalog.tsx`                       | `core/presentation/errors/error_catalog.dart`; assembled in `app/error_catalog.dart`                                      |
+| `core/presentation/query/*` (query client, `retryPolicy`, `QueryFailure`, `useResultMutation`) | `core/presentation/query/` (`RetryPolicy`, `QueryFailure`, `keepQueryFor`, `runResultAction`)               |
+| `core/presentation/state/uiStore.tsx`, `actionEpoch.tsx`         | `core/presentation/state/ui_state.dart`, `sessionEpochProvider`                                                           |
+| `core/presentation/services/CoreServices.tsx`                     | `core/presentation/providers.dart`, `core/presentation/demo/`, `core/presentation/notices/`                               |
+| `core/presentation/navigation/routes.ts`                          | `core/presentation/navigation/routes.dart`                                                                                |
+| `core/presentation/testIds.ts`, `features/*/presentation/testIds.ts`, `composition/shell/testIds.ts` | `.../test_ids.dart` (the same strings, as `Key`s); registry in `app/test_ids.dart`        |
+| `features/<f>/presentation/services/<F>Services.tsx`              | `features/<f>/presentation/providers.dart` (one provider per use case, throws until overridden)                           |
+| `features/auth/presentation/state/accessStore.tsx`                | `features/auth/presentation/state/access.dart` (`AccessController`)                                                       |
+| `features/auth/presentation/session/*`                            | `features/auth/presentation/session/*`                                                                                    |
+| `composition/shell/session/*`, `services/StartupGate.tsx`         | `app/shell/*`                                                                                                             |
+| `composition/shell/navigation/AppNavigator.tsx`, `systemLinks.ts` | `app/router/app_router.dart` (`redirectOf`, `maxLinkLength`)                                                              |
+| `composition/shell/services/AppProviders.tsx`                     | `app/providers/app_overrides.dart`, `app/providers/slot_overrides.dart`                                                   |
+| `composition/shell/errorCatalog.ts`                               | `app/error_catalog.dart`                                                                                                  |
+| `core/presentation/i18n/resources/{en,fr}.ts`                     | `lib/l10n/app_{en,fr}.arb`                                                                                                |
+
+**Text keys.** The key `signIn.title` of the specification is the ARB key `authSignInTitle`: the prefix of the owner (`core`, `auth`, `meetings`, `documents`, `votes`) followed by the React Native key in PascalCase, the prefix not doubled (`meetings.empty.upcoming` is `meetingsEmptyUpcoming`). The table of the namespaces is in `docs/presentation.md`, "Texts". `{{name}}` parameters are `{name}`; the plural keys (`_one`, `_many`, `_other`) are one ICU message with `{count, plural, ...}` and an `int` `count`. Dates are formatted with `Formatters`, not with the `{date}` of the message.
+
+**Test ids** are the strings of the specification, set as `Key(id)`. **Names** follow section 2 (`TEST_IDS.signInEmail` is `AuthTestIds.signInEmail`; `meetingRowTestId` keeps its name).

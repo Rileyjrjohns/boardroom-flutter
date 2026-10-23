@@ -696,8 +696,9 @@ import '../../documents/application/d.dart';
       expect(messages()[1], contains('meetings depends on auth'));
     });
 
-    test('a feature may never import the infrastructure nor the presentation '
-        'of another, even one it depends on', () {
+    test('a feature may never import the infrastructure of another, nor its '
+        'presentation except from a presentation, even for one it depends '
+        'on', () {
       write('lib/features/auth/infrastructure/i.dart', '');
       write('lib/features/auth/presentation/p.dart', '');
       write('lib/features/meetings/infrastructure/i.dart', '');
@@ -710,15 +711,11 @@ import 'package:boardroom/features/meetings/infrastructure/i.dart';
 import '../../auth/infrastructure/i.dart';
 import 'package:boardroom/features/meetings/application/m.dart';
 ''');
-      write('lib/features/documents/presentation/p.dart', '''
-import 'package:boardroom/features/meetings/presentation/q.dart';
-''');
       write('lib/features/meetings/presentation/q.dart', '');
 
       expect(violationsAt(), [
         'lib/features/documents/infrastructure/d.dart:1',
         'lib/features/documents/infrastructure/d.dart:2',
-        'lib/features/documents/presentation/p.dart:1',
         'lib/features/meetings/application/m.dart:1',
         'lib/features/meetings/application/m.dart:2',
       ]);
@@ -727,9 +724,48 @@ import 'package:boardroom/features/meetings/presentation/q.dart';
         contains('never the infrastructure of another feature'),
       );
       expect(
-        messages()[2],
+        messages()[3],
         contains('never the presentation of another feature'),
       );
+    });
+
+    test('the presentation of a feature may import the presentation of a '
+        'feature it depends on, never an adapter, and not the presentation of '
+        'a feature it does not depend on', () {
+      write('lib/features/auth/presentation/p.dart', '');
+      write('lib/features/auth/infrastructure/i.dart', '');
+      write('lib/features/documents/presentation/q.dart', '');
+      write('lib/features/meetings/presentation/m.dart', '''
+import 'package:boardroom/features/auth/presentation/p.dart';
+import '../../auth/presentation/p.dart';
+import 'package:boardroom/features/auth/infrastructure/i.dart';
+import 'package:boardroom/features/documents/presentation/q.dart';
+''');
+
+      expect(violationsAt(), [
+        'lib/features/meetings/presentation/m.dart:3',
+        'lib/features/meetings/presentation/m.dart:4',
+      ]);
+      expect(messages().first, contains('never the infrastructure'));
+      expect(
+        messages()[1],
+        contains('the feature meetings does not depend on the feature'),
+      );
+    });
+
+    test('the presentation never imports app, from a feature or the core', () {
+      write('lib/app/providers/p.dart', '');
+      write('lib/features/auth/presentation/a.dart', '''
+import 'package:boardroom/app/providers/p.dart';
+''');
+      write('lib/core/presentation/b.dart', '''
+import 'package:boardroom/app/providers/p.dart';
+''');
+
+      expect(violationsAt(), [
+        'lib/core/presentation/b.dart:1',
+        'lib/features/auth/presentation/a.dart:1',
+      ]);
     });
 
     test('the core imports no feature and not app', () {

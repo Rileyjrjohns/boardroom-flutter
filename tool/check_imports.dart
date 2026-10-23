@@ -19,11 +19,13 @@
 //   core it sits in: see [layerRules].
 // - The feature of the target: see [featureGraph]. The core imports no feature
 //   and not app; a feature imports the core, and the features [featureGraph]
-//   names for it, by their domain and their application only, never their
-//   infrastructure nor their presentation; only app (and main.dart) knows them
-//   all. When a feature needs something of another that the graph does not
-//   allow, it declares a port and the composition wires it, instead of the
-//   graph growing a cycle: the graph itself is checked to have none.
+//   names for it, by their domain and their application, never their
+//   infrastructure; the presentation of a feature may also import the
+//   presentation of the features it depends on (its screens use their
+//   providers and components), and no other layer may; only app (and main.dart)
+//   knows them all. When a feature needs something of another that the graph
+//   does not allow, it declares a port and the composition wires it, instead
+//   of the graph growing a cycle: the graph itself is checked to have none.
 //
 // Usage: dart run tool/check_imports.dart [project-root]
 // Exit code 0 when every rule holds, 1 with one line per violation otherwise.
@@ -526,6 +528,7 @@ CheckResult checkImports(
     }
 
     final area = inLib ? _areaOfLibFile(relative) : null;
+    final importerLayer = inLib ? _layerOfLibFile(relative) : null;
     if (area != null &&
         area != coreFolder &&
         area != appFolder &&
@@ -546,7 +549,9 @@ CheckResult checkImports(
         continue;
       }
       final target = _resolve(ref.value, relative);
-      final reason = _areaDenial(area, target, graph) ?? _denial(rule, target);
+      final reason =
+          _areaDenial(area, target, graph, importerLayer: importerLayer) ??
+          _denial(rule, target);
       if (reason == null) {
         continue;
       }
@@ -647,8 +652,9 @@ String? _areaOfLibFile(String relative) {
 String? _areaDenial(
   String? area,
   _Target target,
-  Map<String, Map<String, String>> graph,
-) {
+  Map<String, Map<String, String>> graph, {
+  String? importerLayer,
+}) {
   final targetArea = target.area;
   if (area == null || targetArea == null || area == targetArea) {
     return null;
@@ -683,10 +689,15 @@ String? _areaDenial(
         'composition wires it';
   }
   final layer = target.layer;
-  if (layer == 'infrastructure' || layer == 'presentation') {
-    return 'never the $layer of another feature: depend on the domain and the '
-        'application of $targetArea, and let the composition choose the '
-        'adapter';
+  if (layer == 'infrastructure') {
+    return 'never the infrastructure of another feature: depend on the domain '
+        'and the application of $targetArea, and let the composition choose '
+        'the adapter';
+  }
+  if (layer == 'presentation' && importerLayer != 'presentation') {
+    return 'never the presentation of another feature, except from a '
+        'presentation: only the screens of a feature may use the providers '
+        'and the components of the presentation of a feature it depends on';
   }
   return null;
 }
