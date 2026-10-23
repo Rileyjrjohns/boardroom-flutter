@@ -1,3 +1,7 @@
+import 'package:boardroom/core/presentation/components/status_banner.dart';
+import 'package:boardroom/features/meetings/presentation/slots/resolution_actions.dart';
+import 'package:boardroom/features/votes/presentation/components/sync_summary_notice.dart';
+import 'package:boardroom/features/votes/presentation/slots/vote_resolution_actions.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 
 /// The links between features that no feature may make, plugged in the root
@@ -8,11 +12,10 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 ///   declares `bannerNoticesProvider`, the votes implement `BannerNotices` (the
 ///   sync summary), and the override goes here;
 /// - a resolution of a meeting offers the vote: the meetings declare the slot
-///   (`resolutionActionsSlotProvider` in
+///   (`resolutionActionsProvider` in
 ///   `features/meetings/presentation/slots/resolution_actions.dart`), the votes
-///   implement it, and the override goes here.
-///
-/// It is empty until the votes agent has written both implementations: add
-/// `bannerNoticesProvider.overrideWithValue(syncSummaryNotices)` and the slot
-/// override, and keep the order.
-List<Override> slotOverrides() => const [];
+///   implement it (`voteResolutionActions`), and the override goes here.
+List<Override> slotOverrides() => [
+  bannerNoticesProvider.overrideWithValue(syncSummaryNotices),
+  resolutionActionsProvider.overrideWithValue(voteResolutionActions),
+];
