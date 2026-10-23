@@ -444,7 +444,7 @@ The failures that asking again can fix (see [the session policy](#the-session-po
 
 ## Settings
 
-Configuration is set once by the composition root and passed to the use cases. The values below are the defaults of the app (`src/di/config.ts`); the conformance test compares each value and unit with the code. Durations are in milliseconds.
+Configuration is set once by the composition root and passed to the use cases. The values below are the defaults of the app (`src/composition/container/config.ts`); the conformance test compares each value and unit with the code. Durations are in milliseconds.
 
 | Setting                          | Value     | Meaning                                                                                                                      |
 | -------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -461,7 +461,7 @@ Configuration is set once by the composition root and passed to the use cases. T
 
 ## Constants
 
-A fixed number of the application layer, which no configuration changes. The conformance test compares each value with the exported constant of that name in `src/application/shared`. Durations are in milliseconds.
+A fixed number of the application layer, which no configuration changes. The conformance test compares each value with the exported constant of that name in the files of the `application` folders that are neither a port nor a use case. Durations are in milliseconds.
 
 | Constant                        | Value | Meaning                                                                                                                                                                                           |
 | ------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

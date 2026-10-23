@@ -777,7 +777,7 @@ The services carry demo controls in the mock configuration only; in any other co
 
 ## Test id builders
 
-Some elements are repeated (a row per meeting, a button per choice), so their test id is built from an identifier. The builders live in `src/presentation/testIds.ts`. The pattern is exact; `{name}` is the parameter of the same name in the second column. The row of the meetings list also exposes the prefix `meeting-row-` as a constant (`MEETING_ROW_TEST_ID_PREFIX`), used by flows that look for any row.
+Some elements are repeated (a row per meeting, a button per choice), so their test id is built from an identifier. The builders live in `src/composition/shell/testIds.ts`. The pattern is exact; `{name}` is the parameter of the same name in the second column. The row of the meetings list also exposes the prefix `meeting-row-` as a constant (`MEETING_ROW_TEST_ID_PREFIX`), used by flows that look for any row.
 
 | Builder                 | Parameters           | Test id                               | Shown when                                                                        |
 | ----------------------- | -------------------- | ------------------------------------- | --------------------------------------------------------------------------------- |
