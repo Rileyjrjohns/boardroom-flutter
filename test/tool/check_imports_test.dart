@@ -360,12 +360,16 @@ export '../infrastructure/i.dart';
 
   group('adapter packages', () {
     const adapters = [
+      'package:connectivity_plus/connectivity_plus.dart',
       'package:dio/dio.dart',
       'package:drift/drift.dart',
       'package:drift_flutter/drift_flutter.dart',
       'package:flutter_secure_storage/flutter_secure_storage.dart',
       'package:local_auth/local_auth.dart',
       'package:local_auth_android/local_auth_android.dart',
+      'package:local_auth_darwin/local_auth_darwin.dart',
+      'package:path_provider/path_provider.dart',
+      'package:path_provider_android/path_provider_android.dart',
       'package:screen_protection/screen_protection.dart',
       'package:sqlite3/sqlite3.dart',
     ];
