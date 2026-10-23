@@ -1,59 +1,877 @@
 {
   "@@locale": "en",
-  "appTitle": "Boardroom",
-  "@appTitle": {
-    "description": "Name of the app, shown in the task switcher and as the title of the home screen."
+  "coreAppName": "Boardroom",
+  "@coreAppName": {
+    "description": "Text app.name of the React Native app (docs/spec/screens.md key)."
   },
-  "homeComingSoon": "Your board meetings, documents and votes are coming soon.",
-  "@homeComingSoon": {
-    "description": "Placeholder line of the home screen while the first feature is being built."
+  "coreCommonCancel": "Cancel",
+  "@coreCommonCancel": {
+    "description": "Text common.cancel of the React Native app (docs/spec/screens.md key)."
   },
-  "homeOpenScreenProtectionDemo": "Try the screen protection",
-  "@homeOpenScreenProtectionDemo": {
-    "description": "Button of the home screen that opens the screen to try the screen protection on a device."
+  "coreCommonClose": "Close",
+  "@coreCommonClose": {
+    "description": "Text common.close of the React Native app (docs/spec/screens.md key)."
   },
-  "screenProtectionDemoTitle": "Screen protection",
-  "@screenProtectionDemoTitle": {
+  "coreNavigationMeetings": "Meetings",
+  "@coreNavigationMeetings": {
+    "description": "Text navigation.meetings of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreNavigationMeeting": "Meeting",
+  "@coreNavigationMeeting": {
+    "description": "Text navigation.meeting of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreNavigationDocument": "Document",
+  "@coreNavigationDocument": {
+    "description": "Text navigation.document of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreNavigationSignIn": "Sign in",
+  "@coreNavigationSignIn": {
+    "description": "Text navigation.signIn of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreNavigationLocked": "Locked",
+  "@coreNavigationLocked": {
+    "description": "Text navigation.locked of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreNavigationPendingVotes": "Pending votes",
+  "@coreNavigationPendingVotes": {
+    "description": "Text navigation.pendingVotes of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsPeriodLabel": "Meeting period",
+  "@meetingsPeriodLabel": {
+    "description": "Text meetings.period.label of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsPeriodUpcoming": "Upcoming",
+  "@meetingsPeriodUpcoming": {
+    "description": "Text meetings.period.upcoming of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsPeriodPast": "Past",
+  "@meetingsPeriodPast": {
+    "description": "Text meetings.period.past of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsEmptyUpcoming": "No upcoming meetings.",
+  "@meetingsEmptyUpcoming": {
+    "description": "Text meetings.empty.upcoming of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsEmptyPast": "No past meetings.",
+  "@meetingsEmptyPast": {
+    "description": "Text meetings.empty.past of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsLoading": "Loading meetings",
+  "@meetingsLoading": {
+    "description": "Text meetings.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsLoadingMore": "Loading more meetings",
+  "@meetingsLoadingMore": {
+    "description": "Text meetings.loadingMore of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsEndOfList": "That is all of the meetings.",
+  "@meetingsEndOfList": {
+    "description": "Text meetings.endOfList of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsOpenHint": "Opens the meeting",
+  "@meetingsOpenHint": {
+    "description": "Text meetings.openHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingLoading": "Loading the meeting",
+  "@meetingsMeetingLoading": {
+    "description": "Text meeting.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingAgenda": "Agenda",
+  "@meetingsMeetingAgenda": {
+    "description": "Text meeting.agenda of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingAgendaEmpty": "There is no agenda.",
+  "@meetingsMeetingAgendaEmpty": {
+    "description": "Text meeting.agendaEmpty of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingAgendaItem": "{position}. {title}",
+  "@meetingsMeetingAgendaItem": {
+    "description": "Text meeting.agendaItem of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "position": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingDocuments": "Documents",
+  "@meetingsMeetingDocuments": {
+    "description": "Text meeting.documents of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingDocumentsEmpty": "There are no documents.",
+  "@meetingsMeetingDocumentsEmpty": {
+    "description": "Text meeting.documentsEmpty of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingParticipants": "Participants",
+  "@meetingsMeetingParticipants": {
+    "description": "Text meeting.participants of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingParticipantsEmpty": "There are no participants.",
+  "@meetingsMeetingParticipantsEmpty": {
+    "description": "Text meeting.participantsEmpty of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingVotingDeadline": "Vote by {date}",
+  "@meetingsMeetingVotingDeadline": {
+    "description": "Text meeting.votingDeadline of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingVotingClosedOn": "Closed on {date}",
+  "@meetingsMeetingVotingClosedOn": {
+    "description": "Text meeting.votingClosedOn of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingResolutionYourVote": "Your vote: {choice}",
+  "@meetingsMeetingResolutionYourVote": {
+    "description": "Text meeting.resolutionYourVote of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingResolutionYourVoteQueued": "Your vote: {choice} (waiting to be sent)",
+  "@meetingsMeetingResolutionYourVoteQueued": {
+    "description": "Text meeting.resolutionYourVoteQueued of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingResolutionNoVote": "You have not voted.",
+  "@meetingsMeetingResolutionNoVote": {
+    "description": "Text meeting.resolutionNoVote of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsMeetingPageCount": "{count, plural, one{{count} page} other{{count} pages}}",
+  "@meetingsMeetingPageCount": {
+    "description": "Text meeting.pageCount of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "meetingsMeetingDocumentLabel": "{title}, {confidentiality}, {pages}",
+  "@meetingsMeetingDocumentLabel": {
+    "description": "Text meeting.documentLabel of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "confidentiality": {
+        "type": "String"
+      },
+      "pages": {
+        "type": "String"
+      }
+    }
+  },
+  "meetingsMeetingOpenDocumentHint": "Opens the document",
+  "@meetingsMeetingOpenDocumentHint": {
+    "description": "Text meeting.openDocumentHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentLoading": "Opening the document",
+  "@documentsDocumentLoading": {
+    "description": "Text document.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentRendering": "Displaying the document",
+  "@documentsDocumentRendering": {
+    "description": "Text document.rendering of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentProtectedBadge": "Protected screen",
+  "@documentsDocumentProtectedBadge": {
+    "description": "Text document.protectedBadge of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentPageIndicator": "Page {page} of {total}",
+  "@documentsDocumentPageIndicator": {
+    "description": "Text document.pageIndicator of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "page": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "documentsDocumentNotFound": "This document does not exist, or you no longer have access to it.",
+  "@documentsDocumentNotFound": {
+    "description": "Text document.notFound of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentRenderFailed": "The document could not be displayed. Try again.",
+  "@documentsDocumentRenderFailed": {
+    "description": "Text document.renderFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentCaptureScreenshot": "A screenshot was detected. It has been recorded.",
+  "@documentsDocumentCaptureScreenshot": {
+    "description": "Text document.capture.screenshot of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentCaptureRecording": "A screen recording was detected. It has been recorded.",
+  "@documentsDocumentCaptureRecording": {
+    "description": "Text document.capture.recording of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentErrorsNetworkUnavailable": "This document is not saved on this device, so it is not available offline. Check your connection and try again.",
+  "@documentsDocumentErrorsNetworkUnavailable": {
+    "description": "Text document.errors.networkUnavailable of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentErrorsForbidden": "You do not have access to this document.",
+  "@documentsDocumentErrorsForbidden": {
+    "description": "Text document.errors.forbidden of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentErrorsScreenProtectionUnsupported": "This document is confidential and the screen of this device cannot be protected, so it is not shown.",
+  "@documentsDocumentErrorsScreenProtectionUnsupported": {
+    "description": "Text document.errors.screenProtectionUnsupported of the React Native app (docs/spec/screens.md key)."
+  },
+  "documentsDocumentErrorsScreenProtectionFailed": "The screen could not be protected, so the document is not shown. Try again.",
+  "@documentsDocumentErrorsScreenProtectionFailed": {
+    "description": "Text document.errors.screenProtectionFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStatesRetry": "Try again",
+  "@coreStatesRetry": {
+    "description": "Text states.retry of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStatesStaleData": "Showing saved data from {date}",
+  "@coreStatesStaleData": {
+    "description": "Text states.staleData of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "coreStatesRefreshing": "Refreshing",
+  "@coreStatesRefreshing": {
+    "description": "Text states.refreshing of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsParticipantRoleChair": "Chair",
+  "@meetingsParticipantRoleChair": {
+    "description": "Text participantRole.chair of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsParticipantRoleSecretary": "Secretary",
+  "@meetingsParticipantRoleSecretary": {
+    "description": "Text participantRole.secretary of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsParticipantRoleMember": "Member",
+  "@meetingsParticipantRoleMember": {
+    "description": "Text participantRole.member of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsParticipantRoleGuest": "Guest",
+  "@meetingsParticipantRoleGuest": {
+    "description": "Text participantRole.guest of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsVotingStateOpen": "Open",
+  "@meetingsVotingStateOpen": {
+    "description": "Text votingState.open of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsVotingStateClosed": "Closed",
+  "@meetingsVotingStateClosed": {
+    "description": "Text votingState.closed of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsVotingStateWindowOver": "Voting ended",
+  "@meetingsVotingStateWindowOver": {
+    "description": "Text votingState.windowOver of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsConfidentialityPublic": "Public",
+  "@meetingsConfidentialityPublic": {
+    "description": "Text confidentiality.public of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsConfidentialityInternal": "Internal",
+  "@meetingsConfidentialityInternal": {
+    "description": "Text confidentiality.internal of the React Native app (docs/spec/screens.md key)."
+  },
+  "meetingsConfidentialityConfidential": "Confidential",
+  "@meetingsConfidentialityConfidential": {
+    "description": "Text confidentiality.confidential of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteChoiceFor": "For",
+  "@votesVoteChoiceFor": {
+    "description": "Text voteChoice.for of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteChoiceAgainst": "Against",
+  "@votesVoteChoiceAgainst": {
+    "description": "Text voteChoice.against of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteChoiceAbstain": "Abstain",
+  "@votesVoteChoiceAbstain": {
+    "description": "Text voteChoice.abstain of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsNetworkUnavailable": "The server cannot be reached. Check your connection and try again.",
+  "@coreErrorsNetworkUnavailable": {
+    "description": "Text errors.networkUnavailable of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsUnauthorized": "Your session is no longer valid. Sign in again.",
+  "@coreErrorsUnauthorized": {
+    "description": "Text errors.unauthorized of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsForbidden": "You do not have access to this meeting.",
+  "@coreErrorsForbidden": {
+    "description": "Text errors.forbidden of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsNotAuthenticated": "You are signed out. Sign in to continue.",
+  "@coreErrorsNotAuthenticated": {
+    "description": "Text errors.notAuthenticated of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsSessionExpired": "Your session has expired. Sign in again.",
+  "@coreErrorsSessionExpired": {
+    "description": "Text errors.sessionExpired of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsAppLocked": "The app is locked. Unlock it to continue.",
+  "@coreErrorsAppLocked": {
+    "description": "Text errors.appLocked of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsSessionChanged": "The signed-in user has changed. Sign in again.",
+  "@coreErrorsSessionChanged": {
+    "description": "Text errors.sessionChanged of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsNotFound": "This meeting does not exist, or you no longer have access to it.",
+  "@coreErrorsNotFound": {
+    "description": "Text errors.notFound of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsInvalidCredentials": "The email address or the password is not correct.",
+  "@coreErrorsInvalidCredentials": {
+    "description": "Text errors.invalidCredentials of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsStorageWriteFailed": "The data could not be saved on this device. Try again.",
+  "@coreErrorsStorageWriteFailed": {
+    "description": "Text errors.storageWriteFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsUnexpected": "Something went wrong on our side. Try again in a moment.",
+  "@coreErrorsUnexpected": {
+    "description": "Text errors.unexpected of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsStorageReadFailed": "The data saved on this device could not be read.",
+  "@coreErrorsStorageReadFailed": {
+    "description": "Text errors.storageReadFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreErrorsValidation": "The request was not valid.",
+  "@coreErrorsValidation": {
+    "description": "Text errors.validation of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStartupLoading": "Starting Boardroom",
+  "@coreStartupLoading": {
+    "description": "Text startup.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStartupTitle": "Boardroom cannot start",
+  "@coreStartupTitle": {
+    "description": "Text startup.title of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStartupMessage": "The app is not configured correctly, or the data saved on this device cannot be opened. Check the BOARDROOM_ADAPTERS setting, which accepts dev or http, and for http the BOARDROOM_API_BASE_URL setting: an https address, or http for this computer only. A development build uses dev when the first one is missing; any other build needs it.",
+  "@coreStartupMessage": {
+    "description": "Text startup.message of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStartupCode": "Technical code: {code}",
+  "@coreStartupCode": {
+    "description": "Text startup.code of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "coreStartupForgetExplanation": "If trying again does not help, you can sign out on this device and sign in again. Votes waiting to be sent stay on this device.",
+  "@coreStartupForgetExplanation": {
+    "description": "Text startup.forgetExplanation of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreStartupForget": "Sign out on this device",
+  "@coreStartupForget": {
+    "description": "Text startup.forget of the React Native app (docs/spec/screens.md key)."
+  },
+  "authBiometricUnlockApp": "Unlock Boardroom",
+  "@authBiometricUnlockApp": {
+    "description": "Text biometric.unlockApp of the React Native app (docs/spec/screens.md key)."
+  },
+  "authBiometricConfirmVote": "Confirm your vote",
+  "@authBiometricConfirmVote": {
+    "description": "Text biometric.confirmVote of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInTitle": "Sign in to Boardroom",
+  "@authSignInTitle": {
+    "description": "Text signIn.title of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInMessage": "Use the account of your organisation to see your meetings and vote.",
+  "@authSignInMessage": {
+    "description": "Text signIn.message of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInEmail": "Email address",
+  "@authSignInEmail": {
+    "description": "Text signIn.email of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInPassword": "Password",
+  "@authSignInPassword": {
+    "description": "Text signIn.password of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInSubmit": "Sign in",
+  "@authSignInSubmit": {
+    "description": "Text signIn.submit of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInSubmitting": "Signing in",
+  "@authSignInSubmitting": {
+    "description": "Text signIn.submitting of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInEmailRequired": "Enter your email address.",
+  "@authSignInEmailRequired": {
+    "description": "Text signIn.emailRequired of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInEmailInvalid": "Enter a valid email address, such as name@company.com.",
+  "@authSignInEmailInvalid": {
+    "description": "Text signIn.emailInvalid of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInEmailTooLong": "This email address is too long.",
+  "@authSignInEmailTooLong": {
+    "description": "Text signIn.emailTooLong of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignInPasswordRequired": "Enter your password.",
+  "@authSignInPasswordRequired": {
+    "description": "Text signIn.passwordRequired of the React Native app (docs/spec/screens.md key)."
+  },
+  "authLockTitle": "Boardroom is locked",
+  "@authLockTitle": {
+    "description": "Text lock.title of the React Native app (docs/spec/screens.md key)."
+  },
+  "authLockMessage": "Boardroom locks itself when it starts and when you have been away for a while. Unlock it to see your meetings.",
+  "@authLockMessage": {
+    "description": "Text lock.message of the React Native app (docs/spec/screens.md key)."
+  },
+  "authLockUnlock": "Unlock",
+  "@authLockUnlock": {
+    "description": "Text lock.unlock of the React Native app (docs/spec/screens.md key)."
+  },
+  "authLockUnlockHint": "Opens the fingerprint or face prompt of your device.",
+  "@authLockUnlockHint": {
+    "description": "Text lock.unlockHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "authLockUnlocking": "Unlocking",
+  "@authLockUnlocking": {
+    "description": "Text lock.unlocking of the React Native app (docs/spec/screens.md key)."
+  },
+  "authUnlockErrorsBiometricUnavailable": "Biometric unlock is not available on this device. Sign out and sign in again to continue.",
+  "@authUnlockErrorsBiometricUnavailable": {
+    "description": "Text unlockErrors.biometricUnavailable of the React Native app (docs/spec/screens.md key)."
+  },
+  "authUnlockErrorsBiometricNotEnrolled": "No fingerprint or face is registered on this device. Add one in the settings of the device, or sign out and sign in again.",
+  "@authUnlockErrorsBiometricNotEnrolled": {
+    "description": "Text unlockErrors.biometricNotEnrolled of the React Native app (docs/spec/screens.md key)."
+  },
+  "authUnlockErrorsBiometricCancelled": "Unlocking was cancelled. Try again when you are ready.",
+  "@authUnlockErrorsBiometricCancelled": {
+    "description": "Text unlockErrors.biometricCancelled of the React Native app (docs/spec/screens.md key)."
+  },
+  "authUnlockErrorsBiometricFailed": "You were not recognised. Try again.",
+  "@authUnlockErrorsBiometricFailed": {
+    "description": "Text unlockErrors.biometricFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "authUnlockErrorsBiometricLockedOut": "Too many attempts. Wait a moment, or unlock your device with its passcode, then try again.",
+  "@authUnlockErrorsBiometricLockedOut": {
+    "description": "Text unlockErrors.biometricLockedOut of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutAction": "Sign out",
+  "@authSignOutAction": {
+    "description": "Text signOut.action of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutHint": "Asks you to confirm.",
+  "@authSignOutHint": {
+    "description": "Text signOut.hint of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutTitle": "Sign out of Boardroom?",
+  "@authSignOutTitle": {
+    "description": "Text signOut.title of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutMessage": "You will need to sign in again to see your meetings.",
+  "@authSignOutMessage": {
+    "description": "Text signOut.message of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutPending": "{count, plural, one{{count} vote is waiting to be sent. It is kept on this device and will be sent after your next sign-in.} other{{count} votes are waiting to be sent. They are kept on this device and will be sent after your next sign-in.}}",
+  "@authSignOutPending": {
+    "description": "Text signOut.pending of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "authSignOutPendingUnknown": "Any vote waiting to be sent is kept on this device and will be sent after your next sign-in.",
+  "@authSignOutPendingUnknown": {
+    "description": "Text signOut.pendingUnknown of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutSigningOut": "Signing out",
+  "@authSignOutSigningOut": {
+    "description": "Text signOut.signingOut of the React Native app (docs/spec/screens.md key)."
+  },
+  "authSignOutFailed": "You could not be signed out. Try again.",
+  "@authSignOutFailed": {
+    "description": "Text signOut.failed of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingLoading": "Checking your right to vote",
+  "@votesVotingLoading": {
+    "description": "Text voting.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingChoose": "Cast your vote",
+  "@votesVotingChoose": {
+    "description": "Text voting.choose of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingChoiceHint": "Opens a confirmation step before your vote is cast.",
+  "@votesVotingChoiceHint": {
+    "description": "Text voting.choiceHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirmTitle": "Confirm your vote",
+  "@votesVotingConfirmTitle": {
+    "description": "Text voting.confirmTitle of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirmChoice": "Your choice: {choice}",
+  "@votesVotingConfirmChoice": {
+    "description": "Text voting.confirmChoice of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "votesVotingConfirmFinal": "Your vote is final. Once cast, it cannot be changed or withdrawn.",
+  "@votesVotingConfirmFinal": {
+    "description": "Text voting.confirmFinal of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirmBiometric": "Your device will ask for your fingerprint or face to confirm it.",
+  "@votesVotingConfirmBiometric": {
+    "description": "Text voting.confirmBiometric of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirmOffline": "You are offline. Your vote will be saved on this device and sent when the connection returns.",
+  "@votesVotingConfirmOffline": {
+    "description": "Text voting.confirmOffline of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirm": "Confirm my vote",
+  "@votesVotingConfirm": {
+    "description": "Text voting.confirm of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingConfirming": "Casting your vote",
+  "@votesVotingConfirming": {
+    "description": "Text voting.confirming of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingSubmitted": "Your vote was recorded.",
+  "@votesVotingSubmitted": {
+    "description": "Text voting.submitted of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingQueued": "Your vote is saved on this device. It will be sent when the connection returns.",
+  "@votesVotingQueued": {
+    "description": "Text voting.queued of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingRejected": "Your vote was rejected. {reason}",
+  "@votesVotingRejected": {
+    "description": "Text voting.rejected of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "votesVotingAcknowledge": "Acknowledge",
+  "@votesVotingAcknowledge": {
+    "description": "Text voting.acknowledge of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingAcknowledgeHint": "Removes the rejected vote from your list.",
+  "@votesVotingAcknowledgeHint": {
+    "description": "Text voting.acknowledgeHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingNoVotingRightsAs": "Your role in this meeting ({role}) does not carry a vote.",
+  "@votesVotingNoVotingRightsAs": {
+    "description": "Text voting.noVotingRightsAs of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "votesVotingReasonResolutionNotFound": "This resolution no longer exists.",
+  "@votesVotingReasonResolutionNotFound": {
+    "description": "Text voting.reason.resolutionNotFound of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonNotAParticipant": "You are not a participant of this meeting.",
+  "@votesVotingReasonNotAParticipant": {
+    "description": "Text voting.reason.notAParticipant of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonNoVotingRights": "Your role in this meeting does not carry a vote.",
+  "@votesVotingReasonNoVotingRights": {
+    "description": "Text voting.reason.noVotingRights of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonResolutionClosed": "Voting is closed on this resolution.",
+  "@votesVotingReasonResolutionClosed": {
+    "description": "Text voting.reason.resolutionClosed of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonVotingWindowOver": "The voting period for this resolution has ended.",
+  "@votesVotingReasonVotingWindowOver": {
+    "description": "Text voting.reason.votingWindowOver of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonAlreadyVotedRecorded": "You have already voted on this resolution. A vote is final.",
+  "@votesVotingReasonAlreadyVotedRecorded": {
+    "description": "Text voting.reason.alreadyVotedRecorded of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonAlreadyVotedQueued": "You have already voted on this resolution. Your vote is waiting to be sent.",
+  "@votesVotingReasonAlreadyVotedQueued": {
+    "description": "Text voting.reason.alreadyVotedQueued of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingReasonVoteUndeliverable": "{count, plural, one{Your vote could not be delivered after {count} attempt.} other{Your vote could not be delivered after {count} attempts.}}",
+  "@votesVotingReasonVoteUndeliverable": {
+    "description": "Text voting.reason.voteUndeliverable of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "votesVotingFailureVoteInProgress": "A vote on this resolution is already being cast.",
+  "@votesVotingFailureVoteInProgress": {
+    "description": "Text voting.failure.voteInProgress of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingFailureVotePreviouslyRejected": "An earlier vote on this resolution was rejected. Acknowledge it before voting again.",
+  "@votesVotingFailureVotePreviouslyRejected": {
+    "description": "Text voting.failure.votePreviouslyRejected of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingFailureVoteNotRejected": "This vote is still waiting to be sent, so it cannot be acknowledged.",
+  "@votesVotingFailureVoteNotRejected": {
+    "description": "Text voting.failure.voteNotRejected of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVotingFailureStorageWriteFailed": "Your vote could not be saved on this device. It has not been cast. Try again.",
+  "@votesVotingFailureStorageWriteFailed": {
+    "description": "Text voting.failure.storageWriteFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteBiometricBiometricCancelled": "Confirmation was cancelled. Your vote has not been cast.",
+  "@votesVoteBiometricBiometricCancelled": {
+    "description": "Text voteBiometric.biometricCancelled of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteBiometricBiometricFailed": "You were not recognised. Your vote has not been cast. Try again.",
+  "@votesVoteBiometricBiometricFailed": {
+    "description": "Text voteBiometric.biometricFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteBiometricBiometricLockedOut": "Too many attempts. Your vote has not been cast. Wait a moment, or unlock your device with its passcode, then try again.",
+  "@votesVoteBiometricBiometricLockedOut": {
+    "description": "Text voteBiometric.biometricLockedOut of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteBiometricBiometricUnavailable": "Biometric confirmation is not available on this device, and a vote needs it. Your vote has not been cast.",
+  "@votesVoteBiometricBiometricUnavailable": {
+    "description": "Text voteBiometric.biometricUnavailable of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesVoteBiometricBiometricNotEnrolled": "No fingerprint or face is registered on this device. Add one in the settings of the device to vote.",
+  "@votesVoteBiometricBiometricNotEnrolled": {
+    "description": "Text voteBiometric.biometricNotEnrolled of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesOpen": "Pending votes",
+  "@votesPendingVotesOpen": {
+    "description": "Text pendingVotes.open of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesOpenWithCount": "Pending votes, {number}",
+  "@votesPendingVotesOpenWithCount": {
+    "description": "Text pendingVotes.openWithCount of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "votesPendingVotesLoading": "Loading pending votes",
+  "@votesPendingVotesLoading": {
+    "description": "Text pendingVotes.loading of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesExplanation": "Votes cast without a connection wait here and are sent as soon as you are back online. They are kept if you sign out.",
+  "@votesPendingVotesExplanation": {
+    "description": "Text pendingVotes.explanation of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesWaiting": "Waiting to be sent",
+  "@votesPendingVotesWaiting": {
+    "description": "Text pendingVotes.waiting of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesRejected": "Rejected",
+  "@votesPendingVotesRejected": {
+    "description": "Text pendingVotes.rejected of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesEmpty": "No vote is waiting to be sent.",
+  "@votesPendingVotesEmpty": {
+    "description": "Text pendingVotes.empty of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesCastAt": "Cast on {date}",
+  "@votesPendingVotesCastAt": {
+    "description": "Text pendingVotes.castAt of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "votesPendingVotesRejectedAt": "Rejected on {date}",
+  "@votesPendingVotesRejectedAt": {
+    "description": "Text pendingVotes.rejectedAt of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "votesPendingVotesOpenMeeting": "Open the meeting",
+  "@votesPendingVotesOpenMeeting": {
+    "description": "Text pendingVotes.openMeeting of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesUnreadable": "{count, plural, one{{count} saved vote on this device can no longer be read. It will not be sent. Check on the meeting whether your vote was recorded, then you can delete it.} other{{count} saved votes on this device can no longer be read. They will not be sent. Check on the meetings whether your votes were recorded, then you can delete them.}}",
+  "@votesPendingVotesUnreadable": {
+    "description": "Text pendingVotes.unreadable of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "votesPendingVotesDiscard": "Delete what cannot be read",
+  "@votesPendingVotesDiscard": {
+    "description": "Text pendingVotes.discard of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesDiscardHint": "Asks you to confirm.",
+  "@votesPendingVotesDiscardHint": {
+    "description": "Text pendingVotes.discardHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesDiscardTitle": "Delete what cannot be read?",
+  "@votesPendingVotesDiscardTitle": {
+    "description": "Text pendingVotes.discardTitle of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesDiscardMessage": "{count, plural, one{{count} saved vote will be deleted from this device for good. This cannot be undone.} other{{count} saved votes will be deleted from this device for good. This cannot be undone.}}",
+  "@votesPendingVotesDiscardMessage": {
+    "description": "Text pendingVotes.discardMessage of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "votesPendingVotesDiscarding": "Deleting",
+  "@votesPendingVotesDiscarding": {
+    "description": "Text pendingVotes.discarding of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesPendingVotesDiscardFailed": "They could not be deleted. Try again.",
+  "@votesPendingVotesDiscardFailed": {
+    "description": "Text pendingVotes.discardFailed of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreBannerOffline": "You are offline. Votes you cast are saved on this device and sent when the connection returns.",
+  "@coreBannerOffline": {
+    "description": "Text banner.offline of the React Native app (docs/spec/screens.md key)."
+  },
+  "votesBannerSent": "{count, plural, one{{count} vote was sent.} other{{count} votes were sent.}}",
+  "@votesBannerSent": {
+    "description": "Text banner.sent of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "coreBannerRejected": "{count, plural, one{{count} vote was rejected. See your pending votes.} other{{count} votes were rejected. See your pending votes.}}",
+  "@coreBannerRejected": {
+    "description": "Text banner.rejected of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "format": "decimalPattern"
+      }
+    }
+  },
+  "coreBannerDismiss": "Dismiss",
+  "@coreBannerDismiss": {
+    "description": "Text banner.dismiss of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreBannerLocalDataReset": "Some data saved on this device could not be read and was reset. Votes that were waiting to be sent from this device may have been lost: please check that your votes were recorded.",
+  "@coreBannerLocalDataReset": {
+    "description": "Text banner.localDataReset of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoBadge": "Demo",
+  "@coreDemoBadge": {
+    "description": "Text demo.badge of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoAccounts": "Demo accounts",
+  "@coreDemoAccounts": {
+    "description": "Text demo.accounts of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoAccountsHint": "Touch an account to fill in its email address and password.",
+  "@coreDemoAccountsHint": {
+    "description": "Text demo.accountsHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoUseAccount": "Use {name}",
+  "@coreDemoUseAccount": {
+    "description": "Text demo.useAccount of the React Native app (docs/spec/screens.md key).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "coreDemoOffline": "Simulate being offline",
+  "@coreDemoOffline": {
+    "description": "Text demo.offline of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoOfflineHint": "Cuts the simulated server. Only the demo has this switch.",
+  "@coreDemoOfflineHint": {
+    "description": "Text demo.offlineHint of the React Native app (docs/spec/screens.md key)."
+  },
+  "corePrivacyHidden": "Content hidden to protect your privacy",
+  "@corePrivacyHidden": {
+    "description": "Text privacy.hidden of the React Native app (docs/spec/screens.md key)."
+  },
+  "coreDemoOpenScreenProtection": "Try the screen protection",
+  "@coreDemoOpenScreenProtection": {
+    "description": "Button of the demo panel that opens the screen protection demo (development only)."
+  },
+  "documentsScreenProtectionDemoTitle": "Screen protection",
+  "@documentsScreenProtectionDemoTitle": {
     "description": "Title of the screen to try the screen protection."
   },
-  "screenProtectionDemoSwitch": "Protect the screen",
-  "@screenProtectionDemoSwitch": {
+  "documentsScreenProtectionDemoSwitch": "Protect the screen",
+  "@documentsScreenProtectionDemoSwitch": {
     "description": "Label of the switch that turns the screen protection on and off."
   },
-  "screenProtectionDemoSwitchHelp": "While it is on, screenshots and screen recordings of the app are blocked or left blank, and the app switcher shows no content.",
-  "@screenProtectionDemoSwitchHelp": {
+  "documentsScreenProtectionDemoSwitchHelp": "While it is on, screenshots and screen recordings of the app are blocked or left blank, and the app switcher shows no content.",
+  "@documentsScreenProtectionDemoSwitchHelp": {
     "description": "Explanation under the switch of the screen protection."
   },
-  "screenProtectionDemoConfidential": "Confidential: the board approved next year's budget. Do not share this text.",
-  "@screenProtectionDemoConfidential": {
+  "documentsScreenProtectionDemoConfidential": "Confidential: the board approved next year's budget. Do not share this text.",
+  "@documentsScreenProtectionDemoConfidential": {
     "description": "Sample confidential text, shown in a container that is left out of captures when the protection is on."
   },
-  "screenProtectionDemoErrorUnsupported": "This device cannot protect the screen.",
-  "@screenProtectionDemoErrorUnsupported": {
+  "documentsScreenProtectionDemoErrorUnsupported": "This device cannot protect the screen.",
+  "@documentsScreenProtectionDemoErrorUnsupported": {
     "description": "Shown when the platform cannot block captures."
   },
-  "screenProtectionDemoErrorFailed": "The protection could not be changed. Try again.",
-  "@screenProtectionDemoErrorFailed": {
+  "documentsScreenProtectionDemoErrorFailed": "The protection could not be changed. Try again.",
+  "@documentsScreenProtectionDemoErrorFailed": {
     "description": "Shown when turning the screen protection on or off failed."
   },
-  "screenProtectionDemoEventsTitle": "Captures reported",
-  "@screenProtectionDemoEventsTitle": {
+  "documentsScreenProtectionDemoEventsTitle": "Captures reported",
+  "@documentsScreenProtectionDemoEventsTitle": {
     "description": "Title of the list of captures the system reported."
   },
-  "screenProtectionDemoEventsEmpty": "Nothing yet. Take a screenshot or start a screen recording.",
-  "@screenProtectionDemoEventsEmpty": {
+  "documentsScreenProtectionDemoEventsEmpty": "Nothing yet. Take a screenshot or start a screen recording.",
+  "@documentsScreenProtectionDemoEventsEmpty": {
     "description": "Shown while the system has reported no capture."
   },
-  "screenProtectionDemoScreenshot": "Screenshot taken",
-  "@screenProtectionDemoScreenshot": {
+  "documentsScreenProtectionDemoScreenshot": "Screenshot taken",
+  "@documentsScreenProtectionDemoScreenshot": {
     "description": "A screenshot of the app was taken."
   },
-  "screenProtectionDemoRecordingStarted": "Screen recording started",
-  "@screenProtectionDemoRecordingStarted": {
+  "documentsScreenProtectionDemoRecordingStarted": "Screen recording started",
+  "@documentsScreenProtectionDemoRecordingStarted": {
     "description": "The screen started being recorded or mirrored."
   },
-  "screenProtectionDemoRecordingStopped": "Screen recording stopped",
-  "@screenProtectionDemoRecordingStopped": {
+  "documentsScreenProtectionDemoRecordingStopped": "Screen recording stopped",
+  "@documentsScreenProtectionDemoRecordingStopped": {
     "description": "The screen stopped being recorded or mirrored."
   }
 }
