@@ -3,7 +3,6 @@ import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/shared/validation.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/domain/value_objects/email_address.dart';
-import 'package:boardroom/features/documents/domain/value_objects/watermark.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user.freezed.dart';
@@ -13,7 +12,7 @@ const int maxFullNameLength = 200;
 
 /// A person who signs in.
 @freezed
-abstract class User with _$User implements WatermarkReader {
+abstract class User with _$User {
   /// Creates a user from validated parts. Use [createUser] to validate the
   /// full name.
   const factory({
