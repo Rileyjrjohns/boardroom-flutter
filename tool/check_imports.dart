@@ -81,15 +81,18 @@ const Set<String> purePackages = {
 };
 
 /// Packages that belong to the adapters (HTTP, database, secure storage,
-/// biometrics, the native screen protection plugin). Only infrastructure uses
+/// biometrics, connectivity, the folders of the device, the native screen
+/// protection plugin). Only infrastructure uses
 /// them: a screen or a provider that imports one skips the ports. A package
 /// named here also covers its federated parts (`local_auth_android`,
 /// `drift_flutter`...), matched on the `<name>_` prefix.
 const Set<String> adapterPackages = {
+  'connectivity_plus',
   'dio',
   'drift',
   'flutter_secure_storage',
   'local_auth',
+  'path_provider',
   'screen_protection',
   'sqlite3',
 };
