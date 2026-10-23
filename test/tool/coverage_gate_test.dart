@@ -24,8 +24,9 @@ String record(String path, {required int covered, int uncovered = 0}) {
 CoverageRow rowNamed(CoverageReport report, String label) =>
     report.rows.singleWhere((row) => row.label == label);
 
-const domainLabel = '`lib/domain`';
-const applicationLabel = '`lib/application`';
+const domainLabel = '`lib/core/domain` + `lib/features/*/domain`';
+const applicationLabel =
+    '`lib/core/application` + `lib/features/*/application`';
 const restLabel = 'Rest (all but domain and application)';
 const totalLabel = 'Total (`lib`)';
 
@@ -64,17 +65,31 @@ void main() {
 
   group('isGeneratedFile', () {
     test('knows the build_runner and gen-l10n output', () {
-      expect(isGeneratedFile('lib/domain/meeting.freezed.dart'), isTrue);
-      expect(isGeneratedFile('lib/domain/meeting.g.dart'), isTrue);
+      expect(
+        isGeneratedFile(
+          'lib/features/meetings/domain/entities/meeting.freezed.dart',
+        ),
+        isTrue,
+      );
+      expect(
+        isGeneratedFile('lib/features/meetings/domain/entities/meeting.g.dart'),
+        isTrue,
+      );
       expect(isGeneratedFile('lib/l10n/app_localizations.dart'), isTrue);
       expect(isGeneratedFile('lib/l10n/app_localizations_fr.dart'), isTrue);
-      expect(isGeneratedFile('/work/boardroom/lib/domain/a.g.dart'), isTrue);
+      expect(
+        isGeneratedFile('/work/boardroom/lib/core/domain/a.g.dart'),
+        isTrue,
+      );
       expect(isGeneratedFile(r'lib\l10n\app_localizations_en.dart'), isTrue);
     });
 
     test('keeps the files written by hand', () {
-      expect(isGeneratedFile('lib/domain/meeting.dart'), isFalse);
-      expect(isGeneratedFile('lib/presentation/app.dart'), isFalse);
+      expect(
+        isGeneratedFile('lib/features/meetings/domain/entities/meeting.dart'),
+        isFalse,
+      );
+      expect(isGeneratedFile('lib/app/app.dart'), isFalse);
       expect(isGeneratedFile('lib/generated_names.dart'), isFalse);
     });
   });
@@ -83,9 +98,9 @@ void main() {
     test('passes when every layer is above its threshold', () {
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 9, uncovered: 1),
-          record('lib/application/b.dart', covered: 10),
-          record('lib/presentation/c.dart', covered: 7, uncovered: 3),
+          record('lib/core/domain/a.dart', covered: 9, uncovered: 1),
+          record('lib/features/auth/application/b.dart', covered: 10),
+          record('lib/app/c.dart', covered: 7, uncovered: 3),
         ].join('\n'),
       );
 
@@ -102,9 +117,9 @@ void main() {
       () {
         final report = evaluateCoverage(
           [
-            record('lib/domain/a.dart', covered: 89, uncovered: 11),
-            record('lib/application/b.dart', covered: 10),
-            record('lib/presentation/c.dart', covered: 1000),
+            record('lib/core/domain/a.dart', covered: 89, uncovered: 11),
+            record('lib/features/auth/application/b.dart', covered: 10),
+            record('lib/app/c.dart', covered: 1000),
           ].join('\n'),
         );
 
@@ -117,8 +132,12 @@ void main() {
     test('does not let a good layer lift the other one', () {
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 1000),
-          record('lib/application/b.dart', covered: 8, uncovered: 2),
+          record('lib/core/domain/a.dart', covered: 1000),
+          record(
+            'lib/features/auth/application/b.dart',
+            covered: 8,
+            uncovered: 2,
+          ),
         ].join('\n'),
       );
 
@@ -128,9 +147,9 @@ void main() {
     test('fails when everything else together is under 70 percent', () {
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 10),
-          record('lib/infrastructure/b.dart', covered: 6, uncovered: 4),
-          record('lib/presentation/c.dart', covered: 7, uncovered: 13),
+          record('lib/core/domain/a.dart', covered: 10),
+          record('lib/core/infrastructure/b.dart', covered: 6, uncovered: 4),
+          record('lib/app/c.dart', covered: 7, uncovered: 13),
           record('lib/main.dart', covered: 0, uncovered: 2),
         ].join('\n'),
       );
@@ -149,8 +168,8 @@ void main() {
       // be lifted by the domain.
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 100),
-          record('lib/presentation/c.dart', covered: 5, uncovered: 5),
+          record('lib/core/domain/a.dart', covered: 100),
+          record('lib/app/c.dart', covered: 5, uncovered: 5),
         ].join('\n'),
       );
 
@@ -163,16 +182,16 @@ void main() {
     test('ignores generated files, which would otherwise fail the gate', () {
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 10),
-          record('lib/domain/a.freezed.dart', covered: 0, uncovered: 500),
-          record('lib/domain/a.g.dart', covered: 0, uncovered: 500),
+          record('lib/core/domain/a.dart', covered: 10),
+          record('lib/core/domain/a.freezed.dart', covered: 0, uncovered: 500),
+          record('lib/core/domain/a.g.dart', covered: 0, uncovered: 500),
           record('lib/l10n/app_localizations.dart', covered: 0, uncovered: 50),
           record(
             'lib/l10n/app_localizations_fr.dart',
             covered: 0,
             uncovered: 50,
           ),
-          record('lib/presentation/c.dart', covered: 10),
+          record('lib/app/c.dart', covered: 10),
         ].join('\n'),
       );
 
@@ -183,7 +202,7 @@ void main() {
 
     test('skips a layer that has no code', () {
       final report = evaluateCoverage(
-        record('lib/presentation/c.dart', covered: 8, uncovered: 2),
+        record('lib/app/c.dart', covered: 8, uncovered: 2),
       );
 
       expect(rowNamed(report, domainLabel).verdict, Verdict.skipped);
@@ -201,8 +220,12 @@ void main() {
     test('counts a file that no test loaded as 0 percent', () {
       final report = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 10),
-          record('lib/domain/never_loaded.dart', covered: 0, uncovered: 10),
+          record('lib/core/domain/a.dart', covered: 10),
+          record(
+            'lib/features/auth/domain/never_loaded.dart',
+            covered: 0,
+            uncovered: 10,
+          ),
         ].join('\n'),
       );
 
@@ -214,7 +237,7 @@ void main() {
       // 8999 of 10000 lines is 89.99, which must not read as the 90 of the
       // gate.
       final report = evaluateCoverage(
-        record('lib/domain/a.dart', covered: 8999, uncovered: 1001),
+        record('lib/core/domain/a.dart', covered: 8999, uncovered: 1001),
       );
 
       final domain = rowNamed(report, domainLabel);
@@ -224,7 +247,7 @@ void main() {
 
     test('accepts a layer that is exactly on its threshold', () {
       final report = evaluateCoverage(
-        record('lib/domain/a.dart', covered: 90, uncovered: 10),
+        record('lib/core/domain/a.dart', covered: 90, uncovered: 10),
       );
 
       expect(rowNamed(report, domainLabel).verdict, Verdict.pass);
@@ -233,8 +256,11 @@ void main() {
     test('accepts absolute paths and Windows separators', () {
       final report = evaluateCoverage(
         [
-          record('/work/boardroom/lib/domain/a.dart', covered: 10),
-          record(r'lib\application\b.dart', covered: 0, uncovered: 10),
+          record(
+            '/work/boardroom/lib/features/auth/domain/a.dart',
+            covered: 10,
+          ),
+          record(r'lib\core\application\b.dart', covered: 0, uncovered: 10),
         ].join('\n'),
       );
 
@@ -242,13 +268,21 @@ void main() {
       expect(rowNamed(report, applicationLabel).verdict, Verdict.fail);
     });
 
-    test('does not mix lib/domain with a folder that starts with it', () {
+    test('does not mix a domain folder with a folder that starts with it', () {
       final report = evaluateCoverage(
-        record('lib/domainish/a.dart', covered: 0, uncovered: 10),
+        [
+          record('lib/core/domainish/a.dart', covered: 0, uncovered: 10),
+          record(
+            'lib/features/auth/domainish/a.dart',
+            covered: 0,
+            uncovered: 10,
+          ),
+          record('lib/features/domain/a.dart', covered: 0, uncovered: 10),
+        ].join('\n'),
       );
 
       expect(rowNamed(report, domainLabel).total, 0);
-      expect(rowNamed(report, restLabel).total, 10);
+      expect(rowNamed(report, restLabel).total, 30);
     });
   });
 
@@ -256,9 +290,13 @@ void main() {
     test('prints a table with lines, percent, threshold and result', () {
       final markdown = evaluateCoverage(
         [
-          record('lib/domain/a.dart', covered: 9, uncovered: 1),
-          record('lib/application/b.dart', covered: 1, uncovered: 1),
-          record('lib/presentation/c.dart', covered: 7, uncovered: 3),
+          record('lib/core/domain/a.dart', covered: 9, uncovered: 1),
+          record(
+            'lib/features/auth/application/b.dart',
+            covered: 1,
+            uncovered: 1,
+          ),
+          record('lib/app/c.dart', covered: 7, uncovered: 3),
         ].join('\n'),
       ).toMarkdown();
 
@@ -266,11 +304,17 @@ void main() {
       expect(markdown, contains('Lines only'));
       expect(
         markdown,
-        contains('| `lib/domain` | 9 / 10 | 90.00 % | 90 % | pass |'),
+        contains(
+          '| `lib/core/domain` + `lib/features/*/domain` | 9 / 10 | 90.00 % '
+          '| 90 % | pass |',
+        ),
       );
       expect(
         markdown,
-        contains('| `lib/application` | 1 / 2 | 50.00 % | 90 % | fail |'),
+        contains(
+          '| `lib/core/application` + `lib/features/*/application` | 1 / 2 '
+          '| 50.00 % | 90 % | fail |',
+        ),
       );
       expect(
         markdown,
@@ -281,7 +325,7 @@ void main() {
       );
       expect(
         markdown,
-        contains('| `lib/presentation` | 7 / 10 | 70.00 % | in rest | - |'),
+        contains('| `lib/app` | 7 / 10 | 70.00 % | in rest | - |'),
       );
     });
 
@@ -290,7 +334,10 @@ void main() {
 
       expect(
         markdown,
-        contains('| `lib/domain` | 0 / 0 | - | 90 % | skipped (no code) |'),
+        contains(
+          '| `lib/core/domain` + `lib/features/*/domain` | 0 / 0 | - | 90 % '
+          '| skipped (no code) |',
+        ),
       );
     });
   });

@@ -6,9 +6,9 @@ One row per test: the Dart test file, the full name of the test (the description
 
 | Dart test file | Full test name | Reason |
 | -------------- | -------------- | ------ |
-| `test/domain/shared/trim_text_test.dart` | `*` | `trimText` replaces `String.trim`, whose set of white space differs from the one of JavaScript; React Native has no test for `String.prototype.trim` |
-| `test/domain/errors/app_error_dart_test.dart` | `*` | The errors are sealed Dart classes with their own equality, `code` and `payload`; the TypeScript ones are object literals. The tests pin each code and payload, the equality and the exhaustive `switch` |
-| `test/domain/shared/result_dart_test.dart` | `*` | How a `Result` compares, prints and is matched exhaustively, which has no TypeScript counterpart |
-| `test/domain/value_objects/credentials_dart_test.dart` | `*` | The Dart `Credentials` can be printed; its password must not appear |
-| `test/domain/value_objects/email_address_dart_test.dart` | `*` | `toLowerCase` of Dart and of JavaScript follow different versions of Unicode; the test pins the letters a mailbox can have (ASCII, Latin, Greek without final sigma, Cyrillic) that both lower-case the same |
-| `test/application/support/fakes_dart_test.dart` | `*` | `List.sort` of Dart is not stable, so `FakeMeetingRepository` breaks the ties itself (a stable sort, as JavaScript has); and `EnqueueResult.outcome` is a getter of the Dart union, where the TypeScript object carries `outcome` as a field |
+| `test/core/domain/shared/trim_text_test.dart` | `*` | `trimText` replaces `String.trim`, whose set of white space differs from the one of JavaScript; React Native has no test for `String.prototype.trim` |
+| `test/core/domain/errors/app_error_dart_test.dart` | `*` | The errors are sealed Dart classes with their own equality, `code` and `payload`; the TypeScript ones are object literals. The tests pin each code and payload, the equality and the exhaustive `switch` |
+| `test/core/domain/shared/result_dart_test.dart` | `*` | How a `Result` compares, prints and is matched exhaustively, which has no TypeScript counterpart |
+| `test/features/auth/domain/value_objects/credentials_dart_test.dart` | `*` | The Dart `Credentials` can be printed; its password must not appear |
+| `test/features/auth/domain/value_objects/email_address_dart_test.dart` | `*` | `toLowerCase` of Dart and of JavaScript follow different versions of Unicode; the test pins the letters a mailbox can have (ASCII, Latin, Greek without final sigma, Cyrillic) that both lower-case the same |
+| `test/support/fakes/fakes_dart_test.dart` | `*` | `List.sort` of Dart is not stable, so `FakeMeetingRepository` breaks the ties itself (a stable sort, as JavaScript has); and `EnqueueResult.outcome` is a getter of the Dart union, where the TypeScript object carries `outcome` as a field |

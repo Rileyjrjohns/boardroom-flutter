@@ -23,9 +23,9 @@ permissions:
 jobs:
   # Pinned to ubuntu-24.04: GitHub began moving ubuntu-latest to Ubuntu 26 on 19 October 2026.
 
-  # The layers may only import what the architecture allows (see lib/*/README.md). This job runs the
-  # checker alone, beside the job below, so that a broken boundary fails a check of its own that is
-  # named after it.
+  # The layers may only import what the architecture allows (see the README.md of lib/core, of each
+  # folder of lib/features and of lib/app). This job runs the checker alone, beside the job below, so
+  # that a broken boundary fails a check of its own that is named after it.
   imports:
     name: Import rules
     runs-on: ubuntu-24.04
@@ -69,8 +69,8 @@ jobs:
       - name: Install the dependencies
         run: flutter pub get
 
-      # The freezed classes of the domain (*.freezed.dart) are not committed: the analysis and the
-      # tests need them.
+      # The freezed classes of the domain folders (*.freezed.dart) and the JSON and drift code (*.g.dart)
+      # are not committed: the analysis and the tests need them.
       - name: Generate the code (build_runner)
         run: dart run build_runner build
 
@@ -80,14 +80,16 @@ jobs:
       - name: Analyze
         run: flutter analyze --fatal-infos --fatal-warnings
 
-      # The tests of the pure Dart folders (test/domain, test/application and the tooling in
-      # test/tool) run with `dart test`, not `flutter test`: that is the proof that the domain, the
-      # application and the tooling need no Flutter. A folder with no test file yet is skipped,
+      # The tests of the pure Dart folders (the domain and application folders of test/core and of
+      # each feature in test/features, the fakes in test/support/fakes, and the tooling in test/tool)
+      # run with `dart test`, not `flutter test`: that is the proof that the domain, the application
+      # and the tooling need no Flutter. test/core/infrastructure holds Flutter tests, so only the
+      # domain and application folders of core run here. A folder with no test file yet is skipped,
       # because `dart test` fails on a folder that has none.
       - name: Pure Dart tests (without Flutter)
         run: |
           folders=()
-          for folder in test/domain test/application test/tool; do
+          for folder in test/core/domain test/core/application test/features/*/domain test/features/*/application test/support/fakes test/tool; do
             if [ -n "$(find "$folder" -name '*_test.dart' -print -quit 2>/dev/null)" ]; then
               folders+=("$folder")
             fi
@@ -100,25 +102,28 @@ jobs:
           dart test "${folders[@]}"
 
       # The adapters, on their own so that a failure of one is named after it: dio against the fixture
-      # server, drift on files and in memory, the contract suites of the ports run against every adapter.
+      # server, drift on files and in memory, the contract suites of the ports run against every adapter
+      # (test/core/infrastructure, the infrastructure folders of the features, test/app for the
+      # simulated world and the database, and the tests of the support code they use).
       # The tests open an encrypted SQLite file. The native library (SQLite3MultipleCiphers) comes from the
       # build hook of package:sqlite3, which downloads the prebuilt library for the runner and checks its
       # hash, so the runner installs no package. They need Flutter (plugins, assets), so `dart test` cannot
       # run them.
       - name: Infrastructure tests (dio on the fixtures, drift, encrypted SQLite)
-        run: flutter test test/infrastructure
+        run: flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure
 
       # Writes test/coverage_helper_test.dart, which imports every library of lib/: a file that no
       # test loads would be missing from the coverage report instead of counting as 0 percent.
       - name: Load every library for the coverage
         run: dart run tool/coverage_helper.dart
 
-      # Runs every test again, the ones of test/infrastructure included, to measure the coverage.
+      # Runs every test again, the infrastructure ones included, to measure the coverage.
       - name: Flutter tests with coverage
         run: flutter test --coverage
 
-      # The coverage as a table on the page of the run, and the gates: 90 percent of lines for each
-      # of the domain and application layers, 70 percent for the rest together. The table goes to
+      # The coverage as a table on the page of the run, and the gates: 90 percent of lines for each of
+      # the two scopes that hold the rules (the domain folders, lib/core/domain and lib/features/*/domain,
+      # and the application folders), 70 percent for the rest together. The table goes to
       # the summary, the failures to the log, and the exit code of the script fails the step (a
       # redirection does not hide it).
       - name: Coverage gate

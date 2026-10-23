@@ -51,7 +51,7 @@ bool isPartFile(String source) =>
 
 /// The content of the generated test, from the name of the package and the
 /// paths of its libraries (relative to the package, such as
-/// `lib/presentation/app.dart`). Sorted, so that two runs on the same code
+/// `lib/app/app.dart`). Sorted, so that two runs on the same code
 /// write the same file.
 String buildCoverageHelper(String packageName, Iterable<String> libraryPaths) {
   final imports = [

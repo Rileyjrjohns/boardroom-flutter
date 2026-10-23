@@ -1,8 +1,8 @@
 # Boardroom API
 
-This is the contract between the HTTP adapters of the app (`lib/infrastructure/http`) and the server. It is the one of the React Native app: the Flutter app talks to the same API. The fixture server (`lib/infrastructure/fixture_server`) implements it from the simulated server of the app, with the same rules and the same data as the mock configuration: the development build reaches it through a dio `HttpClientAdapter` that answers in process, and the tests of the adapters run against that implementation. A real server must answer the same way.
+This is the contract between the HTTP adapters of the app (the client in `lib/core/infrastructure/http`, the adapters of each resource in `lib/features/<feature>/infrastructure`) and the server. It is the one of the React Native app: the Flutter app talks to the same API. The fixture server (`lib/app/dev/fixture_server`) implements it from the simulated server of the app, with the same rules and the same data as the mock configuration: the development build reaches it through a dio `HttpClientAdapter` that answers in process, and the tests of the adapters run against that implementation. A real server must answer the same way.
 
-The constants below (routes, headers, statuses, query parameters) are the ones of `lib/infrastructure/http/protocol.dart`, which the client and the fixture server share. The shapes are the wire classes of `lib/infrastructure/http/dto` (read with `json_serializable`), one file per resource.
+The constants below (routes, headers, statuses, query parameters) are the ones of `lib/core/infrastructure/http/protocol.dart`, which the client and the fixture server share. The shapes are the wire classes of `lib/core/infrastructure/http/dto/wire.dart` and of the `dto/` folder of each feature (`lib/features/<feature>/infrastructure/dto`, read with `json_serializable`), one file per resource.
 
 ## Conventions
 

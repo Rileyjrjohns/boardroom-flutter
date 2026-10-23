@@ -15,7 +15,7 @@ dependencies:
   collection: ^1.19.1
   # Connectivity changes of the device (wifi, mobile, none), behind the Connectivity port.
   connectivity_plus: ^7.3.2
-  # SHA-256 of the file name of a downloaded document (lib/infrastructure/shared/sha256.dart); maintained by the Dart team, pure Dart.
+  # SHA-256 of the file name of a downloaded document (lib/core/infrastructure/shared/sha256.dart); maintained by the Dart team, pure Dart.
   crypto: ^3.0.7
   # HTTP client of the real API: an interceptor that attaches the token, a response size limit, and an adapter seam that serves the fixtures in development.
   dio: ^5.11.1
@@ -82,7 +82,7 @@ flutter:
   generate: true
   uses-material-design: true
   # The fixtures of the specification: development builds serve them through the simulated server
-  # (lib/infrastructure/in_memory/fixtures); tests read the same files from disk.
+  # (lib/app/dev/in_memory/fixtures); tests read the same files from disk.
   assets:
     - docs/spec/fixtures/accounts.json
     - docs/spec/fixtures/meetings.json

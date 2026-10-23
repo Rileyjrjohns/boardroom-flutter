@@ -321,49 +321,85 @@ describeXContract('RealX', () => 2, { enabled: false });
 
   group('the Dart file of a React Native test file', () {
     final cases = {
-      'src/domain/shared/Result.test.ts': 'test/domain/shared/result_test.dart',
+      'src/domain/shared/Result.test.ts':
+          'test/core/domain/shared/result_test.dart',
       'src/domain/value-objects/EmailAddress.test.ts':
-          'test/domain/value_objects/email_address_test.dart',
-      'src/domain/value-objects/ids.test.ts':
-          'test/domain/value_objects/ids_test.dart',
-      'src/domain/errors/errors.test.ts': 'test/domain/errors/errors_test.dart',
-      'src/domain/limits.test.ts': 'test/domain/limits_test.dart',
+          'test/features/auth/domain/value_objects/email_address_test.dart',
+      'src/domain/policies/appLock.test.ts':
+          'test/features/auth/domain/policies/app_lock_test.dart',
+      'src/application/shared/appLock.test.ts':
+          'test/features/auth/application/session/app_lock_test.dart',
       'src/application/use-cases/auth/SignIn.test.ts':
-          'test/application/use_cases/auth/sign_in_test.dart',
-      'src/application/shared/loadWithCacheFallback.test.ts':
-          'test/application/shared/load_with_cache_fallback_test.dart',
+          'test/features/auth/application/use_cases/sign_in_test.dart',
       'src/application/shared/ScreenProtectionCoordinator.test.ts':
-          'test/application/shared/screen_protection_coordinator_test.dart',
+          'test/features/documents/application/'
+          'screen_protection_coordinator_test.dart',
       'src/application/testing/fakes.contracts.test.ts':
-          'test/application/support/fakes_contracts_test.dart',
+          'test/support/fakes/fakes_contracts_test.dart',
       'src/application/testing/fakes.test.ts':
-          'test/application/support/fakes_test.dart',
+          'test/support/fakes/fakes_test.dart',
       'src/application/securityScenarios.test.ts':
-          'test/application/security_scenarios_test.dart',
+          'test/core/application/security_scenarios_test.dart',
     };
+    final dartTestFiles = [
+      ...cases.values,
+      'test/core/domain/limits_test.dart',
+      'test/core/domain/literals_test.dart',
+      'test/core/application/literals_test.dart',
+    ];
 
     for (final MapEntry(key: rnPath, value: dartPath) in cases.entries) {
       test('$rnPath is $dartPath', () {
-        expect(dartTestPathFor(rnPath), dartPath);
+        expect(dartTestPathFor(rnPath, dartTestFiles), dartPath);
       });
     }
 
     test('is none for what is not a test of the domain or the application', () {
-      expect(dartTestPathFor('src/domain/shared/Result.ts'), isNull);
-      expect(dartTestPathFor('src/infrastructure/x.test.ts'), isNull);
-      expect(dartTestPathFor('tooling/spec.test.ts'), isNull);
+      expect(dartTestPathFor('src/domain/shared/Result.ts', const []), isNull);
+      expect(dartTestPathFor('src/infrastructure/x.test.ts', const []), isNull);
+      expect(dartTestPathFor('tooling/spec.test.ts', const []), isNull);
     });
 
     test('has a folder prefix for --only', () {
+      const valueObject =
+          'test/features/auth/domain/value_objects/email_address_test.dart';
+      const fake = 'test/support/fakes/fakes_test.dart';
+      const useCase = 'test/features/auth/application/use_cases/x_test.dart';
+      expect(dartFileMatchesPrefix(valueObject, 'src/domain'), isTrue);
       expect(
-        dartPrefixFor('src/domain/value-objects'),
-        'test/domain/value_objects',
+        dartFileMatchesPrefix(valueObject, 'src/domain/value-objects'),
+        isTrue,
       );
+      expect(dartFileMatchesPrefix(valueObject, 'src/domain/shared'), isFalse);
+      expect(dartFileMatchesPrefix(valueObject, 'src/application'), isFalse);
+      expect(dartFileMatchesPrefix(fake, 'src/application'), isTrue);
+      expect(dartFileMatchesPrefix(fake, 'src/application/testing'), isTrue);
+      expect(dartFileMatchesPrefix(fake, 'src/domain'), isFalse);
+      expect(dartFileMatchesPrefix(useCase, 'src/application'), isTrue);
+      expect(dartFileMatchesPrefix(useCase, 'docs'), isFalse);
+    });
+
+    test('is a path that stands for the file when no file has the name', () {
       expect(
-        dartPrefixFor('src/application/testing'),
-        'test/application/support',
+        dartTestPathFor('src/domain/shared/Gone.test.ts', dartTestFiles),
+        'test/**/gone_test.dart',
       );
-      expect(dartPrefixFor('docs'), isNull);
+    });
+
+    test('refuses to guess between files of the same name and layer', () {
+      expect(
+        () => dartTestPathFor('src/domain/shared/Result.test.ts', [
+          'test/features/a/domain/result_test.dart',
+          'test/features/b/domain/result_test.dart',
+        ]),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            allOf(contains('result_test.dart'), contains('features/a')),
+          ),
+        ),
+      );
     });
 
     test('snake-cases a name', () {
@@ -407,13 +443,13 @@ describeXContract('RealX', () => 2, { enabled: false });
         'Running somewhere...',
         event({
           'type': 'suite',
-          'suite': {'id': 0, 'path': 'test/domain/a_test.dart'},
+          'suite': {'id': 0, 'path': 'test/core/domain/a_test.dart'},
         }),
         event({
           'type': 'testStart',
           'test': {
             'id': 1,
-            'name': 'loading test/domain/a_test.dart',
+            'name': 'loading test/core/domain/a_test.dart',
             'suiteID': 0,
           },
         }),
@@ -460,7 +496,7 @@ describeXContract('RealX', () => 2, { enabled: false });
       final report = parseDartTestEvents(output);
 
       expect(report.tests, {
-        'test/domain/a_test.dart': ['group first', 'group skipped'],
+        'test/core/domain/a_test.dart': ['group first', 'group skipped'],
       });
       expect(report.loadErrors, isEmpty);
     });
@@ -469,13 +505,13 @@ describeXContract('RealX', () => 2, { enabled: false });
       final output = [
         event({
           'type': 'suite',
-          'suite': {'id': 0, 'path': 'test/domain/a_test.dart'},
+          'suite': {'id': 0, 'path': 'test/core/domain/a_test.dart'},
         }),
         event({
           'type': 'testStart',
           'test': {
             'id': 1,
-            'name': 'loading test/domain/a_test.dart',
+            'name': 'loading test/core/domain/a_test.dart',
             'suiteID': 0,
           },
         }),
@@ -488,7 +524,7 @@ describeXContract('RealX', () => 2, { enabled: false });
       ].join('\n');
 
       expect(parseDartTestEvents(output).loadErrors, [
-        'test/domain/a_test.dart',
+        'test/core/domain/a_test.dart',
       ]);
     });
   });
@@ -500,7 +536,7 @@ describeXContract('RealX', () => 2, { enabled: false });
         ParityNote(file: file, test: test, reason: 'because');
 
     const rnFile = 'src/domain/shared/Result.test.ts';
-    const dartFile = 'test/domain/shared/result_test.dart';
+    const dartFile = 'test/core/domain/shared/result_test.dart';
 
     test('is fine when every scenario has a Dart test of the same name', () {
       final report = compareScenarios(
@@ -631,7 +667,7 @@ describeXContract('RealX', () => 2, { enabled: false });
     });
 
     test('checks the Dart files that no React Native file maps to', () {
-      const extraFile = 'test/domain/shared/trim_text_test.dart';
+      const extraFile = 'test/core/domain/shared/trim_text_test.dart';
       final unexplained = compareScenarios(
         rnTests: const {},
         dartTests: {
@@ -683,8 +719,8 @@ describeXContract('RealX', () => 2, { enabled: false });
           'src/domain/value-objects/Page.test.ts': [rnTest('b')],
         },
         dartTests: {
-          'test/domain/value_objects/page_test.dart': ['b'],
-          'test/domain/shared/other_test.dart': ['stranger'],
+          'test/core/domain/value_objects/page_test.dart': ['b'],
+          'test/core/domain/shared/other_test.dart': ['stranger'],
         },
         only: ['src/domain/value-objects'],
       );
@@ -719,7 +755,7 @@ describeXContract('RealX', () => 2, { enabled: false });
         },
         dartTests: {
           dartFile: ['a'],
-          'test/application/use_cases/auth/sign_in_test.dart': ['x'],
+          'test/features/auth/application/use_cases/sign_in_test.dart': ['x'],
         },
       );
 
@@ -727,7 +763,7 @@ describeXContract('RealX', () => 2, { enabled: false });
         renderReport(report),
         allOf(
           contains(
-            'FAIL 1/2  $useCase -> test/application/use_cases/auth/sign_in_test.dart',
+            'FAIL 1/2  $useCase -> test/features/auth/application/use_cases/sign_in_test.dart',
           ),
           contains('missing in Dart: y'),
           contains('ok   1/1  $rnFile -> $dartFile'),
@@ -740,7 +776,7 @@ describeXContract('RealX', () => 2, { enabled: false });
       expect(
         renderUseCaseTable(report),
         contains(
-          '| SignIn | `$useCase` | `test/application/use_cases/auth/sign_in_test.dart` '
+          '| SignIn | `$useCase` | `test/features/auth/application/use_cases/sign_in_test.dart` '
           '| 2 | 1 | 1 missing, 0 extra |',
         ),
       );
@@ -749,7 +785,7 @@ describeXContract('RealX', () => 2, { enabled: false });
 
   group('the command line', () {
     const rnTestPath = 'src/domain/shared/Result.test.ts';
-    const dartTestPath = 'test/domain/shared/result_test.dart';
+    const dartTestPath = 'test/core/domain/shared/result_test.dart';
 
     String events(Map<String, List<String>> tests) {
       final lines = <String>[];
@@ -874,7 +910,9 @@ describeXContract('RealX', () => 2, { enabled: false });
       final (code, out, _) = await run(
         ['--rn', rn.path, '--table', '--only', 'src/application'],
         {
-          'test/application/use_cases/auth/sign_in_test.dart': ['SignIn a'],
+          'test/features/auth/application/use_cases/sign_in_test.dart': [
+            'SignIn a',
+          ],
         },
       );
 
@@ -912,11 +950,19 @@ describeXContract('RealX', () => 2, { enabled: false });
       final (noRn, _, errNoRn) = await run([], {});
       final (notRn, _, errNotRn) = await run(['--rn', project.path], {});
       final (unknown, _, errUnknown) = await run(['--nope'], {});
+      final (twoFiles, _, errTwoFiles) = await run(
+        ['--rn', rn.path],
+        {
+          'test/features/a/domain/shared/result_test.dart': ['Result a'],
+          'test/features/b/domain/shared/result_test.dart': ['Result a'],
+        },
+      );
 
-      expect((noRn, notRn, unknown), (2, 2, 2));
+      expect((noRn, notRn, unknown, twoFiles), (2, 2, 2, 2));
       expect(errNoRn, contains('--rn is required'));
       expect(errNotRn, contains('not a checkout'));
       expect(errUnknown, contains('unknown option'));
+      expect(errTwoFiles, contains('several Dart test files'));
     });
   });
 }

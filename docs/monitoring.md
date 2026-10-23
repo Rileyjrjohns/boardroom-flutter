@@ -1,8 +1,8 @@
 # Monitoring
 
-The application reports what happens through the `Monitoring` port (`lib/application/ports/monitoring.dart`): `log` for an event and `captureError` for a failure, both fire and forget, both taking only the events and attribute names of the port. No message, no name, no email, no path and no URL ever goes through it.
+The application reports what happens through the `Monitoring` port (`lib/core/application/ports/monitoring.dart`): `log` for an event and `captureError` for a failure, both fire and forget, both taking only the events and attribute names of the port. No message, no name, no email, no path and no URL ever goes through it.
 
-Two adapters implement it in `lib/infrastructure/monitoring`:
+Two adapters implement it in `lib/core/infrastructure/monitoring`:
 
 | Adapter | Where it writes | State |
 | ------- | --------------- | ----- |
@@ -13,7 +13,7 @@ Neither adapter ever throws, whatever the console or the SDK does.
 
 ## What `SentryMonitoring` guarantees
 
-It is the same adapter as in the React Native app, with the same rules. They live in plain functions, tested on their own (`test/infrastructure/monitoring/sentry_monitoring_test.dart`):
+It is the same adapter as in the React Native app, with the same rules. They live in plain functions, tested on their own (`test/core/infrastructure/monitoring/sentry_monitoring_test.dart`):
 
 - `allowedAttributes`: only the attribute names of the port, only strings, numbers and booleans, texts cut at 200 characters.
 - `keepOwnBreadcrumb` (`beforeBreadcrumb`): the automatic breadcrumbs of the SDK (console, requests, taps) are dropped; ours keep their allowed data only.
@@ -24,8 +24,8 @@ The adapter does not import the SDK. It talks to the small interface `SentrySdk`
 
 ## How to turn it on
 
-1. Add the SDK to `pubspec.yaml`, with its one-line justification, and add its package name (`sentry_flutter`) to `adapterPackages` in `tool/check_imports.dart`, so that only `lib/infrastructure` can import it.
-2. Write the class that implements `SentrySdk` over the SDK, in `lib/infrastructure/monitoring/`. The scrubbing functions work on the JSON of the events, so the class converts at the edge:
+1. Add the SDK to `pubspec.yaml`, with its one-line justification, and add its package name (`sentry_flutter`) to `adapterPackages` in `tool/check_imports.dart`, so that only the infrastructure folders (`lib/core/infrastructure`, `lib/features/*/infrastructure`) and `lib/app` can import it, and no screen can.
+2. Write the class that implements `SentrySdk` over the SDK, in `lib/core/infrastructure/monitoring/`. The scrubbing functions work on the JSON of the events, so the class converts at the edge:
 
    ```dart
    final class SentryFlutterSdk implements SentrySdk {
@@ -52,7 +52,7 @@ The adapter does not import the SDK. It talks to the small interface `SentrySdk`
    ```
 
    The comment is a sketch: it is not compiled in this repository, which has no Sentry dependency.
-3. In the composition root (`lib/di`), read the address from the build (`--dart-define=SENTRY_DSN=...`, never from a file of the repository) and choose the adapter:
+3. In the composition root (`lib/app`), read the address from the build (`--dart-define=SENTRY_DSN=...`, never from a file of the repository) and choose the adapter:
 
    ```dart
    final created = createSentryMonitoring(dsn, SentryFlutterSdk());
