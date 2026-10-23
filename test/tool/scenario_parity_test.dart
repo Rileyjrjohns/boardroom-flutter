@@ -40,7 +40,7 @@ void main() {
 
   group('the names of the React Native tests', () {
     test('joins the titles of the describe calls and of the test', () {
-      writeRn('src/domain/a.test.ts', '''
+      writeRn('src/core/domain/a.test.ts', '''
 describe('Result', () => {
   it('builds', () => {});
   describe('map', () => {
@@ -51,7 +51,7 @@ describe('Result', () => {
 it('top level', () => {});
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         'Result builds',
         'Result map transforms',
         'Result map keeps a failure',
@@ -60,7 +60,7 @@ it('top level', () => {});
     });
 
     test('is not fooled by strings, comments, regular expressions', () {
-      writeRn('src/domain/a.test.ts', r'''
+      writeRn('src/core/domain/a.test.ts', r'''
 // it('commented out', () => {});
 /* describe('also commented', () => { it('x', () => {}); }); */
 describe('braces } and { in text', () => {
@@ -74,14 +74,14 @@ describe('braces } and { in text', () => {
 });
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         r"braces } and { in text quote ' and `tick` and ${'dollar'}",
         'braces } and { in text after the regex',
       ]);
     });
 
     test('computes template literals, concatenations and constants', () {
-      writeRn('src/domain/a.test.ts', r'''
+      writeRn('src/core/domain/a.test.ts', r'''
 const SIZE = 3;
 const NAME = 'list';
 describe(`the ${NAME} of ${SIZE * 2} items`, () => {
@@ -90,7 +90,7 @@ describe(`the ${NAME} of ${SIZE * 2} items`, () => {
 });
 ''');
 
-      final tests = extractTsTests('src/domain/a.test.ts', root: rn);
+      final tests = extractTsTests('src/core/domain/a.test.ts', root: rn);
 
       expect(tests.map((test) => test.displayName), [
         'the list of 6 items a b c3',
@@ -108,7 +108,7 @@ describe(`the ${NAME} of ${SIZE * 2} items`, () => {
     });
 
     test('marks the skipped and the todo tests, and keeps their names', () {
-      writeRn('src/domain/a.test.ts', '''
+      writeRn('src/core/domain/a.test.ts', '''
 describe.skip('all skipped', () => { it('one', () => {}); });
 describe('some', () => {
   it.skip('skipped', () => {});
@@ -119,7 +119,7 @@ describe('some', () => {
 });
 ''');
 
-      final tests = extractTsTests('src/domain/a.test.ts', root: rn);
+      final tests = extractTsTests('src/core/domain/a.test.ts', root: rn);
 
       expect(
         {for (final test in tests) test.displayName: test.skipped},
@@ -135,7 +135,7 @@ describe('some', () => {
     });
 
     test('expands it.each like jest-each: %s, %j, %p, %d, %i, %#, %%', () {
-      writeRn('src/domain/a.test.ts', r'''
+      writeRn('src/core/domain/a.test.ts', r'''
 describe('each', () => {
   it.each(['a', 'b'])('string %s', () => {});
   it.each(['', '\n\t', 'café', '\ud800'])('json %j', () => {});
@@ -152,7 +152,7 @@ describe('each', () => {
 });
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         'each string a',
         'each string b',
         'each json ""',
@@ -181,7 +181,7 @@ describe('each', () => {
     });
 
     test('expands describe.each and binds the parameters of its callback', () {
-      writeRn('src/domain/a.test.ts', r'''
+      writeRn('src/core/domain/a.test.ts', r'''
 const PARSERS = [
   ['user id', parseUserId, 'userId'],
   ['meeting id', parseMeetingId, 'meetingId'],
@@ -192,7 +192,7 @@ describe.each(PARSERS)('the %s', (name, parse, field) => {
 });
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         'the user id names userId for user id',
         'the user id rejects ""',
         'the user id rejects " "',
@@ -203,10 +203,10 @@ describe.each(PARSERS)('the %s', (name, parse, field) => {
     });
 
     test('follows Object.values and valuesOf into an imported constant', () {
-      writeRn('src/domain/Period.ts', '''
+      writeRn('src/core/domain/Period.ts', '''
 export const PERIOD = { Upcoming: 'upcoming', Past: 'past' } as const;
 ''');
-      writeRn('src/domain/a.test.ts', '''
+      writeRn('src/core/domain/a.test.ts', '''
 import { PERIOD } from './Period';
 import { valuesOf } from './shared/constants';
 
@@ -217,7 +217,7 @@ describe('Period', () => {
 });
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         'Period parses upcoming',
         'Period parses past',
         'Period lists upcoming',
@@ -229,21 +229,24 @@ describe('Period', () => {
     });
 
     test('resolves the aliases of the imports', () {
-      writeRn('src/domain/Period.ts', "export const PERIOD = ['a', 'b'];\n");
-      writeRn('src/application/a.test.ts', '''
-import { PERIOD } from '@domain/Period';
+      writeRn(
+        'src/core/domain/Period.ts',
+        "export const PERIOD = ['a', 'b'];\n",
+      );
+      writeRn('src/core/application/a.test.ts', '''
+import { PERIOD } from '@core/domain/Period';
 
 describe.each(PERIOD)('from %s', () => { it('works', () => {}); });
 ''');
 
-      expect(names('src/application/a.test.ts'), [
+      expect(names('src/core/application/a.test.ts'), [
         'from a works',
         'from b works',
       ]);
     });
 
     test('evaluates a function of the project whose body is one return', () {
-      writeRn('src/domain/errors.ts', '''
+      writeRn('src/core/domain/errors.ts', '''
 export const CODE = { Network: 'networkUnavailable', Other: 'unexpected' } as const;
 export function networkUnavailable() {
   return { code: CODE.Network };
@@ -252,13 +255,13 @@ export function unexpected(cause?: string) {
   return cause === undefined ? { code: CODE.Other } : { code: CODE.Other, cause };
 }
 ''');
-      writeRn('src/domain/a.test.ts', '''
+      writeRn('src/core/domain/a.test.ts', '''
 import { networkUnavailable, unexpected } from './errors';
 
 it.each([networkUnavailable(), unexpected(), unexpected('HTTP 500')])('rejects %p', () => {});
 ''');
 
-      expect(names('src/domain/a.test.ts'), [
+      expect(names('src/core/domain/a.test.ts'), [
         'rejects {"code": "networkUnavailable"}',
         'rejects {"code": "unexpected"}',
         'rejects {"cause": "HTTP 500", "code": "unexpected"}',
@@ -266,14 +269,14 @@ it.each([networkUnavailable(), unexpected(), unexpected('HTTP 500')])('rejects %
     });
 
     test('leaves a wildcard where it cannot compute a value', () {
-      writeRn('src/domain/a.test.ts', '''
+      writeRn('src/core/domain/a.test.ts', '''
 describe('unknown', () => {
   it.each([build(1), build(2)])('row %s', () => {});
   it.each(table())('rows of %s', () => {});
 });
 ''');
 
-      final tests = extractTsTests('src/domain/a.test.ts', root: rn);
+      final tests = extractTsTests('src/core/domain/a.test.ts', root: rn);
 
       expect(tests.map((test) => test.displayName), [
         'unknown row *',
@@ -286,7 +289,7 @@ describe('unknown', () => {
     test(
       'expands the contract suites a test file calls, with their arguments',
       () {
-        writeRn('src/application/testing/contracts/xContract.ts', r'''
+        writeRn('src/testing/application/contracts/xContract.ts', r'''
 export interface Options { readonly enabled: boolean }
 
 export function describeXContract(name: string, make: () => number, options: Options): void {
@@ -298,14 +301,14 @@ export function describeXContract(name: string, make: () => number, options: Opt
   });
 }
 ''');
-        writeRn('src/application/testing/a.contracts.test.ts', '''
+        writeRn('src/testing/application/a.contracts.test.ts', '''
 import { describeXContract } from './contracts/xContract';
 
 describeXContract('FakeX', () => 1, { enabled: true });
 describeXContract('RealX', () => 2, { enabled: false });
 ''');
 
-        expect(names('src/application/testing/a.contracts.test.ts'), [
+        expect(names('src/testing/application/a.contracts.test.ts'), [
           'FakeX honours the X contract does a thing',
           'FakeX honours the X contract the optional part does another',
           'RealX honours the X contract does a thing',
@@ -315,37 +318,50 @@ describeXContract('RealX', () => 2, { enabled: false });
     );
 
     test('returns nothing for a file that does not exist', () {
-      expect(names('src/domain/missing.test.ts'), isEmpty);
+      expect(names('src/core/domain/missing.test.ts'), isEmpty);
     });
   });
 
   group('the Dart file of a React Native test file', () {
     final cases = {
-      'src/domain/shared/Result.test.ts':
+      'src/core/domain/shared/Result.test.ts':
           'test/core/domain/shared/result_test.dart',
-      'src/domain/value-objects/EmailAddress.test.ts':
+      'src/features/auth/domain/value-objects/EmailAddress.test.ts':
           'test/features/auth/domain/value_objects/email_address_test.dart',
-      'src/domain/policies/appLock.test.ts':
+      'src/features/auth/domain/policies/appLock.test.ts':
           'test/features/auth/domain/policies/app_lock_test.dart',
-      'src/application/shared/appLock.test.ts':
+      'src/features/auth/application/session/AppLock.test.ts':
           'test/features/auth/application/session/app_lock_test.dart',
-      'src/application/use-cases/auth/SignIn.test.ts':
+      'src/features/auth/application/use-cases/SignIn.test.ts':
           'test/features/auth/application/use_cases/sign_in_test.dart',
-      'src/application/shared/ScreenProtectionCoordinator.test.ts':
+      'src/features/documents/application/ScreenProtectionCoordinator.test.ts':
           'test/features/documents/application/'
           'screen_protection_coordinator_test.dart',
-      'src/application/testing/fakes.contracts.test.ts':
+      'src/testing/application/fakes.contracts.test.ts':
           'test/support/fakes/fakes_contracts_test.dart',
-      'src/application/testing/fakes.test.ts':
+      'src/testing/application/fakes.test.ts':
           'test/support/fakes/fakes_test.dart',
-      'src/application/securityScenarios.test.ts':
+      'src/composition/glue/securityScenarios.test.ts':
           'test/core/application/security_scenarios_test.dart',
+      'src/composition/glue/domainLiterals.test.ts':
+          'test/core/domain/domain_literals_test.dart',
+      'src/composition/glue/retryableCodes.test.ts':
+          'test/app/composition/retryable_codes_test.dart',
+      'src/core/application/retryableCodes.test.ts':
+          'test/core/application/retryable_codes_test.dart',
+      'src/features/documents/application/retryableCodes.test.ts':
+          'test/features/documents/application/retryable_codes_test.dart',
+      'src/features/votes/domain/errors/errors.test.ts':
+          'test/features/votes/domain/errors/vote_errors_test.dart',
+      'src/features/auth/domain/errors/errors.test.ts':
+          'test/features/auth/domain/errors/auth_errors_test.dart',
+      'src/core/domain/errors/errors.test.ts':
+          'test/core/domain/errors/errors_test.dart',
     };
     final dartTestFiles = [
       ...cases.values,
       'test/core/domain/limits_test.dart',
-      'test/core/domain/literals_test.dart',
-      'test/core/application/literals_test.dart',
+      'test/core/domain/application_literals_test.dart',
     ];
 
     for (final MapEntry(key: rnPath, value: dartPath) in cases.entries) {
@@ -355,7 +371,10 @@ describeXContract('RealX', () => 2, { enabled: false });
     }
 
     test('is none for what is not a test of the domain or the application', () {
-      expect(dartTestPathFor('src/domain/shared/Result.ts', const []), isNull);
+      expect(
+        dartTestPathFor('src/core/domain/shared/Result.ts', const []),
+        isNull,
+      );
       expect(dartTestPathFor('src/infrastructure/x.test.ts', const []), isNull);
       expect(dartTestPathFor('tooling/spec.test.ts', const []), isNull);
     });
@@ -363,32 +382,62 @@ describeXContract('RealX', () => 2, { enabled: false });
     test('has a folder prefix for --only', () {
       const valueObject =
           'test/features/auth/domain/value_objects/email_address_test.dart';
+      const coreResult = 'test/core/domain/shared/result_test.dart';
       const fake = 'test/support/fakes/fakes_test.dart';
+      const glue = 'test/app/composition/error_codes_test.dart';
       const useCase = 'test/features/auth/application/use_cases/x_test.dart';
-      expect(dartFileMatchesPrefix(valueObject, 'src/domain'), isTrue);
+      expect(dartFileMatchesPrefix(valueObject, 'src/features'), isTrue);
+      expect(dartFileMatchesPrefix(valueObject, 'src/features/auth'), isTrue);
       expect(
-        dartFileMatchesPrefix(valueObject, 'src/domain/value-objects'),
+        dartFileMatchesPrefix(valueObject, 'src/features/auth/domain'),
         isTrue,
       );
-      expect(dartFileMatchesPrefix(valueObject, 'src/domain/shared'), isFalse);
-      expect(dartFileMatchesPrefix(valueObject, 'src/application'), isFalse);
-      expect(dartFileMatchesPrefix(fake, 'src/application'), isTrue);
-      expect(dartFileMatchesPrefix(fake, 'src/application/testing'), isTrue);
-      expect(dartFileMatchesPrefix(fake, 'src/domain'), isFalse);
-      expect(dartFileMatchesPrefix(useCase, 'src/application'), isTrue);
+      expect(
+        dartFileMatchesPrefix(
+          valueObject,
+          'src/features/auth/domain/value-objects',
+        ),
+        isTrue,
+      );
+      expect(dartFileMatchesPrefix(valueObject, 'src/features/votes'), isFalse);
+      expect(
+        dartFileMatchesPrefix(valueObject, 'src/features/auth/application'),
+        isFalse,
+      );
+      expect(dartFileMatchesPrefix(valueObject, 'src/core'), isFalse);
+      expect(dartFileMatchesPrefix(coreResult, 'src/core/domain'), isTrue);
+      expect(
+        dartFileMatchesPrefix(coreResult, 'src/core/domain/shared'),
+        isTrue,
+      );
+      expect(
+        dartFileMatchesPrefix(coreResult, 'src/core/application'),
+        isFalse,
+      );
+      expect(dartFileMatchesPrefix(fake, 'src/testing/application'), isTrue);
+      expect(dartFileMatchesPrefix(fake, 'src/testing'), isTrue);
+      expect(dartFileMatchesPrefix(fake, 'src/core'), isFalse);
+      expect(dartFileMatchesPrefix(glue, 'src/composition/glue'), isTrue);
+      expect(dartFileMatchesPrefix(glue, 'src/composition'), isTrue);
+      expect(dartFileMatchesPrefix(glue, 'src/composition/container'), isFalse);
+      expect(
+        dartFileMatchesPrefix(useCase, 'src/features/auth/application'),
+        isTrue,
+      );
       expect(dartFileMatchesPrefix(useCase, 'docs'), isFalse);
+      expect(dartFileMatchesPrefix(useCase, 'src/domain'), isFalse);
     });
 
     test('is a path that stands for the file when no file has the name', () {
       expect(
-        dartTestPathFor('src/domain/shared/Gone.test.ts', dartTestFiles),
+        dartTestPathFor('src/core/domain/shared/Gone.test.ts', dartTestFiles),
         'test/**/gone_test.dart',
       );
     });
 
     test('refuses to guess between files of the same name and layer', () {
       expect(
-        () => dartTestPathFor('src/domain/shared/Result.test.ts', [
+        () => dartTestPathFor('src/core/domain/shared/Result.test.ts', [
           'test/features/a/domain/result_test.dart',
           'test/features/b/domain/result_test.dart',
         ]),
@@ -411,6 +460,130 @@ describeXContract('RealX', () => 2, { enabled: false });
     });
   });
 
+  group('the React Native tests that are compared', () {
+    test('are the domain and application of the core and of the features, '
+        'the glue and the fakes', () {
+      expect(parityLayerOf('src/core/domain/shared/Result.test.ts'), 'domain');
+      expect(
+        parityLayerOf('src/core/application/retryableCodes.test.ts'),
+        'application',
+      );
+      expect(
+        parityLayerOf('src/features/votes/domain/withVoteRecorded.test.ts'),
+        'domain',
+      );
+      expect(
+        parityLayerOf('src/features/auth/application/session/x.test.ts'),
+        'application',
+      );
+      expect(
+        parityLayerOf('src/composition/glue/limits.test.ts'),
+        'application',
+      );
+      expect(
+        parityLayerOf('src/testing/application/fakes.test.ts'),
+        'application',
+      );
+    });
+
+    test('are not the infrastructure, the presentation, the rest of the '
+        'composition, nor the layer-first folders', () {
+      for (final path in [
+        'src/core/infrastructure/http/HttpClient.test.ts',
+        'src/features/auth/presentation/query/x.test.ts',
+        'src/features/auth/infrastructure/SessionVault.test.ts',
+        'src/composition/container/createContainer.test.ts',
+        'src/testing/infrastructure/x.test.ts',
+        'src/core/x.test.ts',
+        'src/domain/shared/Result.test.ts',
+        'src/application/use-cases/SignIn.test.ts',
+        'src/core/domain/shared/Result.ts',
+      ]) {
+        expect(parityLayerOf(path), isNull, reason: path);
+      }
+    });
+
+    test('are found in the folders of the feature-first layout', () {
+      for (final path in [
+        'src/core/domain/a.test.ts',
+        'src/features/auth/application/b.test.ts',
+        'src/composition/glue/c.test.ts',
+        'src/testing/application/d.test.ts',
+        'src/core/infrastructure/e.test.ts',
+        'src/features/auth/presentation/f.test.ts',
+        'src/composition/container/g.test.ts',
+        'src/domain/h.test.ts',
+        'src/core/domain/i.ts',
+      ]) {
+        writeRn(path, '');
+      }
+
+      expect(findRnTestFiles(rn), [
+        'src/composition/glue/c.test.ts',
+        'src/core/domain/a.test.ts',
+        'src/features/auth/application/b.test.ts',
+        'src/testing/application/d.test.ts',
+      ]);
+    });
+
+    test('are told from files of the same name by the part of the code that '
+        'owns them', () {
+      final dartTestFiles = [
+        'test/core/application/retryable_codes_test.dart',
+        'test/features/documents/application/retryable_codes_test.dart',
+        'test/app/composition/retryable_codes_test.dart',
+      ];
+      expect(
+        dartTestPathFor(
+          'src/core/application/retryableCodes.test.ts',
+          dartTestFiles,
+        ),
+        'test/core/application/retryable_codes_test.dart',
+      );
+      expect(
+        dartTestPathFor(
+          'src/features/documents/application/retryableCodes.test.ts',
+          dartTestFiles,
+        ),
+        'test/features/documents/application/retryable_codes_test.dart',
+      );
+      expect(
+        dartTestPathFor(
+          'src/composition/glue/retryableCodes.test.ts',
+          dartTestFiles,
+        ),
+        'test/app/composition/retryable_codes_test.dart',
+      );
+    });
+
+    test('have a Dart file of a name of their own when the name is shared', () {
+      final dartTestFiles = [
+        'test/core/domain/errors/errors_test.dart',
+        'test/features/auth/domain/errors/auth_errors_test.dart',
+        'test/features/documents/domain/errors/screen_protection_errors_test.dart',
+        'test/features/votes/domain/errors/vote_errors_test.dart',
+      ];
+      expect(
+        {
+          for (final feature in ['auth', 'documents', 'votes'])
+            feature: dartTestPathFor(
+              'src/features/$feature/domain/errors/errors.test.ts',
+              dartTestFiles,
+            ),
+        },
+        {
+          'auth': dartTestFiles[1],
+          'documents': dartTestFiles[2],
+          'votes': dartTestFiles[3],
+        },
+      );
+      expect(
+        dartTestPathFor('src/core/domain/errors/errors.test.ts', dartTestFiles),
+        dartTestFiles[0],
+      );
+    });
+  });
+
   group('the notes of docs/parity', () {
     test('reads the rows of a table', () {
       final notes = parseParityNotes(r'''
@@ -418,18 +591,18 @@ describeXContract('RealX', () => 2, { enabled: false });
 
 | File | Test | Reason |
 | ---- | ---- | ------ |
-| `src/domain/a.test.ts` | `a b c` | type level |
-| `src/domain/a.test.ts` | `has \| a bar` | one more |
-| `src/domain/a.test.ts` | ``has a ` tick`` | with a backtick |
+| `src/core/domain/a.test.ts` | `a b c` | type level |
+| `src/core/domain/a.test.ts` | `has \| a bar` | one more |
+| `src/core/domain/a.test.ts` | ``has a ` tick`` | with a backtick |
 | not a row | ignored | ignored |
 ''');
 
       expect(
         [for (final note in notes) (note.file, note.test, note.reason)],
         [
-          ('src/domain/a.test.ts', 'a b c', 'type level'),
-          ('src/domain/a.test.ts', 'has | a bar', 'one more'),
-          ('src/domain/a.test.ts', 'has a ` tick', 'with a backtick'),
+          ('src/core/domain/a.test.ts', 'a b c', 'type level'),
+          ('src/core/domain/a.test.ts', 'has | a bar', 'one more'),
+          ('src/core/domain/a.test.ts', 'has a ` tick', 'with a backtick'),
         ],
       );
     });
@@ -535,7 +708,7 @@ describeXContract('RealX', () => 2, { enabled: false });
     ParityNote note(String file, String test) =>
         ParityNote(file: file, test: test, reason: 'because');
 
-    const rnFile = 'src/domain/shared/Result.test.ts';
+    const rnFile = 'src/core/domain/shared/Result.test.ts';
     const dartFile = 'test/core/domain/shared/result_test.dart';
 
     test('is fine when every scenario has a Dart test of the same name', () {
@@ -716,23 +889,23 @@ describeXContract('RealX', () => 2, { enabled: false });
       final report = compareScenarios(
         rnTests: {
           rnFile: [rnTest('a')],
-          'src/domain/value-objects/Page.test.ts': [rnTest('b')],
+          'src/core/domain/value-objects/Page.test.ts': [rnTest('b')],
         },
         dartTests: {
           'test/core/domain/value_objects/page_test.dart': ['b'],
           'test/core/domain/shared/other_test.dart': ['stranger'],
         },
-        only: ['src/domain/value-objects'],
+        only: ['src/core/domain/value-objects'],
       );
 
       expect(report.ok, isTrue);
       expect(report.files.map((file) => file.rnFile), [
-        'src/domain/value-objects/Page.test.ts',
+        'src/core/domain/value-objects/Page.test.ts',
       ]);
     });
 
     group('with a React Native file split over several Dart files', () {
-      const meetingFile = 'src/domain/entities/Meeting.test.ts';
+      const meetingFile = 'src/core/domain/entities/Meeting.test.ts';
       const meetingDart =
           'test/features/meetings/domain/entities/'
           'meeting_test.dart';
@@ -841,8 +1014,14 @@ describeXContract('RealX', () => 2, { enabled: false });
         expect(report.files, hasLength(1));
       });
 
-      test('declares the split of Meeting.test.ts for the real tool', () {
-        expect(splitScenarioFiles.keys, contains(meetingFile));
+      test('declares no split for the real tool, the files of the errors '
+          'have a name of their own', () {
+        expect(splitScenarioFiles, isEmpty);
+        expect(
+          dartFileNames.values,
+          everyElement(endsWith('_errors_test.dart')),
+        );
+        expect(dartFileNames, hasLength(3));
       });
     });
 
@@ -862,7 +1041,7 @@ describeXContract('RealX', () => 2, { enabled: false });
     });
 
     test('writes the report and the table of the use cases', () {
-      const useCase = 'src/application/use-cases/auth/SignIn.test.ts';
+      const useCase = 'src/core/application/use-cases/auth/SignIn.test.ts';
       final report = compareScenarios(
         rnTests: {
           rnFile: [rnTest('a')],
@@ -899,7 +1078,7 @@ describeXContract('RealX', () => 2, { enabled: false });
   });
 
   group('the command line', () {
-    const rnTestPath = 'src/domain/shared/Result.test.ts';
+    const rnTestPath = 'src/core/domain/shared/Result.test.ts';
     const dartTestPath = 'test/core/domain/shared/result_test.dart';
 
     String events(Map<String, List<String>> tests) {
@@ -972,18 +1151,18 @@ describeXContract('RealX', () => 2, { enabled: false });
 
     test('exits with 1 on a difference, and honours --only', () async {
       writeRn(
-        'src/domain/value-objects/Page.test.ts',
+        'src/core/domain/value-objects/Page.test.ts',
         "it('page', () => {});\n",
       );
 
       final (code, out, _) = await run(
-        ['--rn', rn.path, '--only', 'src/domain/shared'],
+        ['--rn', rn.path, '--only', 'src/core/domain/shared'],
         {
           dartTestPath: ['Result b'],
         },
       );
       final (codeOther, outOther, _) = await run(
-        ['--rn', rn.path, '--only', 'src/domain/shared'],
+        ['--rn', rn.path, '--only', 'src/core/domain/shared'],
         {
           dartTestPath: ['Result a'],
         },
@@ -1018,12 +1197,12 @@ describeXContract('RealX', () => 2, { enabled: false });
 
     test('prints the table of the use cases', () async {
       writeRn(
-        'src/application/use-cases/auth/SignIn.test.ts',
+        'src/core/application/use-cases/auth/SignIn.test.ts',
         "describe('SignIn', () => { it('a', () => {}); });\n",
       );
 
       final (code, out, _) = await run(
-        ['--rn', rn.path, '--table', '--only', 'src/application'],
+        ['--rn', rn.path, '--table', '--only', 'src/core/application'],
         {
           'test/features/auth/application/use_cases/sign_in_test.dart': [
             'SignIn a',

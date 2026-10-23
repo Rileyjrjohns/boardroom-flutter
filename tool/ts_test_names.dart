@@ -74,11 +74,10 @@ List<TsTest> extractTsTests(
   String path, {
   required Directory root,
   Map<String, String> aliases = const {
-    '@domain/': 'src/domain/',
-    '@application/': 'src/application/',
-    '@infrastructure/': 'src/infrastructure/',
-    '@presentation/': 'src/presentation/',
-    '@di/': 'src/di/',
+    '@core/': 'src/core/',
+    '@features/': 'src/features/',
+    '@composition/': 'src/composition/',
+    '@testing/': 'src/testing/',
   },
 }) {
   final project = _Project(root, aliases);

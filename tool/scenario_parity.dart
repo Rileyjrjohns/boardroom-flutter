@@ -4,19 +4,20 @@
 // The showcase says that a well-made hexagonal architecture makes the domain
 // portable. The proof is that the Dart domain and application pass the same
 // scenarios as the TypeScript ones. This script lists the tests of the React
-// Native repository (src/domain and src/application, the *.test.ts files),
-// maps each file to its Dart test file (the one file of the pure Dart test
-// folders, test/core, test/features/*, test/app/composition and test/support,
-// that has the snake case
-// name of the React Native one, see dartTestPathFor), lists the tests that
+// Native repository (the feature-first layout: the domain and application
+// folders of src/core and of src/features/*, src/composition/glue and
+// src/testing/application, the *.test.ts files), maps each file to its Dart test
+// file (the one file of the pure Dart test folders, test/core, test/features/*,
+// test/app/composition and test/support, that has the snake case name of the
+// React Native one, see dartTestPathFor), lists the tests that
 // `dart test` reports for the Dart files, and compares the full names of the
 // two sides: a scenario of the React Native repository that has no Dart test of
 // the same name is a gap, and a Dart test with no React Native counterpart is
 // an extra that must be explained.
 //
 //   dart run tool/scenario_parity.dart --rn ../boardroom
-//   dart run tool/scenario_parity.dart --rn ../boardroom --only src/domain/shared
-//   dart run tool/scenario_parity.dart --rn ../boardroom --only src/application/use-cases --table
+//   dart run tool/scenario_parity.dart --rn ../boardroom --only src/core/domain/shared
+//   dart run tool/scenario_parity.dart --rn ../boardroom --only src/features/votes/application/use-cases --table
 //
 // What is compared, and how the names are formed, is written in docs/porting.md
 // ("Tests"). The differences that are on purpose are written in
@@ -26,7 +27,8 @@
 // Options:
 //   --rn <path>          the checkout of the React Native repository (required)
 //   --only <prefix>      only the React Native test files whose path starts
-//                        with the prefix, for example src/domain/value-objects
+//                        with the prefix, for example
+//                        src/core/domain/value-objects
 //                        (repeatable)
 //   --table              print the parity table of the use cases (Markdown)
 //   --rn-names <file>    read the React Native names from the JSON that
@@ -44,18 +46,19 @@ import 'package:path/path.dart' as p;
 
 import 'ts_test_names.dart';
 
-/// Folders of the React Native repository whose tests are compared.
-const List<String> rnTestFolders = ['src/domain', 'src/application'];
+/// The glue between features of the React Native composition; its pure tests
+/// count as the application.
+const String rnGlueFolder = 'src/composition/glue';
+
+/// The tests of the React Native fakes and contracts, which count as the
+/// application; their Dart counterpart is `support`.
+const String rnTestingFolder = 'src/testing/application';
 
 /// Suffix of a React Native test file.
 const String rnTestSuffix = '.test.ts';
 
 /// Suffix of a Dart test file.
 const String dartTestSuffix = '_test.dart';
-
-/// Folder of the React Native test support (fakes, builders, contracts); its
-/// Dart counterpart is `support`.
-const String rnSupportFolder = 'testing';
 
 /// Dart name of the support folder.
 const String dartSupportFolder = 'support';
@@ -67,8 +70,9 @@ const String dartTestFolder = 'test';
 /// are also the names of the layer folders of the Dart core and features.
 const List<String> parityLayers = ['domain', 'application'];
 
-/// The layer whose React Native tests are kept beside the Dart support code:
-/// the fakes and their tests are in [dartSupportFolder].
+/// The layer whose React Native tests are kept beside the Dart support code
+/// and the Dart glue: the fakes and their tests are in [dartSupportFolder], the
+/// glue between features in [dartCompositionFolder].
 const String supportLayer = 'application';
 
 /// Folder of the Dart core, under [dartTestFolder].
@@ -121,65 +125,69 @@ class SplitPart {
   bool takes(String name) => scenarioPrefixes.any(name.startsWith);
 }
 
+/// The React Native test files whose Dart counterpart does not have the snake
+/// case name of the React Native file, because several files share a name
+/// (`errors.test.ts` is in the core and in three features).
+const Map<String, String> dartFileNames = {
+  'src/features/auth/domain/errors/errors.test.ts': 'auth_errors_test.dart',
+  'src/features/documents/domain/errors/errors.test.ts':
+      'screen_protection_errors_test.dart',
+  'src/features/votes/domain/errors/errors.test.ts': 'vote_errors_test.dart',
+};
+
 /// The React Native test files whose scenarios are in several Dart test files,
 /// because the code they test is not in one module of the Dart port. The
 /// scenarios named by a [SplitPart] are expected in its Dart file, and all the
 /// others in the file the name of the React Native file gives, as for any other
 /// file. Every entry is a deviation from the React Native structure, written in
 /// docs/parity/open-questions.md.
-///
-/// - `Meeting.test.ts` tests `withVoteRecorded` with the meeting. In Dart the
-///   function belongs to the votes, which depend on the meetings and not the
-///   other way round, so its scenarios are in the votes.
-/// - `errors.test.ts` tests the errors of every family. In Dart each family is
-///   in the feature that owns it (the core keeps the repository, storage and
-///   validation errors), so its scenarios are in that feature, and the one
-///   about the codes of every family is in the composition, the only place that
-///   sees them all.
-const Map<String, List<SplitPart>> splitScenarioFiles = {
-  'src/domain/entities/Meeting.test.ts': [
-    SplitPart(
-      dartFileName: 'with_vote_recorded_test.dart',
-      scenarioPrefixes: ['withVoteRecorded '],
-    ),
-  ],
-  'src/domain/errors/errors.test.ts': [
-    SplitPart(
-      dartFileName: 'error_codes_test.dart',
-      scenarioPrefixes: ['error codes '],
-    ),
-    SplitPart(
-      dartFileName: 'auth_errors_test.dart',
-      scenarioPrefixes: [
-        'error factories build the authentication errors',
-        'error factories build the biometric errors',
-      ],
-    ),
-    SplitPart(
-      dartFileName: 'screen_protection_errors_test.dart',
-      scenarioPrefixes: ['error factories build the screen protection errors'],
-    ),
-    SplitPart(
-      dartFileName: 'vote_errors_test.dart',
-      scenarioPrefixes: ['vote delivery errors ', 'isVotingError '],
-    ),
-  ],
-};
+const Map<String, List<SplitPart>> splitScenarioFiles = {};
 
 /// The layer (`domain` or `application`) of the React Native test file
 /// [rnTestPath] (relative to the React Native repository), or null when the
-/// path is not one of a test of the domain or of the application.
+/// path is not one of a pure test that is compared. The tests of the glue and
+/// of the fakes count as the application.
 String? parityLayerOf(String rnTestPath) {
   if (!rnTestPath.endsWith(rnTestSuffix)) {
     return null;
   }
+  if (rnTestPath.startsWith('$rnGlueFolder/') ||
+      rnTestPath.startsWith('$rnTestingFolder/')) {
+    return supportLayer;
+  }
   final segments = rnTestPath.split('/');
-  if (segments.length < 3 ||
-      segments.first != 'src' ||
-      !parityLayers.contains(segments[1])) {
+  final layerIndex = switch (segments.length > 1 ? segments[1] : '') {
+    'core' => 2,
+    'features' => 3,
+    _ => -1,
+  };
+  if (segments.first != 'src' ||
+      layerIndex < 0 ||
+      segments.length < layerIndex + 2 ||
+      !parityLayers.contains(segments[layerIndex])) {
     return null;
   }
-  return segments[1];
+  return segments[layerIndex];
+}
+
+/// The part of the code that owns the React Native test file: `core` or the
+/// name of the feature; `composition` for the glue and `support` for the
+/// fakes, the names of the Dart folders that hold them.
+String? parityScopeOf(String rnTestPath) {
+  if (rnTestPath.startsWith('$rnGlueFolder/')) {
+    return 'composition';
+  }
+  if (rnTestPath.startsWith('$rnTestingFolder/')) {
+    return dartSupportFolder;
+  }
+  final segments = rnTestPath.split('/');
+  if (segments.length > 2 && segments[1] == 'core') {
+    return 'core';
+  }
+  if (segments.length > 3 && segments[1] == 'features') {
+    return segments[2];
+  }
+  return null;
 }
 
 /// The Dart path of the test file that stands for the React Native test file
@@ -189,12 +197,14 @@ String? parityLayerOf(String rnTestPath) {
 /// It is the file of [dartTestFiles] (project-relative paths with `/`, the
 /// Dart tests that are compared) whose name is the snake case of the name of
 /// the React Native one: `src/domain/value-objects/EmailAddress.test.ts` is
-/// `email_address_test.dart`, `src/application/testing/fakes.contracts.test.ts`
-/// is `fakes_contracts_test.dart`. Two files may have the same name in two
-/// layers (`app_lock_test.dart` tests a policy of the domain and a function of
-/// the application): then the file in a folder named after the layer of the
-/// React Native one is meant. When no file has the name, the result is
-/// `test/**/<name>`, a path that stands for the missing file in the report.
+/// `email_address_test.dart`, `src/testing/application/fakes.contracts.test.ts`
+/// is `fakes_contracts_test.dart` ([dartFileNames] lists the exceptions). Two
+/// files may have the same name in two layers (`app_lock_test.dart` tests a
+/// policy of the domain and a function of the application) or in two parts of
+/// the code: then the file in a folder named after the part (`core` or the
+/// feature) and the layer of the React Native one is meant. When no file has
+/// the name, the result is `test/**/<name>`, a path that stands for the
+/// missing file in the report.
 ///
 /// Throws a [FormatException] when several files are still possible: the
 /// comparison would be a guess.
@@ -205,20 +215,29 @@ String? dartTestPathFor(String rnTestPath, Iterable<String> dartTestFiles) {
   }
   final fileName = p.posix.basename(rnTestPath);
   final stem = fileName.substring(0, fileName.length - rnTestSuffix.length);
-  final dartName = '${snakeCase(stem)}$dartTestSuffix';
-  return _dartPathNamed(dartName, layer, dartTestFiles, rnTestPath);
+  final dartName =
+      dartFileNames[rnTestPath] ?? '${snakeCase(stem)}$dartTestSuffix';
+  return _dartPathNamed(
+    dartName,
+    layer,
+    dartTestFiles,
+    rnTestPath,
+    scope: parityScopeOf(rnTestPath),
+  );
 }
 
 /// The Dart file named [dartName] among [dartTestFiles], the one in a folder
 /// named after [layer] when two files share the name; `test/**/<name>` when
-/// there is none. Throws a [FormatException] (with [what] in the message) when
-/// the choice is a guess.
+/// there is none; the files in a folder named [scope] (`core` or a feature)
+/// are looked at first. Throws a [FormatException] (with [what] in the
+/// message) when the choice is a guess.
 String _dartPathNamed(
   String dartName,
   String layer,
   Iterable<String> dartTestFiles,
-  String what,
-) {
+  String what, {
+  String? scope,
+}) {
   final named = {
     for (final file in dartTestFiles)
       if (p.posix.basename(file) == dartName) file,
@@ -229,8 +248,16 @@ String _dartPathNamed(
   if (named.length == 1) {
     return named.single;
   }
-  final inLayer = [
+  final inScope = [
     for (final file in named)
+      if (scope != null && p.posix.dirname(file).split('/').contains(scope))
+        file,
+  ];
+  if (inScope.length == 1) {
+    return inScope.single;
+  }
+  final inLayer = [
+    for (final file in inScope.isEmpty ? named : inScope)
       if (p.posix.dirname(file).split('/').contains(layer)) file,
   ];
   if (inLayer.length == 1) {
@@ -242,52 +269,52 @@ String _dartPathNamed(
   );
 }
 
-String _dartSegment(String segment) =>
-    segment == rnSupportFolder ? dartSupportFolder : snakeCase(segment);
+/// The folder of the Dart tests that the React Native path prefix [rnPrefix]
+/// (the value of `--only`) stands for, as segments under `test`, or null when
+/// the prefix is not one of a compared folder.
+///
+/// `src/core/domain/value-objects` is `core/domain/value_objects`,
+/// `src/features/auth` is `features/auth`, `src/composition/glue` is
+/// `app/composition` and `src/testing/application` is `support`. Each segment
+/// is in snake case.
+List<String>? _dartFolderOfPrefix(String rnPrefix) {
+  final segments = rnPrefix.split('/').where((s) => s.isNotEmpty).toList();
+  if (segments.length < 2 || segments.first != 'src') {
+    return null;
+  }
+  final rest = [for (final segment in segments.skip(2)) snakeCase(segment)];
+  switch (segments[1]) {
+    case 'core':
+      return [dartCoreFolder, ...rest];
+    case 'features':
+      return [dartFeaturesFolder, ...rest];
+    case 'composition':
+      return rest.isEmpty || rest.first == 'glue'
+          ? dartCompositionFolder.split('/')
+          : null;
+    case 'testing':
+      return rest.isEmpty || rest.first == supportLayer
+          ? [dartSupportFolder]
+          : null;
+  }
+  return null;
+}
 
 /// Whether the Dart test file [dartFile] is in the folder that the React
 /// Native path prefix [rnPrefix] (the value of `--only`) stands for, to find
-/// the Dart-only files of a folder.
-///
-/// The prefix `src/<layer>` stands for the files in a folder named after the
-/// layer (`test/features/auth/domain/...`, `test/core/application/...`); the
-/// fakes and their tests are in `test/support`, which counts as the
-/// application. Each further segment of the prefix, in snake case with
-/// `testing` as `support`, must appear in the path of the file, one after the
-/// other: `src/domain/value-objects` stands for the files in a folder
-/// `domain/value_objects`, `src/application/testing` for the files in
-/// `test/support`.
+/// the Dart-only files of a folder (see [_dartFolderOfPrefix]).
 bool dartFileMatchesPrefix(String dartFile, String rnPrefix) {
-  final segments = rnPrefix.split('/').where((s) => s.isNotEmpty).toList();
-  if (segments.length < 2 ||
-      segments.first != 'src' ||
-      !parityLayers.contains(segments[1])) {
+  final wanted = _dartFolderOfPrefix(rnPrefix);
+  if (wanted == null) {
     return false;
   }
-  final layer = segments[1];
   final folders = p.posix.dirname(dartFile).split('/');
-  final inSupport =
-      layer == supportLayer &&
-      (folders.contains(dartSupportFolder) ||
-          p.posix
-              .dirname(dartFile)
-              .startsWith('$dartTestFolder/$dartCompositionFolder'));
-  if (!folders.contains(layer) && !inSupport) {
+  if (folders.first != dartTestFolder) {
     return false;
   }
-  final wanted = [
-    for (final segment in segments.skip(2)) _dartSegment(segment),
-  ];
-  if (wanted.isEmpty) {
-    return true;
-  }
-  for (var start = 0; start + wanted.length <= folders.length; start++) {
-    if (folders.sublist(start, start + wanted.length).join('/') ==
-        wanted.join('/')) {
-      return true;
-    }
-  }
-  return false;
+  final under = folders.skip(1).toList();
+  return under.length >= wanted.length &&
+      under.sublist(0, wanted.length).join('/') == wanted.join('/');
 }
 
 /// `FooBar` and `fooBar` are `foo_bar`, `use-cases` is `use_cases`,
@@ -839,20 +866,24 @@ String renderUseCaseTable(ParityReport report) {
   return out.toString();
 }
 
-/// The React Native test files under [rnRoot] (relative paths with `/`).
+/// The React Native test files under [rnRoot] that are compared (relative paths
+/// with `/`): the domain and application tests of the core and of the
+/// features, the glue and the tests of the fakes.
 List<String> findRnTestFiles(Directory rnRoot) {
   final files = <String>[];
-  for (final folder in rnTestFolders) {
-    final directory = Directory(p.join(rnRoot.path, folder));
-    if (!directory.existsSync()) {
+  final directory = Directory(p.join(rnRoot.path, 'src'));
+  if (!directory.existsSync()) {
+    return files;
+  }
+  for (final entity in directory.listSync(recursive: true)) {
+    if (entity is! File) {
       continue;
     }
-    for (final entity in directory.listSync(recursive: true)) {
-      if (entity is File && entity.path.endsWith(rnTestSuffix)) {
-        files.add(
-          p.posix.joinAll(p.split(p.relative(entity.path, from: rnRoot.path))),
-        );
-      }
+    final relative = p.posix.joinAll(
+      p.split(p.relative(entity.path, from: rnRoot.path)),
+    );
+    if (parityLayerOf(relative) != null) {
+      files.add(relative);
     }
   }
   return files..sort();
@@ -964,12 +995,14 @@ Usage: dart run tool/scenario_parity.dart --rn <react-native-repo> [options]
 
   --rn <path>          the checkout of the React Native repository (required)
   --only <prefix>      only the React Native test files under the prefix, for
-                       example src/domain/shared (repeatable)
+                       example src/core/domain/shared (repeatable)
   --table              print the parity table of the use cases (Markdown)
   --rn-names <file>    read the React Native names from `jest --json` output
   --dart-names <file>  read the Dart names from `dart test --reporter json`
   --root <path>        the Flutter project (default: the current directory)
 
+The React Native tests are those of src/core and src/features/* (domain and
+application), src/composition/glue and src/testing/application.
 The Dart tests are those of the pure folders: test/core/{domain,application},
 test/features/*/{domain,application}, test/app/composition and
 test/support/{builders,contracts,fakes}.
