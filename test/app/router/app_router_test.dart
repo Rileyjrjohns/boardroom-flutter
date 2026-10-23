@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../support/builders/builders.dart';
 import '../../support/presentation/fake_demo_network.dart';
 import '../../support/presentation/test_app.dart';
 
@@ -24,6 +25,20 @@ String? _redirect(Access access, String location, {bool demo = false}) =>
 
 Finder _inHeader(String title) =>
     find.descendant(of: find.byType(AppBar), matching: find.text(title));
+
+/// An app whose server holds the meeting `m1`, so that its screen is the
+/// meeting and not the "not found" message.
+TestApp _appWithMeeting() => TestApp()
+  ..fakes.meetings.addMeeting(
+    aMeeting(summary: aMeetingSummary(id: aMeetingId('m1'))),
+  );
+
+/// The queries keep timers: the tree is emptied and the container disposed
+/// before the test ends.
+Future<void> _endApp(WidgetTester tester, ProviderContainer providers) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  providers.dispose();
+}
 
 void main() {
   group('redirectOf', () {
@@ -157,7 +172,11 @@ void main() {
     testWidgets('mounts the four screens of the open app by their paths', (
       tester,
     ) async {
-      final (_, router) = await pump(tester, access: Access.unlocked);
+      final (providers, router) = await pump(
+        tester,
+        access: Access.unlocked,
+        app: _appWithMeeting(),
+      );
 
       router.go('/meetings/m1');
       await tester.pumpAndSettle();
@@ -170,13 +189,18 @@ void main() {
       router.go(AppRoutes.pendingVotes.path);
       await tester.pumpAndSettle();
       expect(byTestId(VotesTestIds.pendingVotesScreen), findsOneWidget);
+      await _endApp(tester, providers);
     });
 
     testWidgets('removes the screens of the open app, history included, '
         'when the session ends, and starts anew when the user is back', (
       tester,
     ) async {
-      final (providers, router) = await pump(tester, access: Access.unlocked);
+      final (providers, router) = await pump(
+        tester,
+        access: Access.unlocked,
+        app: _appWithMeeting(),
+      );
       unawaited(router.push('/meetings/m1'));
       await tester.pumpAndSettle();
       expect(byTestId(MeetingsTestIds.meetingDetail), findsOneWidget);
@@ -194,6 +218,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(byTestId(MeetingsTestIds.meetingsList), findsOneWidget);
       expect(router.canPop(), isFalse);
+      await _endApp(tester, providers);
     });
 
     testWidgets('does not open a protected link while signed out', (
