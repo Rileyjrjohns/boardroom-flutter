@@ -6,7 +6,7 @@ Board meetings, documents and votes: the Flutter port of Boardroom, built to sho
 
 Port of [Boardroom (React Native)](https://github.com/Rileyjrjohns/boardroom) with the same domain. Both apps follow the same specification, kept in [`docs/spec`](docs/spec).
 
-Status: step 2 of 8, domain and application. The app still shows a placeholder screen; the domain and the use cases are being translated from the specification and the React Native code, and the adapters and the screens come in the next steps. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md).
+Status: step 3 of 8, infrastructure, done. The app still shows a placeholder screen; the domain and the application are translated, and the adapters are written and tested (dio against the fixtures, the encrypted drift database, secure storage, biometrics, connectivity, monitoring), but nothing wires them yet: the screen protection plugin (step 4), the screens and the providers come in the next steps. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md); the infrastructure is mapped in [`docs/parity/infrastructure.md`](docs/parity/infrastructure.md).
 
 ## Requirements
 
@@ -17,7 +17,7 @@ Status: step 2 of 8, domain and application. The app still shows a placeholder s
 
 ```sh
 flutter pub get      # installs the dependencies and generates the localization classes
-dart run build_runner build   # generates the freezed classes of the domain
+dart run build_runner build   # generates the freezed classes and the JSON code of the DTOs
 flutter gen-l10n     # regenerates the localization classes by hand (after editing an ARB file)
 flutter run          # runs the app on a connected device or emulator
 flutter test         # runs all the tests
@@ -31,14 +31,14 @@ Generated files are never committed. They are rebuilt with:
 | What                                   | Command                                                    | Output                          |
 | -------------------------------------- | ---------------------------------------------------------- | ------------------------------- |
 | Localization classes (`AppLocalizations`) | `flutter gen-l10n` (also run by `flutter pub get`)       | `lib/l10n/app_localizations*.dart` |
-| Freezed and JSON code                  | `dart run build_runner build` | `*.freezed.dart`, `*.g.dart`    |
+| Freezed, JSON and drift code           | `dart run build_runner build` | `*.freezed.dart`, `*.g.dart`    |
 
 `flutter test` and `flutter analyze` do not regenerate the localization classes on their own: after a fresh clone, run `flutter pub get` first. The same goes for the freezed classes (the entities and value data of `lib/domain`): after a fresh clone, and after any change to a class annotated with `@freezed`, run `dart run build_runner build`, or `dart test` and `flutter analyze` fail on the missing `*.freezed.dart`. CI runs it before the analysis and the tests.
 The texts live in `lib/l10n/app_en.arb` (English, the template and the fallback) and `lib/l10n/app_fr.arb` (French).
 
 ## Checks
 
-[CI](.github/workflows/ci.yml) runs three jobs on every pull request and on every push to `main`. Run the same commands locally, from the root of the repository, after `flutter pub get` (and, for the last two jobs, `dart run build_runner build`).
+[CI](.github/workflows/ci.yml) runs three jobs on every pull request and on every push to `main`. Run the same commands locally, from the root of the repository, after `flutter pub get` (and, for the last two jobs, `dart run build_runner build`). The tests of `test/infrastructure` run in their own step (`flutter test test/infrastructure`) and again in the step `flutter test --coverage`: those that import Flutter or a plugin cannot run under `dart test`.
 
 **Import rules** (job `Import rules`): a file may only import what its layer allows (see [Layers](#layers)).
 
@@ -53,6 +53,7 @@ dart run build_runner build   # the freezed classes, needed by the analysis and 
 dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos --fatal-warnings
 dart test test/domain test/application test/tool   # pure Dart tests, no Flutter
+flutter test test/infrastructure         # the adapters: dio on the fixtures, drift, encrypted SQLite
 dart run tool/coverage_helper.dart       # writes test/coverage_helper_test.dart (ignored by Git)
 flutter test --coverage                  # all the tests, writes coverage/lcov.info
 dart run tool/coverage_gate.dart         # prints the coverage table, fails under a threshold
@@ -81,6 +82,14 @@ The script reads the test sources of `src/domain` and `src/application`, expands
 
 The lint rules are those of `very_good_analysis` with `strict-casts`, `strict-inference` and `strict-raw-types`.
 
+## Native libraries
+
+The local database is encrypted at rest, with SQLCipher parameters and a key kept in the secure storage of the device, as in the React Native app. The library comes from the build hook of `package:sqlite3`, which `pubspec.yaml` asks for SQLite3MultipleCiphers (`hooks.user_defines.sqlite3.source: sqlite3mc`): the first build, test run or `dart run` downloads the prebuilt library for the platform (the download is checked against a hash that the package holds), so a developer or a CI runner installs nothing. `test/infrastructure/persistence/encrypted_sqlite_test.dart` opens an encrypted file on the machine that runs the tests, which proves the library encrypts. A database in memory takes no key, so tests that use one are plain.
+
+## Monitoring
+
+`ConsoleMonitoring` is the adapter in use. `SentryMonitoring` is written and tested but disabled, with no Sentry dependency; [`docs/monitoring.md`](docs/monitoring.md) says how to turn it on.
+
 ## Layers
 
 | Folder                | Role                                              | May import                          |
@@ -93,4 +102,4 @@ The lint rules are those of `very_good_analysis` with `strict-casts`, `strict-in
 
 Each folder has a `README.md` with the details.
 
-`presentation` and `di` also never import the packages behind the adapters (dio, drift, flutter_secure_storage, local_auth, screen_protection, sqlite3), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this.
+`presentation` and `di` also never import the packages behind the adapters (connectivity_plus, dio, drift, flutter_secure_storage, local_auth, path_provider, screen_protection, sqlite3), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this.
