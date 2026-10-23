@@ -1,14 +1,14 @@
 import 'dart:io';
 
+import 'package:boardroom/app/device/create_device_platform.dart';
 import 'package:boardroom/core/infrastructure/connectivity/connectivity_plus_network_state.dart';
-import 'package:boardroom/core/infrastructure/device/create_device_platform.dart';
 import 'package:boardroom/core/infrastructure/persistence/random_key.dart';
 import 'package:boardroom/core/infrastructure/persistence/sqlite3_opener.dart';
 import 'package:boardroom/core/infrastructure/secure_storage/device_secure_storage.dart';
 import 'package:boardroom/features/auth/infrastructure/biometrics/device_local_authentication.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../support/infrastructure/test_files.dart';
+import '../../support/infrastructure/test_files.dart';
 
 // The plugins are only called when a wrapper is used, so all there is to check
 // is that the platform is made of the wrappers over them. The private storage
