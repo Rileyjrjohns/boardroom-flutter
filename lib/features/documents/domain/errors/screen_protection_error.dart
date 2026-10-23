@@ -1,4 +1,9 @@
-part of 'app_error.dart';
+// The screen protection errors: what turning the protection of a document
+// screen on or off can fail with. They extend the open `AppError` of the core,
+// and the family is sealed here, in the feature that owns it.
+
+import 'package:boardroom/core/domain/errors/app_error.dart';
+import 'package:boardroom/core/domain/shared/constants.dart';
 
 /// The codes of the screen protection errors.
 enum ScreenProtectionErrorCode implements StableValue {

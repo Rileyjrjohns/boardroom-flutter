@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:boardroom/app/persistence/boardroom_database.dart';
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
@@ -9,11 +7,14 @@ import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/core/infrastructure/http/dto/wire.dart';
 import 'package:boardroom/core/infrastructure/persistence/guarded.dart';
-import 'package:boardroom/core/infrastructure/shared/rejection_schemas.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/tables.drift.dart';
+import 'package:boardroom/features/votes/infrastructure/rejection_schemas.dart';
 import 'package:drift/drift.dart';
 
 /// What a row of the outbox is called in the logs.
@@ -23,19 +24,19 @@ const String _unreadableCause = 'stored vote unreadable';
 // The statements that read. A vote is found by its whole idempotency key (a
 // `UNIQUE` column compared byte for byte). The writes go through the tables of
 // drift (`tables.dart`).
-String get _votes => StoredTable.outboxVotes.value;
-String get _sequence => StoredColumn.sequence.value;
-String get _idempotencyKey => StoredColumn.idempotencyKey.value;
-String get _voterId => StoredColumn.voterId.value;
-String get _resolutionId => StoredColumn.resolutionId.value;
-String get _meetingId => StoredColumn.meetingId.value;
-String get _choice => StoredColumn.choice.value;
-String get _castAt => StoredColumn.castAt.value;
-String get _enqueuedAt => StoredColumn.enqueuedAt.value;
-String get _attempts => StoredColumn.attempts.value;
-String get _status => StoredColumn.status.value;
-String get _rejectionReason => StoredColumn.rejectionReason.value;
-String get _rejectedAt => StoredColumn.rejectedAt.value;
+String get _votes => VoteStoredTable.outboxVotes.value;
+String get _sequence => VoteStoredColumn.sequence.value;
+String get _idempotencyKey => VoteStoredColumn.idempotencyKey.value;
+String get _voterId => VoteStoredColumn.voterId.value;
+String get _resolutionId => VoteStoredColumn.resolutionId.value;
+String get _meetingId => VoteStoredColumn.meetingId.value;
+String get _choice => VoteStoredColumn.choice.value;
+String get _castAt => VoteStoredColumn.castAt.value;
+String get _enqueuedAt => VoteStoredColumn.enqueuedAt.value;
+String get _attempts => VoteStoredColumn.attempts.value;
+String get _status => VoteStoredColumn.status.value;
+String get _rejectionReason => VoteStoredColumn.rejectionReason.value;
+String get _rejectedAt => VoteStoredColumn.rejectedAt.value;
 
 String get _select =>
     'SELECT $_sequence, $_idempotencyKey, $_voterId, $_resolutionId, '
@@ -176,14 +177,13 @@ final class _UnreadableRow extends _Decoded {
 final class DriftVoteOutbox implements VoteOutbox {
   /// Creates the outbox over [database]. [timeoutMillis] is how long a
   /// statement may take (`defaultStatementTimeoutMillis` by default).
-  const new({
-    required this.database,
-    required this.monitoring,
-    this.timeoutMillis,
-  });
+  new({required this.database, required this.monitoring, this.timeoutMillis})
+    : _table = $OutboxVotesTable(database);
 
-  /// The database the votes are in.
-  final BoardroomDatabase database;
+  /// The database the votes are in. Any drift database that holds the table of
+  /// the outbox will do: the outbox knows the table it owns, not the database
+  /// of the app that lists it.
+  final GeneratedDatabase database;
 
   /// Where a row that cannot be read is reported.
   final Monitoring monitoring;
@@ -193,7 +193,7 @@ final class DriftVoteOutbox implements VoteOutbox {
 
   int get _timeout => timeoutMillis ?? defaultStatementTimeoutMillis;
 
-  $OutboxVotesTable get _table => database.outboxVotes;
+  final $OutboxVotesTable _table;
 
   @override
   Future<Result<EnqueueResult, StorageWriteFailedError>> enqueue(

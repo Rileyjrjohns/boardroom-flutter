@@ -1,4 +1,3 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/duration.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
@@ -16,6 +15,7 @@ import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 
 // Test support, not production code: the files of a `support` folder may throw,
 // which is how a fixture that breaks an invariant fails the test that uses it.

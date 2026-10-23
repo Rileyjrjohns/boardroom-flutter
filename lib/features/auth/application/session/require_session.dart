@@ -5,6 +5,7 @@ import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/application/session/end_session.dart';
 import 'package:boardroom/features/auth/application/session/purge_caches.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/auth/domain/policies/session_expiry.dart';
 
 /// What the guard of a use case fails with when there is no usable session: not
@@ -14,9 +15,9 @@ import 'package:boardroom/features/auth/domain/policies/session_expiry.dart';
 typedef SessionRequiredError = AppError;
 
 /// What [requireSession] and [requireSameUser] need. It is what [closeSession]
-/// needs (the session, the lock shared by every use case, and both caches,
-/// which are emptied when a session is found expired: see [requireSession])
-/// plus the clock.
+/// needs (the session, the lock shared by every use case, and the purgers of
+/// the data a session leaves, which run when a session is found expired: see
+/// [requireSession]) plus the clock.
 abstract interface class RequireSessionDeps implements EndSessionDeps {
   /// The clock the expiry of the session is judged by.
   Clock get clock;
@@ -28,10 +29,10 @@ abstract interface class RequireSessionDeps implements EndSessionDeps {
 ///
 /// - `notAuthenticated` when nobody is signed in;
 /// - `sessionExpired` when the expiry has passed. The session is never
-///   returned, and the caches are emptied (both, for every owner, as at a
-///   sign-out): a session that ends while the app is running must not leave the
-///   content of its user on the device. The purge is best effort, a failure is
-///   captured and the caller still gets `sessionExpired`;
+///   returned, and the caches are emptied (all of them, for every owner, as at
+///   a sign-out): a session that ends while the app is running must not leave
+///   the content of its user on the device. The purge is best effort, a failure
+///   is captured and the caller still gets `sessionExpired`;
 /// - `appLocked` when the session is valid but the app is locked (see
 ///   `AppLock`): until the biometric unlock succeeds, no use case returns data
 ///   to, or acts for, the user.

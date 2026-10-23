@@ -1,4 +1,5 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 
 /// The failures that say the session of the user is over, whatever the
 /// operation was doing: the server refused the session, there is none, it has

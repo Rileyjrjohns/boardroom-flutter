@@ -6,23 +6,28 @@ import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/application/session/end_session.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/votes/application/ports/recorded_vote_sink.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/application/ports/vote_repository.dart';
-import 'package:boardroom/features/votes/application/record_vote_in_cache.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sync_pending_votes.freezed.dart';
 
 /// What [SyncPendingVotes] needs: what the session guard needs, the outbox, the
-/// server that records votes, and the number of attempts after which a vote is
-/// given up.
+/// server that records votes, where a recorded vote is written into the cached
+/// meeting, and the number of attempts after which a vote is given up.
 abstract interface class SyncPendingVotesDeps implements RequireSessionDeps {
   /// The local queue of votes.
   VoteOutbox get outbox;
 
   /// The server that records votes.
   VoteRepository get votes;
+
+  /// Where a vote the server recorded is written into the cached meeting.
+  RecordedVoteSink get recordedVoteSink;
 
   /// Configuration, set once by the composition root: after this many
   /// unexpected failures a vote is given up (rejected as `voteUndeliverable`)
@@ -167,7 +172,7 @@ final class _Interrupted extends _Settlement {
 /// one at a time. A rejected vote is never sent again.
 ///
 /// - Recorded by the server: removed from the outbox, reported in `synced`, and
-///   recorded on the cached copy of its meeting (`recordVoteInCache`).
+///   recorded on the cached copy of its meeting (`RecordedVoteSink`).
 /// - Rejected for a business reason (closed, already voted, ...): sending it
 ///   again would change nothing, so it is moved to the rejected state, with its
 ///   reason, and reported in `rejected`. It stays in the outbox until the user
@@ -367,7 +372,7 @@ final class SyncPendingVotes {
       return _Interrupted(error);
     }
 
-    await recordVoteInCache(_deps, pending.vote);
+    await _deps.recordedVoteSink.record(pending.vote);
     return const _Synced();
   }
 

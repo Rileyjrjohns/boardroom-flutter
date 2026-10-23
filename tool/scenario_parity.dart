@@ -6,7 +6,8 @@
 // scenarios as the TypeScript ones. This script lists the tests of the React
 // Native repository (src/domain and src/application, the *.test.ts files),
 // maps each file to its Dart test file (the one file of the pure Dart test
-// folders, test/core, test/features/* and test/support, that has the snake case
+// folders, test/core, test/features/*, test/app/composition and test/support,
+// that has the snake case
 // name of the React Native one, see dartTestPathFor), lists the tests that
 // `dart test` reports for the Dart files, and compares the full names of the
 // two sides: a scenario of the React Native repository that has no Dart test of
@@ -76,6 +77,11 @@ const String dartCoreFolder = 'core';
 /// Folder of the Dart features, under [dartTestFolder].
 const String dartFeaturesFolder = 'features';
 
+/// The pure test folder of the composition, under [dartTestFolder]: the tests
+/// of the glue between features (`app/composition`), which run under
+/// `dart test` and count as the application, like the support code.
+const String dartCompositionFolder = 'app/composition';
+
 /// The folders of [dartSupportFolder] that are pure Dart, so that `dart test`
 /// runs the tests they hold: the builders, the contract suites and the fakes.
 /// The support of the infrastructure needs Flutter and is never run here.
@@ -92,6 +98,73 @@ const String extrasFile = 'docs/parity/extras.md';
 
 /// What an extras entry says when the whole Dart file is Dart specific.
 const String wholeFileMarker = '*';
+
+/// A part of a React Native test file that a Dart test file of its own takes
+/// over.
+class SplitPart {
+  /// Creates the part: the scenarios whose full names start with one of
+  /// [scenarioPrefixes] are expected in the Dart test file named
+  /// [dartFileName].
+  const new({required this.dartFileName, required this.scenarioPrefixes});
+
+  /// The name of the Dart test file (`with_vote_recorded_test.dart`), looked
+  /// for among the Dart test files like the name of a whole file is (see
+  /// [dartTestPathFor]).
+  final String dartFileName;
+
+  /// The beginnings of the full names of the scenarios of this part: the
+  /// description of a `describe` that holds them and the space after it, or the
+  /// description of a `describe` and the beginning of the title of a test.
+  final List<String> scenarioPrefixes;
+
+  /// Whether the scenario named [name] belongs to this part.
+  bool takes(String name) => scenarioPrefixes.any(name.startsWith);
+}
+
+/// The React Native test files whose scenarios are in several Dart test files,
+/// because the code they test is not in one module of the Dart port. The
+/// scenarios named by a [SplitPart] are expected in its Dart file, and all the
+/// others in the file the name of the React Native file gives, as for any other
+/// file. Every entry is a deviation from the React Native structure, written in
+/// docs/parity/open-questions.md.
+///
+/// - `Meeting.test.ts` tests `withVoteRecorded` with the meeting. In Dart the
+///   function belongs to the votes, which depend on the meetings and not the
+///   other way round, so its scenarios are in the votes.
+/// - `errors.test.ts` tests the errors of every family. In Dart each family is
+///   in the feature that owns it (the core keeps the repository, storage and
+///   validation errors), so its scenarios are in that feature, and the one
+///   about the codes of every family is in the composition, the only place that
+///   sees them all.
+const Map<String, List<SplitPart>> splitScenarioFiles = {
+  'src/domain/entities/Meeting.test.ts': [
+    SplitPart(
+      dartFileName: 'with_vote_recorded_test.dart',
+      scenarioPrefixes: ['withVoteRecorded '],
+    ),
+  ],
+  'src/domain/errors/errors.test.ts': [
+    SplitPart(
+      dartFileName: 'error_codes_test.dart',
+      scenarioPrefixes: ['error codes '],
+    ),
+    SplitPart(
+      dartFileName: 'auth_errors_test.dart',
+      scenarioPrefixes: [
+        'error factories build the authentication errors',
+        'error factories build the biometric errors',
+      ],
+    ),
+    SplitPart(
+      dartFileName: 'screen_protection_errors_test.dart',
+      scenarioPrefixes: ['error factories build the screen protection errors'],
+    ),
+    SplitPart(
+      dartFileName: 'vote_errors_test.dart',
+      scenarioPrefixes: ['vote delivery errors ', 'isVotingError '],
+    ),
+  ],
+};
 
 /// The layer (`domain` or `application`) of the React Native test file
 /// [rnTestPath] (relative to the React Native repository), or null when the
@@ -133,6 +206,19 @@ String? dartTestPathFor(String rnTestPath, Iterable<String> dartTestFiles) {
   final fileName = p.posix.basename(rnTestPath);
   final stem = fileName.substring(0, fileName.length - rnTestSuffix.length);
   final dartName = '${snakeCase(stem)}$dartTestSuffix';
+  return _dartPathNamed(dartName, layer, dartTestFiles, rnTestPath);
+}
+
+/// The Dart file named [dartName] among [dartTestFiles], the one in a folder
+/// named after [layer] when two files share the name; `test/**/<name>` when
+/// there is none. Throws a [FormatException] (with [what] in the message) when
+/// the choice is a guess.
+String _dartPathNamed(
+  String dartName,
+  String layer,
+  Iterable<String> dartTestFiles,
+  String what,
+) {
   final named = {
     for (final file in dartTestFiles)
       if (p.posix.basename(file) == dartName) file,
@@ -151,7 +237,7 @@ String? dartTestPathFor(String rnTestPath, Iterable<String> dartTestFiles) {
     return inLayer.single;
   }
   throw FormatException(
-    '$rnTestPath has several Dart test files named $dartName and none can be '
+    '$what has several Dart test files named $dartName and none can be '
     'chosen by its layer ($layer): ${named.join(', ')}',
   );
 }
@@ -181,7 +267,11 @@ bool dartFileMatchesPrefix(String dartFile, String rnPrefix) {
   final layer = segments[1];
   final folders = p.posix.dirname(dartFile).split('/');
   final inSupport =
-      layer == supportLayer && folders.contains(dartSupportFolder);
+      layer == supportLayer &&
+      (folders.contains(dartSupportFolder) ||
+          p.posix
+              .dirname(dartFile)
+              .startsWith('$dartTestFolder/$dartCompositionFolder'));
   if (!folders.contains(layer) && !inSupport) {
     return false;
   }
@@ -381,6 +471,20 @@ class FileParity {
       extra.isEmpty &&
       staleExceptions.isEmpty &&
       problems.isEmpty;
+
+  /// The same result, with one more problem.
+  FileParity withProblem(String problem) => FileParity(
+    rnFile: rnFile,
+    dartFile: dartFile,
+    rnCount: rnCount,
+    dartCount: dartCount,
+    dartFileExists: dartFileExists,
+    missing: missing,
+    extra: extra,
+    excepted: excepted,
+    staleExceptions: staleExceptions,
+    problems: [...problems, problem],
+  );
 }
 
 /// The result of the whole comparison.
@@ -427,6 +531,7 @@ ParityReport compareScenarios({
   List<String> only = const [],
   Set<String> dartLoadErrors = const {},
   Iterable<String>? dartTestFiles,
+  Map<String, List<SplitPart>> splits = splitScenarioFiles,
 }) {
   final candidates = List<String>.of(
     dartTestFiles ?? {...dartTests.keys, ...dartLoadErrors},
@@ -446,17 +551,71 @@ ParityReport compareScenarios({
     if (dartFile == null) {
       continue;
     }
+
+    // The scenarios that a declared split sends to another Dart file are
+    // compared there; the others are compared with the file of the name.
+    var rn = rnTests[rnFile]!;
+    var rnNotes = [
+      for (final note in exceptions)
+        if (note.file == rnFile) note,
+    ];
+    final layer = parityLayerOf(rnFile)!;
+    for (final part in splits[rnFile] ?? const <SplitPart>[]) {
+      final partFile = _dartPathNamed(
+        part.dartFileName,
+        layer,
+        candidates,
+        rnFile,
+      );
+      bool inPart(String name) => part.takes(name);
+      final taken = [
+        for (final test in rn)
+          if (inPart(test.displayName)) test,
+      ];
+      final takenNotes = [
+        for (final note in rnNotes)
+          if (inPart(note.test)) note,
+      ];
+      rn = [
+        for (final test in rn)
+          if (!inPart(test.displayName)) test,
+      ];
+      rnNotes = [
+        for (final note in rnNotes)
+          if (!inPart(note.test)) note,
+      ];
+      mappedDart.add(partFile);
+      final compared = _compareFile(
+        rnFile: rnFile,
+        dartFile: partFile,
+        rn: taken,
+        dart: dartTests[partFile] ?? const [],
+        exceptions: takenNotes,
+        extras: [
+          for (final note in extras)
+            if (note.file == partFile) note,
+        ],
+        loadError: dartLoadErrors.contains(partFile),
+      );
+      results.add(
+        taken.isEmpty
+            ? compared.withProblem(
+                'the split of $rnFile sends the scenarios that start with '
+                '"${part.scenarioPrefixes.join('", "')}" here, and it has '
+                'none',
+              )
+            : compared,
+      );
+    }
+
     mappedDart.add(dartFile);
     results.add(
       _compareFile(
         rnFile: rnFile,
         dartFile: dartFile,
-        rn: rnTests[rnFile]!,
+        rn: rn,
         dart: dartTests[dartFile] ?? const [],
-        exceptions: [
-          for (final note in exceptions)
-            if (note.file == rnFile) note,
-        ],
+        exceptions: rnNotes,
         extras: [
           for (final note in extras)
             if (note.file == dartFile) note,
@@ -727,9 +886,10 @@ typedef DartTestRunner = Future<String> Function(Directory root);
 /// relative to [root] with `/` separators: the domain and the application of
 /// the core (`test/core/domain`, `test/core/application`) and of each feature
 /// (`test/features/<feature>/domain`, `test/features/<feature>/application`),
-/// and the pure folders of `test/support` (the fakes and their tests). They run
-/// under `dart test`; the infrastructure, the app and the support that needs
-/// Flutter do not.
+/// the glue between features (`test/app/composition`) and the pure folders of
+/// `test/support` (the fakes and their tests). They run under `dart test`; the
+/// infrastructure, the rest of the app and the support that needs Flutter do
+/// not.
 List<String> pureTestFolders(Directory root) {
   final features = Directory(
     p.join(root.path, dartTestFolder, dartFeaturesFolder),
@@ -745,6 +905,7 @@ List<String> pureTestFolders(Directory root) {
     for (final feature in featureNames..sort())
       for (final layer in parityLayers)
         '$dartTestFolder/$dartFeaturesFolder/$feature/$layer',
+    '$dartTestFolder/$dartCompositionFolder',
     for (final folder in pureSupportFolders)
       '$dartTestFolder/$dartSupportFolder/$folder',
   ];
@@ -810,7 +971,8 @@ Usage: dart run tool/scenario_parity.dart --rn <react-native-repo> [options]
   --root <path>        the Flutter project (default: the current directory)
 
 The Dart tests are those of the pure folders: test/core/{domain,application},
-test/features/*/{domain,application} and test/support/{builders,contracts,fakes}.
+test/features/*/{domain,application}, test/app/composition and
+test/support/{builders,contracts,fakes}.
 ''';
 
 /// The command line, with the output streams and the runner of `dart test`

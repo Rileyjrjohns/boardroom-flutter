@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:boardroom/app/persistence/boardroom_database.dart';
 import 'package:boardroom/app/persistence/migrations.dart' as schema;
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/infrastructure/persistence/migrate.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/schema.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
 import 'package:test/test.dart';
 
@@ -45,12 +47,12 @@ Future<List<String>> _objectsOf(BoardroomDatabase database) async =>
 /// them.
 Future<void> _fillAtVersion(BoardroomDatabase database) async {
   await database.run(
-    'INSERT INTO ${StoredTable.meetingDetails.value} '
+    'INSERT INTO ${MeetingStoredTable.meetingDetails.value} '
     '(owner, meeting_id, cached_at, payload) VALUES (?, ?, ?, ?)',
     ['owner', 'meeting', 1, '{}'],
   );
   await database.run(
-    'INSERT INTO ${StoredTable.outboxVotes.value} '
+    'INSERT INTO ${VoteStoredTable.outboxVotes.value} '
     '(idempotency_key, voter_id, resolution_id, meeting_id, choice, cast_at, '
     'enqueued_at, attempts, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
     ['key', 'voter', 'resolution', 'meeting', 'for', 1, 2, 3, 'pending'],
@@ -140,12 +142,12 @@ void main() {
           await _objectsOf(test.database),
           equals(
             [
-              StoredTable.meetingPages.value,
-              StoredTable.meetingDetails.value,
-              StoredTable.documentEntries.value,
-              StoredTable.outboxVotes.value,
-              StoredIndex.outboxByResolution.value,
-              StoredIndex.documentEntriesByLocation.value,
+              MeetingStoredTable.meetingPages.value,
+              MeetingStoredTable.meetingDetails.value,
+              DocumentStoredTable.documentEntries.value,
+              VoteStoredTable.outboxVotes.value,
+              VoteStoredIndex.outboxByResolution.value,
+              DocumentStoredIndex.documentEntriesByLocation.value,
             ]..sort(),
           ),
         );
@@ -168,24 +170,24 @@ void main() {
 
         expect(await _versionOf(test.database), equals(latest));
         final keys = await test.database.all(
-          'SELECT idempotency_key FROM ${StoredTable.outboxVotes.value}',
+          'SELECT idempotency_key FROM ${VoteStoredTable.outboxVotes.value}',
         );
         expect([for (final row in keys) row['idempotency_key']], ['key']);
         expect(
           await test.database.all(
-            'SELECT meeting_id FROM ${StoredTable.meetingDetails.value}',
+            'SELECT meeting_id FROM ${MeetingStoredTable.meetingDetails.value}',
           ),
           hasLength(1),
         );
         expect(
           await _objectsOf(test.database),
-          contains(StoredIndex.outboxByResolution.value),
+          contains(VoteStoredIndex.outboxByResolution.value),
         );
         // Version 4 added the cache of documents, empty whatever the version
         // it came from.
         expect(
           await test.database.all(
-            'SELECT * FROM ${StoredTable.documentEntries.value}',
+            'SELECT * FROM ${DocumentStoredTable.documentEntries.value}',
           ),
           isEmpty,
         );
@@ -197,7 +199,7 @@ void main() {
       final test = await openTestDatabase(directory);
       final database = test.database;
       final insert =
-          'INSERT INTO ${StoredTable.documentEntries.value} '
+          'INSERT INTO ${DocumentStoredTable.documentEntries.value} '
           '(owner, document_id, cached_at, location, payload) '
           'VALUES (?, ?, ?, ?, ?)';
       await database.run(insert, [
@@ -223,7 +225,7 @@ void main() {
       await database.run(insert, ['owner', 'other', 1, 'file:///a.pdf', '{}']);
       expect(
         await database.all(
-          'SELECT * FROM ${StoredTable.documentEntries.value}',
+          'SELECT * FROM ${DocumentStoredTable.documentEntries.value}',
         ),
         hasLength(3),
       );
@@ -238,7 +240,7 @@ void main() {
       expect(await _versionOf(test.database), equals(latest));
       expect(
         await test.database.all(
-          'SELECT * FROM ${StoredTable.outboxVotes.value}',
+          'SELECT * FROM ${VoteStoredTable.outboxVotes.value}',
         ),
         hasLength(1),
       );
@@ -257,7 +259,7 @@ void main() {
     });
 
     group('a migration that fails', () {
-      const third = schema.Migration(
+      const third = Migration(
         version: 5,
         statements: [
           'CREATE TABLE half_done (id INTEGER)',
@@ -285,7 +287,7 @@ void main() {
         final test = await openTestFile(current.file!);
         expect(
           await test.database.all(
-            'SELECT * FROM ${StoredTable.outboxVotes.value}',
+            'SELECT * FROM ${VoteStoredTable.outboxVotes.value}',
           ),
           hasLength(1),
         );
@@ -324,7 +326,7 @@ void main() {
           openTestFile(file, withThird),
           throwsA(isA<MigrationFailure>()),
         );
-        const fixed = schema.Migration(
+        const fixed = Migration(
           version: 5,
           statements: ['CREATE TABLE fixed (id INTEGER)'],
         );
@@ -353,23 +355,23 @@ void main() {
       expect(after.objects, equals(before.objects));
     });
 
-    final invalidLists = <(String, List<schema.Migration>)>[
+    final invalidLists = <(String, List<Migration>)>[
       (
         'a gap',
         [
-          const schema.Migration(version: 1, statements: []),
-          const schema.Migration(version: 3, statements: []),
+          const Migration(version: 1, statements: []),
+          const Migration(version: 3, statements: []),
         ],
       ),
       (
         'a list that does not start at 1',
-        [const schema.Migration(version: 2, statements: [])],
+        [const Migration(version: 2, statements: [])],
       ),
       (
         'a repeated version',
         [
-          const schema.Migration(version: 1, statements: []),
-          const schema.Migration(version: 1, statements: []),
+          const Migration(version: 1, statements: []),
+          const Migration(version: 1, statements: []),
         ],
       ),
     ];

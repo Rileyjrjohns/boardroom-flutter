@@ -1,7 +1,7 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/documents/application/screen_protection_coordinator.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 
 /// What [CloseDocument] needs.
 abstract interface class CloseDocumentDeps {

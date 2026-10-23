@@ -1,7 +1,7 @@
 import 'package:boardroom/core/application/ports/types/unsubscribe.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/documents/application/ports/screen_protection.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 
 /// The screen protection of the mock configuration. It blocks nothing: it
 /// records whether it was turned on, so that the demo and the tests can see

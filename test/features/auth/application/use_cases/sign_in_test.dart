@@ -2,11 +2,15 @@ import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/application/ports/auth_session.dart';
+import 'package:boardroom/features/auth/application/ports/session_data_purger.dart';
 import 'package:boardroom/features/auth/application/session/app_lock.dart';
 import 'package:boardroom/features/auth/application/session/end_session.dart';
 import 'package:boardroom/features/auth/application/use_cases/sign_in.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
+import 'package:boardroom/features/documents/application/document_cache_purger.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
+import 'package:boardroom/features/meetings/application/meeting_cache_purger.dart';
 import 'package:test/test.dart';
 
 import '../../../../support/builders/builders.dart';
@@ -32,12 +36,11 @@ final class _SpyMeetingCache extends FakeMeetingCache {
 /// The fakes, with another cache of meetings: the Dart counterpart of
 /// `{ ...fakes, meetingCache }`.
 final class _DepsWithCache implements EndSessionDeps {
-  const new(this._fakes, this.meetingCache);
+  const new(this._fakes, this._meetingCache);
 
   final Fakes _fakes;
 
-  @override
-  final FakeMeetingCache meetingCache;
+  final FakeMeetingCache _meetingCache;
 
   @override
   AuthSession get auth => _fakes.auth;
@@ -46,7 +49,10 @@ final class _DepsWithCache implements EndSessionDeps {
   AppLock get appLock => _fakes.appLock;
 
   @override
-  DocumentCache get documentCache => _fakes.documentCache;
+  List<SessionDataPurger> get sessionDataPurgers => [
+    MeetingCachePurger(_meetingCache),
+    DocumentCachePurger(_fakes.documentCache),
+  ];
 
   @override
   Monitoring get monitoring => _fakes.monitoring;

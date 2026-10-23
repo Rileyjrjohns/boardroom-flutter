@@ -1,12 +1,20 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:test/test.dart';
 
-import '../../../support/builders/builders.dart';
-import '../../../support/builders/matchers.dart';
+import '../../support/builders/builders.dart';
+import '../../support/builders/matchers.dart';
 
 // Dart only: the TypeScript errors are object literals that jest compares
-// field by field, the Dart ones are sealed classes with their own equality and
-// the compiler checks that a switch over them is exhaustive.
+// field by field, the Dart ones are classes with their own equality, and the
+// compiler checks that a switch over a sealed family is exhaustive. The root,
+// `AppError`, is open (each feature declares its own families), and this is the
+// one place that sees all of them, so it is here, in the tests of the
+// composition, that every error is listed and that the families are told
+// apart.
 
 /// Every error of the domain: its stable code and its payload.
 final List<(AppError, String, Map<String, Object?>)> _errors = [
@@ -73,8 +81,9 @@ final List<(AppError, String, Map<String, Object?>)> _errors = [
   (const VoteNotRejectedError(), 'voteNotRejected', {}),
 ];
 
-/// The family of an error, by an exhaustive switch: it stops compiling when an
-/// error is added to the hierarchy and not handled here.
+/// The family of an error. `AppError` is open, so a `switch` over it cannot be
+/// exhaustive and ends with a default; each sealed family has an exhaustive
+/// `switch` of its own below.
 String familyOf(AppError error) => switch (error) {
   ValidationError() => 'validation',
   AuthenticationError() => 'authentication',
@@ -86,6 +95,48 @@ String familyOf(AppError error) => switch (error) {
   VotePreviouslyRejectedError() ||
   VoteInProgressError() ||
   VoteNotRejectedError() => 'voteDelivery',
+  _ => 'unknown',
+};
+
+/// The members of each sealed family, by an exhaustive switch: it stops
+/// compiling when an error is added to the family and not handled here.
+String authenticationKind(AuthenticationError error) => switch (error) {
+  InvalidCredentialsError() => 'invalidCredentials',
+  SessionExpiredError() => 'sessionExpired',
+  NotAuthenticatedError() => 'notAuthenticated',
+  SessionChangedError() => 'sessionChanged',
+  AppLockedError() => 'appLocked',
+};
+
+String biometricKind(BiometricError error) => switch (error) {
+  BiometricAvailabilityError() => 'availability',
+  BiometricCancelledError() => 'cancelled',
+  BiometricFailedError() => 'failed',
+  BiometricLockedOutError() => 'lockedOut',
+};
+
+String screenProtectionKind(ScreenProtectionError error) => switch (error) {
+  ScreenProtectionUnsupportedError() => 'unsupported',
+  ScreenProtectionFailedError() => 'failed',
+};
+
+String storageKind(StorageError error) => switch (error) {
+  StorageReadFailedError() => 'read',
+  StorageWriteFailedError() => 'write',
+};
+
+String rejectionKind(RejectionReason reason) => switch (reason) {
+  VotingError() => 'voting',
+  VoteUndeliverableError() => 'undeliverable',
+};
+
+String votingKind(VotingError error) => switch (error) {
+  ResolutionNotFoundError() => 'resolutionNotFound',
+  NotAParticipantError() => 'notAParticipant',
+  NoVotingRightsError() => 'noVotingRights',
+  ResolutionClosedError() => 'resolutionClosed',
+  VotingWindowOverError() => 'votingWindowOver',
+  AlreadyVotedError() => 'alreadyVoted',
 };
 
 /// The same for the repository errors alone.
@@ -127,6 +178,30 @@ void main() {
         equals('rejectionReason'),
       );
       expect(familyOf(const VoteInProgressError()), equals('voteDelivery'));
+      expect(
+        familyOf(
+          const ValidationError(
+            field: ValidationField.email,
+            rule: ValidationRule.required,
+          ),
+        ),
+        equals('validation'),
+      );
+      expect(authenticationKind(const AppLockedError()), equals('appLocked'));
+      expect(biometricKind(const BiometricFailedError()), equals('failed'));
+      expect(
+        screenProtectionKind(const ScreenProtectionFailedError()),
+        equals('failed'),
+      );
+      expect(storageKind(const StorageReadFailedError()), equals('read'));
+      expect(
+        rejectionKind(const VoteUndeliverableError(attempts: 1)),
+        equals('undeliverable'),
+      );
+      expect(
+        votingKind(const NotAParticipantError()),
+        equals('notAParticipant'),
+      );
       expect(
         repositoryKind(const NetworkUnavailableError()),
         equals('gateway'),

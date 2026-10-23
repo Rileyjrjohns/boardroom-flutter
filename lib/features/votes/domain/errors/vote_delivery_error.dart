@@ -1,4 +1,4 @@
-part of 'app_error.dart';
+part of 'vote_errors.dart';
 
 /// What can go wrong between a vote being cast and the server recording it.
 enum VoteDeliveryErrorCode implements StableValue {

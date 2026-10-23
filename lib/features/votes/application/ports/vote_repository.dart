@@ -1,6 +1,8 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart'
+    show VotingError;
 
 /// Why a vote was not recorded: a [GatewayError] or a [VotingError]. A
 /// `VotingError` is a business rejection: the server understood the vote and

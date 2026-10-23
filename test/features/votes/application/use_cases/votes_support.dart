@@ -1,13 +1,16 @@
 import 'package:boardroom/core/application/ports/clock.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
+import 'package:boardroom/core/application/ports/session_gate.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/duration.dart';
 import 'package:boardroom/features/auth/application/ports/auth_session.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
+import 'package:boardroom/features/auth/application/ports/session_data_purger.dart';
 import 'package:boardroom/features/auth/application/session/app_lock.dart';
-import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
+import 'package:boardroom/features/meetings/application/ports/meeting_document_evictor.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_repository.dart';
+import 'package:boardroom/features/votes/application/ports/recorded_vote_sink.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/application/ports/vote_repository.dart';
 import 'package:boardroom/features/votes/application/use_cases/acknowledge_rejected_vote.dart';
@@ -68,7 +71,16 @@ final class VotesDeps
   MeetingCache get meetingCache => _fakes.meetingCache;
 
   @override
-  DocumentCache get documentCache => _fakes.documentCache;
+  SessionGate get sessionGate => _fakes.sessionGate;
+
+  @override
+  RecordedVoteSink get recordedVoteSink => _fakes.recordedVoteSink;
+
+  @override
+  List<SessionDataPurger> get sessionDataPurgers => _fakes.sessionDataPurgers;
+
+  @override
+  MeetingDocumentEvictor get documentEvictor => _fakes.documentEvictor;
 
   @override
   Monitoring get monitoring => _fakes.monitoring;

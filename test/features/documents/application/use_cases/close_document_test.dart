@@ -1,7 +1,7 @@
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/documents/application/use_cases/close_document.dart';
 import 'package:boardroom/features/documents/application/use_cases/open_document.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
 import 'package:test/test.dart';
 

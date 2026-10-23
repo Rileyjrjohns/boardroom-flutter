@@ -1,60 +1,53 @@
-import 'package:boardroom/app/persistence/schema.dart';
+import 'package:boardroom/core/infrastructure/persistence/migrate.dart';
+import 'package:boardroom/features/documents/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/schema.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
-import 'package:meta/meta.dart';
+import 'package:boardroom/features/votes/infrastructure/persistence/schema.dart';
 
-/// A step from one version of the schema to the next. Versions are 1, 2, 3, ...
-/// with no gap. The statements run in one transaction together with the update
-/// of the version, so that a migration that fails leaves the database at the
-/// version it was at.
-///
-/// Forward only: a migration that was released is never edited, a change is a
-/// new migration, and there is no way back. A database that is more recent than
-/// the app (the app was downgraded) is refused, not touched (see
-/// `migrate.dart`).
-@immutable
-final class Migration {
-  /// Creates the step that brings the schema to [version].
-  const new({required this.version, required this.statements});
-
-  /// The version of the schema once the statements have run.
-  final int version;
-
-  /// The statements, in order.
-  final List<String> statements;
-}
+// The history of the file: the migrations of the database of the whole app, in
+// order. Each feature owns its tables and their names (`schema.dart` of its
+// `infrastructure/persistence` folder), and this list, which is the app's, reads
+// them; the machinery that runs the list is `migrate.dart` of the core.
 
 String get _pending => "'${OutboxStatus.pending.value}'";
 String get _rejected => "'${OutboxStatus.rejected.value}'";
 const String _quarantined = "'$outboxQuarantined'";
 
-String get _meetingPages => StoredTable.meetingPages.value;
-String get _meetingDetails => StoredTable.meetingDetails.value;
-String get _documentEntries => StoredTable.documentEntries.value;
-String get _outboxVotes => StoredTable.outboxVotes.value;
-String get _outboxVotesRebuilt => StoredTable.outboxVotesRebuilt.value;
-String get _outboxByResolution => StoredIndex.outboxByResolution.value;
-String get _entriesByLocation => StoredIndex.documentEntriesByLocation.value;
+String get _meetingPages => MeetingStoredTable.meetingPages.value;
+String get _meetingDetails => MeetingStoredTable.meetingDetails.value;
+String get _documentEntries => DocumentStoredTable.documentEntries.value;
+String get _outboxVotes => VoteStoredTable.outboxVotes.value;
+String get _outboxVotesRebuilt => VoteStoredTable.outboxVotesRebuilt.value;
+String get _outboxByResolution => VoteStoredIndex.outboxByResolution.value;
+String get _entriesByLocation =>
+    DocumentStoredIndex.documentEntriesByLocation.value;
 
-String get _owner => StoredColumn.owner.value;
-String get _period => StoredColumn.period.value;
-String get _cursorKey => StoredColumn.cursorKey.value;
-String get _pageLimit => StoredColumn.pageLimit.value;
-String get _meetingId => StoredColumn.meetingId.value;
-String get _documentId => StoredColumn.documentId.value;
-String get _location => StoredColumn.location.value;
-String get _cachedAt => StoredColumn.cachedAt.value;
-String get _payload => StoredColumn.payload.value;
-String get _sequence => StoredColumn.sequence.value;
-String get _idempotencyKey => StoredColumn.idempotencyKey.value;
-String get _voterId => StoredColumn.voterId.value;
-String get _resolutionId => StoredColumn.resolutionId.value;
-String get _choice => StoredColumn.choice.value;
-String get _castAt => StoredColumn.castAt.value;
-String get _enqueuedAt => StoredColumn.enqueuedAt.value;
-String get _attempts => StoredColumn.attempts.value;
-String get _status => StoredColumn.status.value;
-String get _rejectionReason => StoredColumn.rejectionReason.value;
-String get _rejectedAt => StoredColumn.rejectedAt.value;
+String get _mOwner => MeetingStoredColumn.owner.value;
+String get _mPeriod => MeetingStoredColumn.period.value;
+String get _mCursorKey => MeetingStoredColumn.cursorKey.value;
+String get _mPageLimit => MeetingStoredColumn.pageLimit.value;
+String get _mMeetingId => MeetingStoredColumn.meetingId.value;
+String get _mCachedAt => MeetingStoredColumn.cachedAt.value;
+String get _mPayload => MeetingStoredColumn.payload.value;
+
+String get _dOwner => DocumentStoredColumn.owner.value;
+String get _dDocumentId => DocumentStoredColumn.documentId.value;
+String get _dLocation => DocumentStoredColumn.location.value;
+String get _dCachedAt => DocumentStoredColumn.cachedAt.value;
+String get _dPayload => DocumentStoredColumn.payload.value;
+
+String get _vSequence => VoteStoredColumn.sequence.value;
+String get _vIdempotencyKey => VoteStoredColumn.idempotencyKey.value;
+String get _vVoterId => VoteStoredColumn.voterId.value;
+String get _vResolutionId => VoteStoredColumn.resolutionId.value;
+String get _vMeetingId => VoteStoredColumn.meetingId.value;
+String get _vChoice => VoteStoredColumn.choice.value;
+String get _vCastAt => VoteStoredColumn.castAt.value;
+String get _vEnqueuedAt => VoteStoredColumn.enqueuedAt.value;
+String get _vAttempts => VoteStoredColumn.attempts.value;
+String get _vStatus => VoteStoredColumn.status.value;
+String get _vRejectionReason => VoteStoredColumn.rejectionReason.value;
+String get _vRejectedAt => VoteStoredColumn.rejectedAt.value;
 
 /// Version 1: the cache of meetings and the outbox of votes.
 ///
@@ -70,38 +63,38 @@ Migration get _initial => Migration(
   statements: [
     '''
 CREATE TABLE $_meetingPages (
-  $_owner TEXT NOT NULL,
-  $_period TEXT NOT NULL,
-  $_cursorKey TEXT NOT NULL,
-  $_pageLimit INTEGER NOT NULL,
-  $_cachedAt INTEGER NOT NULL,
-  $_payload TEXT NOT NULL,
-  PRIMARY KEY ($_owner, $_period, $_cursorKey, $_pageLimit)
+  $_mOwner TEXT NOT NULL,
+  $_mPeriod TEXT NOT NULL,
+  $_mCursorKey TEXT NOT NULL,
+  $_mPageLimit INTEGER NOT NULL,
+  $_mCachedAt INTEGER NOT NULL,
+  $_mPayload TEXT NOT NULL,
+  PRIMARY KEY ($_mOwner, $_mPeriod, $_mCursorKey, $_mPageLimit)
 ) WITHOUT ROWID''',
     '''
 CREATE TABLE $_meetingDetails (
-  $_owner TEXT NOT NULL,
-  $_meetingId TEXT NOT NULL,
-  $_cachedAt INTEGER NOT NULL,
-  $_payload TEXT NOT NULL,
-  PRIMARY KEY ($_owner, $_meetingId)
+  $_mOwner TEXT NOT NULL,
+  $_mMeetingId TEXT NOT NULL,
+  $_mCachedAt INTEGER NOT NULL,
+  $_mPayload TEXT NOT NULL,
+  PRIMARY KEY ($_mOwner, $_mMeetingId)
 ) WITHOUT ROWID''',
     '''
 CREATE TABLE $_outboxVotes (
-  $_sequence INTEGER PRIMARY KEY AUTOINCREMENT,
-  $_idempotencyKey TEXT NOT NULL UNIQUE,
-  $_voterId TEXT NOT NULL,
-  $_resolutionId TEXT NOT NULL,
-  $_meetingId TEXT NOT NULL,
-  $_choice TEXT NOT NULL,
-  $_castAt INTEGER NOT NULL,
-  $_enqueuedAt INTEGER NOT NULL,
-  $_attempts INTEGER NOT NULL,
-  $_status TEXT NOT NULL CHECK ($_status IN ($_pending, $_rejected)),
-  $_rejectionReason TEXT,
-  $_rejectedAt INTEGER,
-  CHECK (($_status = $_pending) = ($_rejectionReason IS NULL)),
-  CHECK (($_status = $_pending) = ($_rejectedAt IS NULL))
+  $_vSequence INTEGER PRIMARY KEY AUTOINCREMENT,
+  $_vIdempotencyKey TEXT NOT NULL UNIQUE,
+  $_vVoterId TEXT NOT NULL,
+  $_vResolutionId TEXT NOT NULL,
+  $_vMeetingId TEXT NOT NULL,
+  $_vChoice TEXT NOT NULL,
+  $_vCastAt INTEGER NOT NULL,
+  $_vEnqueuedAt INTEGER NOT NULL,
+  $_vAttempts INTEGER NOT NULL,
+  $_vStatus TEXT NOT NULL CHECK ($_vStatus IN ($_pending, $_rejected)),
+  $_vRejectionReason TEXT,
+  $_vRejectedAt INTEGER,
+  CHECK (($_vStatus = $_pending) = ($_vRejectionReason IS NULL)),
+  CHECK (($_vStatus = $_pending) = ($_vRejectedAt IS NULL))
 )''',
   ],
 );
@@ -117,7 +110,7 @@ Migration get _indexOutboxByResolution => Migration(
   statements: [
     '''
 CREATE INDEX $_outboxByResolution
-  ON $_outboxVotes ($_voterId, $_resolutionId)''',
+  ON $_outboxVotes ($_vVoterId, $_vResolutionId)''',
   ],
 );
 
@@ -141,32 +134,32 @@ Migration get _quarantineUnreadableVotes => Migration(
   statements: [
     '''
 CREATE TABLE $_outboxVotesRebuilt (
-  $_sequence INTEGER PRIMARY KEY AUTOINCREMENT,
-  $_idempotencyKey TEXT NOT NULL UNIQUE,
-  $_voterId TEXT NOT NULL,
-  $_resolutionId TEXT NOT NULL,
-  $_meetingId TEXT NOT NULL,
-  $_choice TEXT NOT NULL,
-  $_castAt INTEGER NOT NULL,
-  $_enqueuedAt INTEGER NOT NULL,
-  $_attempts INTEGER NOT NULL,
-  $_status TEXT NOT NULL
-    CHECK ($_status IN ($_pending, $_rejected, $_quarantined)),
-  $_rejectionReason TEXT,
-  $_rejectedAt INTEGER,
-  CHECK ($_status = $_quarantined
-    OR (($_status = $_pending) = ($_rejectionReason IS NULL))),
-  CHECK ($_status = $_quarantined
-    OR (($_status = $_pending) = ($_rejectedAt IS NULL)))
+  $_vSequence INTEGER PRIMARY KEY AUTOINCREMENT,
+  $_vIdempotencyKey TEXT NOT NULL UNIQUE,
+  $_vVoterId TEXT NOT NULL,
+  $_vResolutionId TEXT NOT NULL,
+  $_vMeetingId TEXT NOT NULL,
+  $_vChoice TEXT NOT NULL,
+  $_vCastAt INTEGER NOT NULL,
+  $_vEnqueuedAt INTEGER NOT NULL,
+  $_vAttempts INTEGER NOT NULL,
+  $_vStatus TEXT NOT NULL
+    CHECK ($_vStatus IN ($_pending, $_rejected, $_quarantined)),
+  $_vRejectionReason TEXT,
+  $_vRejectedAt INTEGER,
+  CHECK ($_vStatus = $_quarantined
+    OR (($_vStatus = $_pending) = ($_vRejectionReason IS NULL))),
+  CHECK ($_vStatus = $_quarantined
+    OR (($_vStatus = $_pending) = ($_vRejectedAt IS NULL)))
 )''',
     '''
 INSERT INTO $_outboxVotesRebuilt
-  ($_sequence, $_idempotencyKey, $_voterId, $_resolutionId,
-   $_meetingId, $_choice, $_castAt, $_enqueuedAt,
-   $_attempts, $_status, $_rejectionReason, $_rejectedAt)
-  SELECT $_sequence, $_idempotencyKey, $_voterId, $_resolutionId,
-   $_meetingId, $_choice, $_castAt, $_enqueuedAt,
-   $_attempts, $_status, $_rejectionReason, $_rejectedAt
+  ($_vSequence, $_vIdempotencyKey, $_vVoterId, $_vResolutionId,
+   $_vMeetingId, $_vChoice, $_vCastAt, $_vEnqueuedAt,
+   $_vAttempts, $_vStatus, $_vRejectionReason, $_vRejectedAt)
+  SELECT $_vSequence, $_vIdempotencyKey, $_vVoterId, $_vResolutionId,
+   $_vMeetingId, $_vChoice, $_vCastAt, $_vEnqueuedAt,
+   $_vAttempts, $_vStatus, $_vRejectionReason, $_vRejectedAt
   FROM $_outboxVotes''',
     "DELETE FROM sqlite_sequence WHERE name = '$_outboxVotesRebuilt'",
     '''
@@ -178,7 +171,7 @@ INSERT INTO sqlite_sequence (name, seq)
     'ALTER TABLE $_outboxVotesRebuilt RENAME TO $_outboxVotes',
     '''
 CREATE INDEX $_outboxByResolution
-  ON $_outboxVotes ($_voterId, $_resolutionId)''',
+  ON $_outboxVotes ($_vVoterId, $_vResolutionId)''',
   ],
 );
 
@@ -199,16 +192,16 @@ Migration get _cacheDocuments => Migration(
   statements: [
     '''
 CREATE TABLE $_documentEntries (
-  $_owner TEXT NOT NULL,
-  $_documentId TEXT NOT NULL,
-  $_cachedAt INTEGER NOT NULL,
-  $_location TEXT NOT NULL,
-  $_payload TEXT NOT NULL,
-  PRIMARY KEY ($_owner, $_documentId)
+  $_dOwner TEXT NOT NULL,
+  $_dDocumentId TEXT NOT NULL,
+  $_dCachedAt INTEGER NOT NULL,
+  $_dLocation TEXT NOT NULL,
+  $_dPayload TEXT NOT NULL,
+  PRIMARY KEY ($_dOwner, $_dDocumentId)
 ) WITHOUT ROWID''',
     '''
 CREATE INDEX $_entriesByLocation
-  ON $_documentEntries ($_location)''',
+  ON $_documentEntries ($_dLocation)''',
   ],
 );
 

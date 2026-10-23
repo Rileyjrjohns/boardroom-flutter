@@ -1,5 +1,3 @@
-import 'package:boardroom/app/persistence/boardroom_database.dart';
-import 'package:boardroom/app/persistence/migrations.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
@@ -13,6 +11,7 @@ import 'package:boardroom/core/infrastructure/persistence/unlock_database.dart';
 import 'package:boardroom/core/infrastructure/secure_storage/secure_storage.dart';
 import 'package:boardroom/core/infrastructure/shared/attempt.dart';
 import 'package:boardroom/core/infrastructure/shared/serial_queue.dart';
+import 'package:drift/drift.dart' hide DatabaseOpener;
 import 'package:meta/meta.dart';
 
 /// How long opening the database, or the keychain, may take before the app
@@ -71,9 +70,18 @@ final class DatabaseUnavailable {
   String toString() => 'DatabaseUnavailable(${reason.value})';
 }
 
-/// What `openProtectedDatabase` needs.
+/// Makes the drift database of the app over an open connection, brought to the
+/// last of [migrations] when it is first used.
+typedef DatabaseFactory<D extends GeneratedDatabase> = D Function(
+  QueryExecutor executor,
+  List<Migration> migrations,
+);
+
+/// What `openProtectedDatabase` needs. The machinery knows no database of the
+/// app: the composition hands over the migrations and the [databaseFactory]
+/// that makes the one drift database of the file.
 @immutable
-final class ProtectedDatabaseOptions {
+final class ProtectedDatabaseOptions<D extends GeneratedDatabase> {
   /// Creates the options.
   const new({
     required this.opener,
@@ -82,6 +90,7 @@ final class ProtectedDatabaseOptions {
     required this.monitoring,
     required this.name,
     required this.migrations,
+    required this.databaseFactory,
     this.timeoutMillis,
   });
 
@@ -104,22 +113,26 @@ final class ProtectedDatabaseOptions {
   /// The steps that bring the schema up to date.
   final List<Migration> migrations;
 
+  /// Makes the database of the app over the connection that was opened.
+  final DatabaseFactory<D> databaseFactory;
+
   /// Defaults to [defaultOpenTimeoutMillis].
   final int? timeoutMillis;
 
   /// The same options, with another source of bits, another keychain, or
   /// another time limit.
-  ProtectedDatabaseOptions copyWith({
+  ProtectedDatabaseOptions<D> copyWith({
     RandomBytes? randomBytes,
     List<Migration>? migrations,
     int? timeoutMillis,
-  }) => ProtectedDatabaseOptions(
+  }) => ProtectedDatabaseOptions<D>(
     opener: opener,
     storage: storage,
     randomBytes: randomBytes ?? this.randomBytes,
     monitoring: monitoring,
     name: name,
     migrations: migrations ?? this.migrations,
+    databaseFactory: databaseFactory,
     timeoutMillis: timeoutMillis ?? this.timeoutMillis,
   );
 }
@@ -183,15 +196,16 @@ SerialQueue _queueOf(SecureStorage storage) =>
 /// Never throws. A start that fails with the keychain or the engine is
 /// `databaseUnavailable` with the reason; the app then does not start (the
 /// container reports it) and nothing is deleted.
-Future<Result<BoardroomDatabase, DatabaseUnavailable>> openProtectedDatabase(
-  ProtectedDatabaseOptions options,
+Future<Result<D, DatabaseUnavailable>>
+openProtectedDatabase<D extends GeneratedDatabase>(
+  ProtectedDatabaseOptions<D> options,
 ) => _queueOf(options.storage)(() => _start(options));
 
 Err<Never, DatabaseUnavailable> _unavailable(DatabaseFailureReason reason) =>
     err(DatabaseUnavailable(reason));
 
-Future<Result<BoardroomDatabase, DatabaseUnavailable>> _start(
-  ProtectedDatabaseOptions options,
+Future<Result<D, DatabaseUnavailable>> _start<D extends GeneratedDatabase>(
+  ProtectedDatabaseOptions<D> options,
 ) async {
   final timeout = options.timeoutMillis ?? defaultOpenTimeoutMillis;
 
@@ -260,8 +274,8 @@ Future<Result<BoardroomDatabase, DatabaseUnavailable>> _start(
       connection = value;
   }
 
-  final prepared = await _prepare(connection, options.migrations);
-  final BoardroomDatabase database;
+  final prepared = await _prepare(connection, options);
+  final D database;
   switch (prepared) {
     case Err():
       return prepared;
@@ -279,7 +293,7 @@ Future<Result<BoardroomDatabase, DatabaseUnavailable>> _start(
 /// the key that failed came from the keychain (and is worth keeping) or was
 /// made a moment ago for a file that was not there to be found.
 Future<Result<KeyState, DatabaseUnavailable>> _setAsideAndRenew(
-  ProtectedDatabaseOptions options,
+  ProtectedDatabaseOptions<GeneratedDatabase> options,
   KeyState current, {
   required bool keepsKey,
   required ResetReason reason,
@@ -315,7 +329,7 @@ Future<Result<KeyState, DatabaseUnavailable>> _setAsideAndRenew(
 /// Removes the copy that an earlier reset set aside, now that there is another
 /// one. Best effort.
 Future<void> _removeOlderCopy(
-  ProtectedDatabaseOptions options,
+  ProtectedDatabaseOptions<GeneratedDatabase> options,
   int setAside,
   int timeout,
 ) async {
@@ -361,10 +375,11 @@ Future<Result<EngineConnection, UnlockFailure>> _openUnlocked(
 }
 
 /// Sets the connection up and migrates the schema.
-Future<Result<BoardroomDatabase, DatabaseUnavailable>> _prepare(
+Future<Result<D, DatabaseUnavailable>> _prepare<D extends GeneratedDatabase>(
   EngineConnection connection,
-  List<Migration> migrations,
+  ProtectedDatabaseOptions<D> options,
 ) async {
+  final migrations = options.migrations;
   try {
     await connection.exec(connectionPragmas);
   } on Object {
@@ -376,10 +391,7 @@ Future<Result<BoardroomDatabase, DatabaseUnavailable>> _prepare(
     return _unavailable(DatabaseFailureReason.migration);
   }
 
-  final database = BoardroomDatabase(
-    connection.toExecutor(),
-    migrations: migrations,
-  );
+  final database = options.databaseFactory(connection.toExecutor(), migrations);
   try {
     // The first statement opens the file and runs the migrations.
     await database.customSelect('SELECT 1').get();
@@ -431,7 +443,7 @@ Future<Result<KeyState?, DatabaseUnavailable>> _readKeyState(
 /// Makes a key and stores it with the generation. The key is used only once it
 /// is safe in the keychain.
 Future<Result<KeyState, DatabaseUnavailable>> _makeState(
-  ProtectedDatabaseOptions options,
+  ProtectedDatabaseOptions<GeneratedDatabase> options,
   int generation,
   int timeout,
 ) async {

@@ -1,4 +1,3 @@
-import 'package:boardroom/app/persistence/migrations.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/infrastructure/persistence/guarded.dart';
 import 'package:boardroom/core/infrastructure/shared/attempt.dart';
@@ -13,6 +12,29 @@ import 'package:meta/meta.dart';
 // failure leaves the database at the version before it, which the next start
 // retries from. A database that is already there does nothing, and one that is
 // more recent than the migrations is refused.
+
+/// A step from one version of the schema to the next. Versions are 1, 2, 3, ...
+/// with no gap. The statements run in one transaction together with the update
+/// of the version, so that a migration that fails leaves the database at the
+/// version it was at.
+///
+/// Forward only: a migration that was released is never edited, a change is a
+/// new migration, and there is no way back. A database that is more recent than
+/// the app (the app was downgraded) is refused, not touched (see
+/// [migrationStrategyOf]). The list of the migrations of the app is in
+/// `lib/app/persistence/migrations.dart`: the machinery is here, the history of
+/// the file is the app's.
+@immutable
+final class Migration {
+  /// Creates the step that brings the schema to [version].
+  const new({required this.version, required this.statements});
+
+  /// The version of the schema once the statements have run.
+  final int version;
+
+  /// The statements, in order.
+  final List<String> statements;
+}
 
 /// Why the schema could not be brought up to date.
 enum MigrationFailureKind implements StableValue {

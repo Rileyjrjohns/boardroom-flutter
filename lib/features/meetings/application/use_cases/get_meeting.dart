@@ -3,6 +3,8 @@ import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart'
+    show SessionChangedError;
 import 'package:boardroom/features/meetings/application/load_meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 

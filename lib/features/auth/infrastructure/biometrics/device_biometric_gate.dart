@@ -1,9 +1,9 @@
 import 'package:boardroom/core/application/ports/monitoring.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/shared/attempt.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 import 'package:meta/meta.dart';
 
 /// How long the questions about the capability (hardware, enrolment) may take.

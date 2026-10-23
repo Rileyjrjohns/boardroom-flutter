@@ -20,6 +20,8 @@ import 'package:boardroom/features/auth/application/use_cases/sign_in.dart';
 import 'package:boardroom/features/auth/application/use_cases/sign_out.dart';
 import 'package:boardroom/features/auth/application/use_cases/unlock_app.dart';
 import 'package:boardroom/features/auth/domain/entities/user.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/documents/application/ports/screen_protection.dart';
 import 'package:boardroom/features/documents/application/use_cases/close_document.dart';
@@ -37,6 +39,7 @@ import 'package:boardroom/features/votes/application/use_cases/cast_vote.dart';
 import 'package:boardroom/features/votes/application/use_cases/list_pending_votes.dart';
 import 'package:boardroom/features/votes/application/use_cases/sync_pending_votes.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:test/test.dart';
 
 import '../../support/builders/builders.dart';

@@ -23,9 +23,10 @@ permissions:
 jobs:
   # Pinned to ubuntu-24.04: GitHub began moving ubuntu-latest to Ubuntu 26 on 19 October 2026.
 
-  # The layers may only import what the architecture allows (see the README.md of lib/core, of each
-  # folder of lib/features and of lib/app). This job runs the checker alone, beside the job below, so
-  # that a broken boundary fails a check of its own that is named after it.
+  # The layers and the features may only import what the architecture allows (docs/architecture.md, and
+  # the README.md of lib/core, of each folder of lib/features and of lib/app): the layers, the graph
+  # of the features, no cycle. This job runs the checker alone, beside the job below, so that a broken
+  # boundary fails a check of its own that is named after it.
   imports:
     name: Import rules
     runs-on: ubuntu-24.04
@@ -69,7 +70,7 @@ jobs:
       - name: Install the dependencies
         run: flutter pub get
 
-      # The freezed classes of the domain folders (*.freezed.dart) and the JSON and drift code (*.g.dart)
+      # The freezed classes of the domain folders (*.freezed.dart) and the JSON code (*.g.dart) and the drift code (*.drift.dart)
       # are not committed: the analysis and the tests need them.
       - name: Generate the code (build_runner)
         run: dart run build_runner build
@@ -81,7 +82,8 @@ jobs:
         run: flutter analyze --fatal-infos --fatal-warnings
 
       # The tests of the pure Dart folders (the domain and application folders of test/core and of
-      # each feature in test/features, the fakes in test/support/fakes, and the tooling in test/tool)
+      # each feature in test/features, the glue between features in test/app/composition, the fakes
+      # in test/support/fakes, and the tooling in test/tool)
       # run with `dart test`, not `flutter test`: that is the proof that the domain, the application
       # and the tooling need no Flutter. test/core/infrastructure holds Flutter tests, so only the
       # domain and application folders of core run here. A folder with no test file yet is skipped,
@@ -89,7 +91,7 @@ jobs:
       - name: Pure Dart tests (without Flutter)
         run: |
           folders=()
-          for folder in test/core/domain test/core/application test/features/*/domain test/features/*/application test/support/fakes test/tool; do
+          for folder in test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool; do
             if [ -n "$(find "$folder" -name '*_test.dart' -print -quit 2>/dev/null)" ]; then
               folders+=("$folder")
             fi

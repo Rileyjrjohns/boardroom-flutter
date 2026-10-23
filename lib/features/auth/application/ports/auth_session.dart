@@ -1,6 +1,8 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart'
+    show InvalidCredentialsError;
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
 
 /// What can go wrong when signing in: [InvalidCredentialsError],

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:boardroom/app/persistence/boardroom_database.dart';
 import 'package:boardroom/app/persistence/migrations.dart' as schema;
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/persistence/database_opener.dart';
+import 'package:boardroom/core/infrastructure/persistence/migrate.dart';
 import 'package:boardroom/core/infrastructure/persistence/protected_database.dart';
 import 'package:boardroom/core/infrastructure/persistence/random_key.dart';
 import 'package:boardroom/core/infrastructure/persistence/sqlite3_opener.dart';
@@ -82,13 +84,10 @@ final class _Device {
 /// holds.
 Future<TestDatabase> openEncryptedTestDatabase(
   Directory parent, [
-  List<schema.Migration>? migrations,
+  List<Migration>? migrations,
 ]) => _start(_Device(parent), migrations ?? schema.migrations);
 
-Future<TestDatabase> _start(
-  _Device device,
-  List<schema.Migration> migrations,
-) async {
+Future<TestDatabase> _start(_Device device, List<Migration> migrations) async {
   // A test opens many databases, one after the other: drift's warning about
   // the same class being instantiated twice is for a program that uses two at
   // once.
@@ -102,6 +101,7 @@ Future<TestDatabase> _start(
       monitoring: device.monitoring,
       name: device.name,
       migrations: migrations,
+      databaseFactory: createBoardroomDatabase,
     ),
   );
   final database = switch (started) {

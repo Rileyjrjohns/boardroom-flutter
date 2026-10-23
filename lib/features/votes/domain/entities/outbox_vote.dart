@@ -4,6 +4,7 @@ import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/shared/validation.dart';
 import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'outbox_vote.freezed.dart';

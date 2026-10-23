@@ -34,8 +34,8 @@ const defaultLcovPath = 'coverage/lcov.info';
 const sourceFolder = 'lib';
 
 /// Endings of the files that build_runner writes (freezed, json_serializable,
-/// riverpod_generator).
-const generatedFileSuffixes = ['.g.dart', '.freezed.dart'];
+/// and the modular generation of drift).
+const generatedFileSuffixes = ['.g.dart', '.freezed.dart', '.drift.dart'];
 
 /// Start of the path of the files that gen-l10n writes
 /// (`app_localizations.dart` and one file per language), see l10n.yaml.

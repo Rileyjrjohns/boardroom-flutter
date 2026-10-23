@@ -7,6 +7,7 @@ import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/features/auth/application/ports/auth_session.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
 import 'package:boardroom/features/auth/domain/entities/user.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
 import 'package:boardroom/features/auth/domain/policies/session_expiry.dart';
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
 import 'package:boardroom/features/auth/domain/value_objects/email_address.dart';

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:boardroom/core/application/ports/types/unsubscribe.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/documents/application/ports/screen_protection.dart';
 import 'package:boardroom/features/documents/application/screen_protection_coordinator.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 import 'package:test/test.dart';
 
 import '../../../support/builders/builders.dart';

@@ -1,7 +1,7 @@
 import 'package:boardroom/core/application/ports/types/unsubscribe.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/constants.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'screen_protection.freezed.dart';

@@ -1,7 +1,7 @@
 import 'package:boardroom/core/application/ports/types/unsubscribe.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/documents/application/ports/screen_protection.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart';
 
 /// A platform that supports screen protection, until the test says otherwise.
 class FakeScreenProtection implements ScreenProtection {

@@ -15,6 +15,7 @@ analyzer:
     # Generated code is never linted nor committed (see the README for the commands that rebuild it).
     - '**/*.g.dart'
     - '**/*.freezed.dart'
+    - '**/*.drift.dart'
     - '.dart_tool/**'
     - 'build/**'
     - 'lib/l10n/app_localizations*.dart'

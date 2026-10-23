@@ -8,14 +8,17 @@ import 'package:boardroom/features/auth/application/session/confirm_with_biometr
 import 'package:boardroom/features/auth/application/session/end_session.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart'
+    show BiometricError;
 import 'package:boardroom/features/meetings/application/load_meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
+import 'package:boardroom/features/votes/application/ports/recorded_vote_sink.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/application/ports/vote_repository.dart';
-import 'package:boardroom/features/votes/application/record_vote_in_cache.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:boardroom/features/votes/domain/policies/voting_eligibility.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -32,6 +35,9 @@ abstract interface class CastVoteDeps implements LoadMeetingDeps {
 
   /// The biometric prompt that confirms a vote.
   BiometricGate get biometricGate;
+
+  /// Where a vote the server recorded is written into the cached meeting.
+  RecordedVoteSink get recordedVoteSink;
 }
 
 /// What happened to a vote that was cast.
@@ -223,7 +229,7 @@ final class CastVote {
 
     switch (await votes.submit(vote)) {
       case Ok():
-        await recordVoteInCache(_deps, vote);
+        await _deps.recordedVoteSink.record(vote);
         monitoring.log(
           LogLevel.info,
           MonitoringEvent.voteSubmitted,

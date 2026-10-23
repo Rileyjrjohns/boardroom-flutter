@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:boardroom/app/persistence/boardroom_database.dart';
 import 'package:boardroom/app/persistence/migrations.dart' as schema;
+import 'package:boardroom/core/infrastructure/persistence/migrate.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:test/test.dart';
@@ -36,7 +37,7 @@ final class TestDatabase {
   final DatabaseFaults faults;
 
   /// The migrations it was opened with.
-  final List<schema.Migration> migrations;
+  final List<Migration> migrations;
 
   /// The file of the database; `null` for a database in memory.
   final File? file;
@@ -44,12 +45,12 @@ final class TestDatabase {
   /// How a start of the app opens this database again, with the migrations it
   /// is given (`null`: the same). `null` for a database that is opened as a
   /// plain file of the tests.
-  final Future<TestDatabase> Function(List<schema.Migration>? next)? restart;
+  final Future<TestDatabase> Function(List<Migration>? next)? restart;
 
   /// Closes this database and opens the same file again, as a new start of the
   /// app would, with the same migrations or with [next] (a newer version of the
   /// app). A database in memory has no file to open again.
-  Future<TestDatabase> reopen([List<schema.Migration>? next]) async {
+  Future<TestDatabase> reopen([List<Migration>? next]) async {
     final file = this.file;
     if (file == null) {
       throw StateError('A database in memory cannot be opened again.');
@@ -70,7 +71,7 @@ int _counter = 0;
 /// when the test is done.
 Future<TestDatabase> openTestDatabase([
   Directory? directory,
-  List<schema.Migration>? migrations,
+  List<Migration>? migrations,
 ]) async {
   if (directory == null) {
     return await _open(
@@ -90,7 +91,7 @@ Future<TestDatabase> openTestDatabase([
 /// fails.
 Future<TestDatabase> openTestFile(
   File file, [
-  List<schema.Migration>? migrations,
+  List<Migration>? migrations,
 ]) async => await _open(
   NativeDatabase(file),
   migrations ?? schema.migrations,
@@ -99,7 +100,7 @@ Future<TestDatabase> openTestFile(
 
 Future<TestDatabase> _open(
   QueryExecutor executor,
-  List<schema.Migration> migrations, {
+  List<Migration> migrations, {
   File? file,
 }) async {
   // A test opens many databases, one after the other: drift's warning about

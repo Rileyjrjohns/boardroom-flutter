@@ -7,9 +7,13 @@ import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/application/session/require_session.dart';
 import 'package:boardroom/features/auth/domain/entities/session.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart'
+    show SessionChangedError;
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:boardroom/features/documents/application/ports/document_repository.dart';
 import 'package:boardroom/features/documents/application/screen_protection_coordinator.dart';
+import 'package:boardroom/features/documents/domain/errors/screen_protection_error.dart'
+    show ScreenProtectionError;
 import 'package:boardroom/features/documents/domain/value_objects/document_location.dart';
 import 'package:boardroom/features/documents/domain/value_objects/watermark.dart';
 import 'package:boardroom/features/meetings/domain/entities/document.dart';
@@ -18,12 +22,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'open_document.freezed.dart';
 
 /// What [OpenDocument] needs, on top of what the cache fallback needs.
-abstract interface class OpenDocumentDeps implements CacheFallbackDeps {
+abstract interface class OpenDocumentDeps
+    implements CacheFallbackDeps, RequireSessionDeps {
   /// The remote documents.
   DocumentRepository get documents;
 
   /// The local cache of documents.
-  @override
   DocumentCache get documentCache;
 
   /// The instance shared with `CloseDocument`.

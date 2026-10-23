@@ -6,10 +6,10 @@ import 'package:boardroom/core/infrastructure/http/http_client.dart';
 import 'package:boardroom/core/infrastructure/http/invalid_response.dart';
 import 'package:boardroom/core/infrastructure/http/protocol.dart';
 import 'package:boardroom/core/infrastructure/http/well_formed.dart';
-import 'package:boardroom/core/infrastructure/shared/rejection_schemas.dart';
 import 'package:boardroom/features/votes/application/ports/vote_repository.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
 import 'package:boardroom/features/votes/infrastructure/dto/vote_dto.dart';
+import 'package:boardroom/features/votes/infrastructure/rejection_schemas.dart';
 
 /// The votes of the API (`POST /votes`). The request carries the idempotency
 /// key in a header, so that a retry after a lost answer is recorded once; the

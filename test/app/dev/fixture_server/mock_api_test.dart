@@ -4,11 +4,11 @@ import 'dart:typed_data';
 import 'package:boardroom/app/dev/fixture_server/api_message.dart';
 import 'package:boardroom/app/dev/fixture_server/mock_api.dart';
 import 'package:boardroom/app/dev/in_memory/in_memory_backend.dart';
-import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/infrastructure/http/protocol.dart';
 import 'package:boardroom/features/documents/infrastructure/pdf_signature.dart';
 import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:boardroom/features/votes/infrastructure/dto/vote_dto.dart';
 import 'package:test/test.dart';
 

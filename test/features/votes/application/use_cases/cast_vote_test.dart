@@ -4,6 +4,8 @@ import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
+import 'package:boardroom/features/auth/domain/errors/authentication_error.dart';
+import 'package:boardroom/features/auth/domain/errors/biometric_error.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/participant.dart';
 import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
@@ -11,6 +13,7 @@ import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dar
 import 'package:boardroom/features/votes/application/use_cases/cast_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 import 'package:test/test.dart';
 
 import '../../../../support/builders/builders.dart';
@@ -945,8 +948,7 @@ void main() {
         final outbox = _BlindOutbox()
           ..seed([
             // The reason is part of the scenario: it is spelled out.
-            // ignore: avoid_redundant_argument_values
-            aRejectedVote(aVote(), const ResolutionClosedError()),
+            aRejectedVote(aVote()),
           ]);
 
         fakes.votes.answerNext(err(networkUnavailable()));

@@ -1,4 +1,4 @@
-part of 'app_error.dart';
+part of 'vote_errors.dart';
 
 /// Why a vote cannot be cast. The same reasons come back from the remote source
 /// when it rejects one.

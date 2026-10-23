@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:boardroom/app/persistence/boardroom_database.dart';
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/application/ports/types/cache_entry.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
@@ -15,6 +13,8 @@ import 'package:boardroom/core/infrastructure/persistence/stored_payload.dart';
 import 'package:boardroom/features/meetings/application/ports/meeting_cache.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting.dart';
 import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/schema.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/tables.drift.dart';
 import 'package:boardroom/features/meetings/infrastructure/stored_meeting.dart';
 import 'package:drift/drift.dart';
 
@@ -31,15 +31,15 @@ enum _Stored implements StableValue {
 
 // The statements that read. A row is found by one column for each part of its
 // key. The writes go through the tables of drift (`tables.dart`).
-String get _pages => StoredTable.meetingPages.value;
-String get _details => StoredTable.meetingDetails.value;
-String get _owner => StoredColumn.owner.value;
-String get _period => StoredColumn.period.value;
-String get _cursorKey => StoredColumn.cursorKey.value;
-String get _pageLimit => StoredColumn.pageLimit.value;
-String get _meetingId => StoredColumn.meetingId.value;
-String get _cachedAt => StoredColumn.cachedAt.value;
-String get _payload => StoredColumn.payload.value;
+String get _pages => MeetingStoredTable.meetingPages.value;
+String get _details => MeetingStoredTable.meetingDetails.value;
+String get _owner => MeetingStoredColumn.owner.value;
+String get _period => MeetingStoredColumn.period.value;
+String get _cursorKey => MeetingStoredColumn.cursorKey.value;
+String get _pageLimit => MeetingStoredColumn.pageLimit.value;
+String get _meetingId => MeetingStoredColumn.meetingId.value;
+String get _cachedAt => MeetingStoredColumn.cachedAt.value;
+String get _payload => MeetingStoredColumn.payload.value;
 
 String get _readPage =>
     'SELECT $_cachedAt, $_payload FROM $_pages '
@@ -81,14 +81,17 @@ _PageKey _pageKeyOf(UserId owner, MeetingPageKey key) => (
 final class DriftMeetingCache implements MeetingCache {
   /// Creates the cache over [database]. [timeoutMillis] is how long a
   /// statement may take (`defaultStatementTimeoutMillis` by default).
-  const new({
-    required this.database,
-    required this.monitoring,
-    this.timeoutMillis,
-  });
+  new({required this.database, required this.monitoring, this.timeoutMillis})
+    : _pages = $MeetingPagesTable(database),
+      _details = $MeetingDetailsTable(database);
 
-  /// The database the entries are in.
-  final BoardroomDatabase database;
+  /// The database the entries are in. Any drift database that holds the tables
+  /// of the meetings will do: the adapter knows the tables it owns, not the
+  /// database of the app that lists them.
+  final GeneratedDatabase database;
+
+  final $MeetingPagesTable _pages;
+  final $MeetingDetailsTable _details;
 
   /// Where a row that cannot be read is reported.
   final Monitoring monitoring;
@@ -108,7 +111,7 @@ final class DriftMeetingCache implements MeetingCache {
     final row = _pageKeyOf(owner, key);
     return _save(
       () => database
-          .into(database.meetingPages)
+          .into(_pages)
           .insert(
             MeetingPagesCompanion.insert(
               owner: row.owner,
@@ -158,7 +161,7 @@ final class DriftMeetingCache implements MeetingCache {
     Instant cachedAt,
   ) => _save(
     () => database
-        .into(database.meetingDetails)
+        .into(_details)
         .insert(
           MeetingDetailsCompanion.insert(
             owner: owner,
@@ -192,14 +195,14 @@ final class DriftMeetingCache implements MeetingCache {
   @override
   Future<Result<void, StorageWriteFailedError>> purge() => guardedWrite(
     () => database.transaction(() async {
-      await database.delete(database.meetingPages).go();
-      await database.delete(database.meetingDetails).go();
+      await database.delete(_pages).go();
+      await database.delete(_details).go();
     }),
     _timeout,
   );
 
   Future<void> _deletePage(_PageKey row) async {
-    await (database.delete(database.meetingPages)..where(
+    await (database.delete(_pages)..where(
           (page) =>
               page.owner.equals(row.owner) &
               page.period.equals(row.period) &
@@ -210,7 +213,7 @@ final class DriftMeetingCache implements MeetingCache {
   }
 
   Future<void> _deleteMeeting(UserId owner, MeetingId id) async {
-    await (database.delete(database.meetingDetails)..where(
+    await (database.delete(_details)..where(
           (meeting) =>
               meeting.owner.equals(owner) & meeting.meetingId.equals(id),
         ))

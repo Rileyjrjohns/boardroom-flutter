@@ -1,38 +1,36 @@
-/// Every error the domain defines, as sealed classes.
+/// The root of every error of the app, and the families of the core.
 ///
 /// An error is plain data with a stable [AppError.code] and, for some, a few
 /// more fields. It carries no user-facing text: the presentation turns a code
 /// into a message of the language of the user. The codes are unique across all
-/// the families (a test checks it), so errors of several concerns can be told
-/// apart by `code` alone.
+/// the families (a test of the composition checks it, as it is the only place
+/// that sees every family), so errors of several concerns can be told apart by
+/// `code` alone.
 ///
-/// All the families live in one library (one `part` file each) because Dart
-/// only lets a sealed class be extended inside its own library. That is what
-/// makes a `switch` over an [AppError], or over any family, exhaustive. Import
-/// this file to use any of them.
+/// [AppError] is open: a feature declares the errors that are its own, as a
+/// family sealed in its own library (`AuthenticationError`, `BiometricError`,
+/// `VotingError`, `ScreenProtectionError`...), and the core does not know them.
+/// A `switch` over a family is checked to be exhaustive, since Dart only lets a
+/// sealed class be extended inside its own library; a `switch` over [AppError]
+/// itself, whose subclasses are in several libraries, is not. The families of
+/// the core are here, one `part` file each: the repository errors, the storage
+/// errors and the validation error. Import this file to use any of them.
 library;
 
 import 'package:boardroom/core/domain/shared/constants.dart';
-import 'package:boardroom/core/domain/value_objects/ids.dart' show ResolutionId;
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
-part 'authentication_error.dart';
-part 'biometric_error.dart';
 part 'repository_error.dart';
-part 'screen_protection_error.dart';
 part 'storage_error.dart';
 part 'validation_error.dart';
-part 'vote_delivery_error.dart';
-part 'voting_error.dart';
 
-/// Every error the domain defines. Match on it with a `switch`: the families
-/// are sealed too, so the switch is checked to be exhaustive.
+/// Every error of the app. A family extends it, in the core or in a feature.
 ///
 /// Two errors are equal when they are of the same class and carry the same
 /// data.
 @immutable
-sealed class AppError {
+abstract base class AppError {
   /// Creates an error.
   const new();
 

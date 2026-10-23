@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/http/dto/wire.dart';
-import 'package:boardroom/core/infrastructure/shared/rejection_schemas.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
+import 'package:boardroom/features/votes/infrastructure/rejection_schemas.dart';
 import 'package:test/test.dart';
 
 import '../../../support/builders/builders.dart';

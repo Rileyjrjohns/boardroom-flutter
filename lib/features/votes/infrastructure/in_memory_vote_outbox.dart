@@ -5,6 +5,7 @@ import 'package:boardroom/core/domain/value_objects/instant.dart';
 import 'package:boardroom/features/votes/application/ports/vote_outbox.dart';
 import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
 import 'package:boardroom/features/votes/domain/entities/vote.dart';
+import 'package:boardroom/features/votes/domain/errors/vote_errors.dart';
 
 /// A vote outbox in memory: a queue in the order of enqueueing, scoped by voter
 /// on every read, with the idempotent writes the port describes and

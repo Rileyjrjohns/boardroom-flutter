@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:boardroom/app/persistence/boardroom_database.dart';
 import 'package:boardroom/app/persistence/migrations.dart' as schema;
-import 'package:boardroom/app/persistence/schema.dart';
 import 'package:boardroom/core/application/ports/monitoring.dart';
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
@@ -12,11 +11,13 @@ import 'package:boardroom/core/infrastructure/persistence/database_key.dart';
 import 'package:boardroom/core/infrastructure/persistence/database_opener.dart'
     show connectionPragmas;
 import 'package:boardroom/core/infrastructure/persistence/local_data_reset.dart';
+import 'package:boardroom/core/infrastructure/persistence/migrate.dart';
 import 'package:boardroom/core/infrastructure/persistence/protected_database.dart';
 import 'package:boardroom/core/infrastructure/persistence/random_key.dart';
 import 'package:boardroom/core/infrastructure/persistence/sqlite3_opener.dart';
 import 'package:boardroom/core/infrastructure/persistence/unlock_database.dart';
 import 'package:boardroom/core/infrastructure/secure_storage/secure_storage.dart';
+import 'package:boardroom/features/meetings/infrastructure/persistence/schema.dart';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:test/test.dart';
 
@@ -109,7 +110,7 @@ final class _Device {
 
   /// A start of the app.
   Future<Result<BoardroomDatabase, DatabaseUnavailable>> start({
-    List<schema.Migration>? migrations,
+    List<Migration>? migrations,
     int? timeoutMillis,
   }) => openProtectedDatabase(
     ProtectedDatabaseOptions(
@@ -119,6 +120,7 @@ final class _Device {
       monitoring: monitoring,
       name: name,
       migrations: migrations ?? schema.migrations,
+      databaseFactory: createBoardroomDatabase,
       timeoutMillis: timeoutMillis,
     ),
   );
@@ -138,14 +140,15 @@ Future<BoardroomDatabase> _started(_Device device) async {
 }
 
 Future<void> _mark(BoardroomDatabase database) => database.run(
-  'INSERT INTO ${StoredTable.meetingDetails.value} '
+  'INSERT INTO ${MeetingStoredTable.meetingDetails.value} '
   "(owner, meeting_id, cached_at, payload) VALUES ('o', 'm', 1, '{}')",
 );
 
-Future<Object?> _rowsOf(BoardroomDatabase database) async =>
-    (await database.all(
-      'SELECT count(*) AS total FROM ${StoredTable.meetingDetails.value}',
-    )).single['total'];
+Future<Object?> _rowsOf(
+  BoardroomDatabase database,
+) async => (await database.all(
+  'SELECT count(*) AS total FROM ${MeetingStoredTable.meetingDetails.value}',
+)).single['total'];
 
 Err<Never, DatabaseUnavailable> _unavailable(DatabaseFailureReason reason) =>
     err(DatabaseUnavailable(reason));
@@ -354,7 +357,7 @@ void main() {
               expect(
                 await old.all(
                   'SELECT count(*) AS total '
-                  'FROM ${StoredTable.meetingDetails.value}',
+                  'FROM ${MeetingStoredTable.meetingDetails.value}',
                 ),
                 equals([
                   {'total': 1},
@@ -917,7 +920,7 @@ void main() {
       test('reports a schema that cannot be brought up to date, '
           'and closes the database', () async {
         final device = _Device(parent);
-        final broken = schema.Migration(
+        final broken = Migration(
           version: schema.migrations.length + 1,
           statements: const ['INSERT INTO nowhere VALUES (1)'],
         );
@@ -934,7 +937,7 @@ void main() {
       test('closes the database of a newer version of the app '
           'that it leaves alone', () async {
         final device = _Device(parent);
-        final newer = schema.Migration(
+        final newer = Migration(
           version: schema.migrations.length + 1,
           statements: const ['CREATE TABLE later (id INTEGER)'],
         );
@@ -984,7 +987,7 @@ void main() {
       test('reports a database written by a more recent version of the app, '
           'and leaves it alone', () async {
         final device = _Device(parent);
-        final newer = schema.Migration(
+        final newer = Migration(
           version: schema.migrations.length + 1,
           statements: const ['CREATE TABLE later (id INTEGER)'],
         );
@@ -1050,12 +1053,12 @@ void main() {
         expect(failed, equals(_unavailable(DatabaseFailureReason.open)));
       });
 
-      final invalidLists = <(String, List<schema.Migration>)>[
+      final invalidLists = <(String, List<Migration>)>[
         (
           'a gap',
           [
-            const schema.Migration(version: 1, statements: []),
-            const schema.Migration(version: 3, statements: []),
+            const Migration(version: 1, statements: []),
+            const Migration(version: 3, statements: []),
           ],
         ),
         ('no migration at all', const []),
@@ -1108,6 +1111,7 @@ void main() {
           monitoring: device.monitoring,
           name: 'boardroom.db',
           migrations: schema.migrations,
+          databaseFactory: createBoardroomDatabase,
         );
         Future<Uint8List> zeros(int count) async => Uint8List(count);
 
