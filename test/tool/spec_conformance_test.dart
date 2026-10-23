@@ -47,8 +47,8 @@ const String _screensOutOfScope =
 /// Why the settings are not checked yet.
 const String _settingsOutOfScope =
     'The settings are the defaults of the composition root (the React Native '
-    'src/di/config.ts), which is built from step 3; this test covers the '
-    'domain, the use cases and the ports.';
+    'src/di/config.ts), which is built with the providers, after the '
+    'infrastructure; this test covers the domain, the use cases and the ports.';
 
 /// The part of the project the conformance test reads.
 const String _specFolder = 'docs/spec';
