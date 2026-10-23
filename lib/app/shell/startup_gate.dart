@@ -12,6 +12,7 @@ import 'package:boardroom/app/shell/startup_failure_screen.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/presentation/components/loading_state.dart';
 import 'package:boardroom/core/presentation/providers.dart';
+import 'package:boardroom/core/presentation/query/query_lifetime.dart';
 import 'package:boardroom/core/presentation/query/retry_policy.dart';
 import 'package:boardroom/core/presentation/test_ids.dart';
 import 'package:boardroom/core/presentation/theme/app_theme.dart';
@@ -114,10 +115,13 @@ class _StartupGateState extends State<StartupGate> {
       onSessionEnded: (code, startedUnder) =>
           providers.read(sessionEndHandlerProvider)(code, startedUnder),
     );
-    return providers = ProviderContainer(
+    providers = ProviderContainer(
       overrides: appOverrides(app),
       retry: policy.call,
     );
+    // Closed with the container.
+    dropQueriesWhenSessionMoves(providers);
+    return providers;
   }
 
   @override

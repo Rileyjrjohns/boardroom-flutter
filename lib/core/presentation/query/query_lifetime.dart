@@ -2,6 +2,48 @@ import 'dart:async';
 
 import 'package:boardroom/core/presentation/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show KeepAliveLink;
+
+/// Every query that holds data of the user, so that all of them can be dropped
+/// at once when the access moves. A query registers itself in
+/// [QueryLifetime.keepQueryFor] and leaves when it is disposed.
+final class QueryRegistry {
+  final Set<KeepAliveLink> _links = {};
+
+  /// How many queries are held in memory.
+  int get length => _links.length;
+
+  /// Lets go of every query: the ones nobody listens to are disposed at once,
+  /// the data with them. One a screen still listens to is disposed as soon as
+  /// that screen goes, and the router removes the screens of a session that
+  /// ended; a screen that is built after the move reads a new query.
+  void dropAll() {
+    for (final link in _links.toList()) {
+      link.close();
+    }
+  }
+}
+
+/// The registry of the queries of the container.
+final queryRegistryProvider = Provider<QueryRegistry>((ref) => QueryRegistry());
+
+/// Drops every query of [container] each time the epoch of the access moves
+/// (the user signed out, the app locked, another user signed in), and returns
+/// the subscription, to close it with the container.
+///
+/// It must be a subscription of the container itself and not one a query makes
+/// with `ref.listen`: a provider nobody listens to is paused, and a paused
+/// provider is not told of the change, so a second user would be handed what
+/// the first one had loaded. The container is always listening, which is the
+/// counterpart of the query cache the React Native app clears when a session
+/// ends. The app (`StartupGate`) and the test harness both call it.
+ProviderSubscription<int> dropQueriesWhenSessionMoves(
+  ProviderContainer container,
+) => container.listen<int>(sessionEpochProvider, (previous, next) {
+  if (previous != next) {
+    container.read(queryRegistryProvider).dropAll();
+  }
+});
 
 /// How long what a query holds counts as current. A screen opened again inside
 /// this window shows what it has and asks nothing; after it, the screen shows
@@ -26,13 +68,16 @@ extension QueryLifetime on Ref {
   ///   the provider asks again (`invalidateSelf`, which keeps the previous
   ///   value while the new one loads);
   /// - whenever the user leaves the open app (the epoch of the access moves)
-  ///   the data is dropped as soon as nobody listens, so nothing of the
-  ///   previous session stays in memory.
+  ///   the data is dropped, whether a screen was listening or not, so nothing
+  ///   of the previous session stays in memory (see
+  ///   [dropQueriesWhenSessionMoves], which the container installs).
   void keepQueryFor({
     Duration staleTime = queryStaleTime,
     Duration gcTime = queryGcTime,
   }) {
     final link = keepAlive();
+    final registry = read(queryRegistryProvider);
+    registry._links.add(link);
     Timer? gc;
     var stale = false;
     final staleTimer = Timer(staleTime, () => stale = true);
@@ -53,13 +98,9 @@ extension QueryLifetime on Ref {
       }
     });
     onDispose(() {
+      registry._links.remove(link);
       gc?.cancel();
       staleTimer.cancel();
-    });
-    listen<int>(sessionEpochProvider, (previous, next) {
-      if (previous != next) {
-        link.close();
-      }
     });
   }
 }

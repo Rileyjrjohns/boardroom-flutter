@@ -1,5 +1,5 @@
 import 'package:boardroom/app/composition/ports.dart';
-import 'package:boardroom/app/composition/settings.dart';
+import 'package:boardroom/app/composition/settings.dart' as app_settings;
 import 'package:boardroom/app/composition/use_cases.dart';
 import 'package:boardroom/app/container/app_container.dart';
 import 'package:boardroom/app/container/configuration.dart';
@@ -8,6 +8,7 @@ import 'package:boardroom/app/providers/app_overrides.dart';
 import 'package:boardroom/core/presentation/demo/demo_controls.dart';
 import 'package:boardroom/core/presentation/notices/app_notices.dart';
 import 'package:boardroom/core/presentation/providers.dart';
+import 'package:boardroom/core/presentation/query/query_lifetime.dart';
 import 'package:boardroom/core/presentation/query/retry_policy.dart';
 import 'package:boardroom/core/presentation/theme/app_theme.dart';
 import 'package:boardroom/features/auth/application/session/session_policy.dart';
@@ -47,12 +48,15 @@ Ports portsOf(Fakes fakes) => Ports(
 /// container that `appOverrides` reads.
 final class TestApp {
   /// Creates the app. The user is signed in and the app is unlocked unless
-  /// [startsLocked].
+  /// [startsLocked]. A page of the meetings list holds [meetingsPageSize]
+  /// meetings (the one of the app by default; a test of the pagination sets a
+  /// small one).
   factory({
     Fakes? fakes,
     DemoControls? demoControls,
     AppNotices? notices,
     bool startsLocked = false,
+    int meetingsPageSize = app_settings.meetingsPageSize,
     Ports Function(Ports ports)? adaptPorts,
   }) {
     final theFakes = fakes ?? createFakes();
@@ -61,7 +65,7 @@ final class TestApp {
       UseCaseSettings(
         maxCacheAge: theFakes.maxCacheAge,
         maxAttempts: theFakes.maxAttempts,
-        gracePeriod: appLockGracePeriod,
+        gracePeriod: app_settings.appLockGracePeriod,
         startsLocked: startsLocked,
       ),
     );
@@ -71,7 +75,7 @@ final class TestApp {
       container: AppContainer(
         kind: AdaptersKind.dev,
         useCases: useCases,
-        settings: const AppSettings(meetingsPageSize: meetingsPageSize),
+        settings: AppSettings(meetingsPageSize: meetingsPageSize),
         clock: theFakes.clock,
         monitoring: theFakes.monitoring,
         screenProtection: theFakes.screenProtection,
@@ -115,6 +119,7 @@ final class TestApp {
       retry: policy.call,
     );
     created.read(accessControllerProvider.notifier).startAt(access);
+    dropQueriesWhenSessionMoves(created);
     addTearDown(created.dispose);
     return created;
   }
