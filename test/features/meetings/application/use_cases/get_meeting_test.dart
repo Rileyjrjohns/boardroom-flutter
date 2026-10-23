@@ -311,6 +311,54 @@ void main() {
         expect(fakes.meetingCache.isEmpty(), isTrue);
       });
 
+      test('captures the failure when the cached copy cannot be read to find '
+          'the documents it lists', () async {
+        final (:fakes, :useCase) = _setup();
+        await _get(useCase);
+        fakes.meetings.forbid(aMeetingId());
+        fakes.meetingCache.readFailure = storageReadFailed();
+
+        expect(await _get(useCase), equals(err(forbidden())));
+        expect(
+          fakes.monitoring.errors,
+          equals([
+            ErrorRecord(
+              event: MonitoringEvent.cacheRemoveFailed,
+              error: storageReadFailed(),
+              attributes: _meetingAttributes,
+            ),
+          ]),
+        );
+      });
+
+      test('captures the failure when a document that the refused meeting '
+          'lists cannot be removed', () async {
+        final (:fakes, :useCase) = _setup();
+        await _get(useCase);
+        await fakes.documentCache.save(
+          aUserId(),
+          ViewableDocument(
+            document: _meeting.documents.firstOrNull ?? aDocument(),
+            location: aDocumentLocation(),
+          ),
+          now,
+        );
+        fakes.meetings.forbid(aMeetingId());
+        fakes.documentCache.removeFailure = storageWriteFailed();
+
+        expect(await _get(useCase), equals(err(forbidden())));
+        expect(
+          fakes.monitoring.errors,
+          equals([
+            ErrorRecord(
+              event: MonitoringEvent.cacheRemoveFailed,
+              error: storageWriteFailed(),
+              attributes: _meetingAttributes,
+            ),
+          ]),
+        );
+      });
+
       test('captures the failure of the purge when the session is refused and '
           'the caches cannot be emptied', () async {
         final (:fakes, :useCase) = _setup();

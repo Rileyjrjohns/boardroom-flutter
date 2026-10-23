@@ -1,5 +1,6 @@
 import 'package:boardroom/core/domain/errors/app_error.dart';
 import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:boardroom/core/domain/value_objects/ids.dart';
 import 'package:boardroom/features/documents/application/document_cache_evictor.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:test/test.dart';
@@ -7,52 +8,47 @@ import 'package:test/test.dart';
 import '../../../support/builders/builders.dart';
 import '../../../support/fakes/fake_document_cache.dart';
 
-// Dart only: the evictor is the way the meetings feature reaches the document
-// cache without importing it (see docs/architecture.md).
+// The evictor is the way the meetings feature reaches the document cache
+// without importing it (see docs/architecture.md).
 
-ViewableDocument _viewable() =>
-    ViewableDocument(document: aDocument(), location: aDocumentLocation());
+final UserId _alice = aUserId();
+final UserId _bruno = aUserId('user-2');
 
 void main() {
   group('DocumentCacheEvictor', () {
-    test('removes the copy of the document that the owner kept', () async {
+    test('drops the copy of a document that the owner kept, and only that '
+        'one', () async {
       final cache = FakeDocumentCache();
-      await cache.save(aUserId(), _viewable(), at(0));
+      final viewable = ViewableDocument(
+        document: aDocument(),
+        location: aDocumentLocation(),
+      );
+      await cache.save(_alice, viewable, now);
+      await cache.save(_bruno, viewable, now);
 
       final evicted = await DocumentCacheEvictor(cache)
-          .evict(aUserId(), aDocumentId());
+          .evict(_alice, aDocumentId());
 
       expect(evicted, equals(ok<void>(null)));
-      expect(unwrap(await cache.read(aUserId(), aDocumentId())), isNull);
+      expect(await cache.read(_alice, aDocumentId()), equals(ok(null)));
+      expect(isOk(await cache.read(_bruno, aDocumentId())), isTrue);
+      expect(cache.isEmpty(), isFalse);
     });
 
-    test('leaves the copy of another owner', () async {
-      final cache = FakeDocumentCache();
-      await cache.save(aUserId('user-2'), _viewable(), at(0));
+    test('succeeds when the owner kept none', () async {
+      final evicted = await DocumentCacheEvictor(FakeDocumentCache())
+          .evict(_alice, aDocumentId());
 
-      await DocumentCacheEvictor(cache).evict(aUserId(), aDocumentId());
+      expect(evicted, equals(ok<void>(null)));
+    });
+
+    test('gives the failure of a cache that cannot be written', () async {
+      final cache = FakeDocumentCache()..removeFailure = storageWriteFailed();
 
       expect(
-        unwrap(await cache.read(aUserId('user-2'), aDocumentId())),
-        isNotNull,
+        await DocumentCacheEvictor(cache).evict(_alice, aDocumentId()),
+        equals(err(storageWriteFailed())),
       );
-    });
-
-    test('succeeds when there is no copy', () async {
-      final evicted = await DocumentCacheEvictor(FakeDocumentCache())
-          .evict(aUserId(), aDocumentId());
-
-      expect(evicted, equals(ok<void>(null)));
-    });
-
-    test('returns the failure of the cache', () async {
-      final cache = FakeDocumentCache()
-        ..removeFailure = storageWriteFailed('disk');
-
-      final evicted = await DocumentCacheEvictor(cache)
-          .evict(aUserId(), aDocumentId());
-
-      expect(evicted, equals(err(storageWriteFailed('disk'))));
     });
   });
 }
