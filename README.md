@@ -6,7 +6,7 @@ Board meetings, documents and votes: the Flutter port of Boardroom, built to sho
 
 Port of [Boardroom (React Native)](https://github.com/Rileyjrjohns/boardroom) with the same domain. Both apps follow the same specification, kept in [`docs/spec`](docs/spec).
 
-Status: step 3 of 8, infrastructure, done. The app still shows a placeholder screen; the domain and the application are translated, and the adapters are written and tested (dio against the fixtures, the encrypted drift database, secure storage, biometrics, connectivity, monitoring), but nothing wires them yet: the screen protection plugin (step 4), the screens and the providers come in the next steps. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md); the infrastructure is mapped in [`docs/parity/infrastructure.md`](docs/parity/infrastructure.md). The code is organised by feature, then by layer: see [Layers](#layers).
+Status: step 3 of 8, infrastructure, done. The app still shows a placeholder screen; the domain and the application are translated, and the adapters are written and tested (dio against the fixtures, the encrypted drift database, secure storage, biometrics, connectivity, monitoring), but nothing wires them yet: the screen protection plugin (step 4), the screens and the providers come in the next steps. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md); the infrastructure is mapped in [`docs/parity/infrastructure.md`](docs/parity/infrastructure.md). The code is organised by feature, then by layer: see [Features and layers](#features-and-layers) and [`docs/architecture.md`](docs/architecture.md).
 
 ## Requirements
 
@@ -21,7 +21,7 @@ dart run build_runner build   # generates the freezed classes and the JSON code 
 flutter gen-l10n     # regenerates the localization classes by hand (after editing an ARB file)
 flutter run          # runs the app on a connected device or emulator
 flutter test         # runs all the tests
-dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/support/fakes test/tool   # runs the pure Dart tests, without Flutter
+dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # runs the pure Dart tests, without Flutter
 ```
 
 ## Generated code
@@ -31,16 +31,17 @@ Generated files are never committed. They are rebuilt with:
 | What                                   | Command                                                    | Output                          |
 | -------------------------------------- | ---------------------------------------------------------- | ------------------------------- |
 | Localization classes (`AppLocalizations`) | `flutter gen-l10n` (also run by `flutter pub get`)       | `lib/l10n/app_localizations*.dart` |
-| Freezed, JSON and drift code           | `dart run build_runner build` | `*.freezed.dart`, `*.g.dart`    |
+| Freezed, JSON and drift code           | `dart run build_runner build` | `*.freezed.dart`, `*.g.dart`, `*.drift.dart` |
 
 `flutter test` and `flutter analyze` do not regenerate the localization classes on their own: after a fresh clone, run `flutter pub get` first. The same goes for the freezed classes (the entities and value data of the `domain` folders of `lib/core` and `lib/features`): after a fresh clone, and after any change to a class annotated with `@freezed`, run `dart run build_runner build`, or `dart test` and `flutter analyze` fail on the missing `*.freezed.dart`. CI runs it before the analysis and the tests.
+The drift code is generated in its modular form (`build.yaml`): each feature declares its tables, and the generator writes one `tables.drift.dart` beside each `tables.dart`, which the adapter of the feature and the database of `lib/app/persistence` import.
 The texts live in `lib/l10n/app_en.arb` (English, the template and the fallback) and `lib/l10n/app_fr.arb` (French).
 
 ## Checks
 
-[CI](.github/workflows/ci.yml) runs three jobs on every pull request and on every push to `main`. Run the same commands locally, from the root of the repository, after `flutter pub get` (and, for the last two jobs, `dart run build_runner build`). The infrastructure tests (`test/core/infrastructure`, `test/features/*/infrastructure`, `test/app` and `test/support/infrastructure`) run in their own step (`flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure`) and again in the step `flutter test --coverage`: those that import Flutter or a plugin cannot run under `dart test`, so only the `domain` and `application` folders of `test/core` and `test/features/*`, the fakes and the tooling run there.
+[CI](.github/workflows/ci.yml) runs three jobs on every pull request and on every push to `main`. Run the same commands locally, from the root of the repository, after `flutter pub get` (and, for the last two jobs, `dart run build_runner build`). The infrastructure tests (`test/core/infrastructure`, `test/features/*/infrastructure`, `test/app` and `test/support/infrastructure`) run in their own step (`flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure`) and again in the step `flutter test --coverage`: those that import Flutter or a plugin cannot run under `dart test`, so only the `domain` and `application` folders of `test/core` and `test/features/*`, the glue of `test/app/composition`, the fakes and the tooling run there.
 
-**Import rules** (job `Import rules`): a file may only import what its layer allows (see [Layers](#layers)).
+**Import rules** (job `Import rules`): a file may only import what its layer allows, and a feature only the features that the graph names for it (see [Features and layers](#features-and-layers)).
 
 ```sh
 dart run tool/check_imports.dart
@@ -52,14 +53,14 @@ dart run tool/check_imports.dart
 dart run build_runner build   # the freezed classes, needed by the analysis and the tests
 dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos --fatal-warnings
-dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/support/fakes test/tool   # pure Dart tests, no Flutter
+dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # pure Dart tests, no Flutter
 flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure   # the adapters: dio on the fixtures, drift, encrypted SQLite
 dart run tool/coverage_helper.dart       # writes test/coverage_helper_test.dart (ignored by Git)
 flutter test --coverage                  # all the tests, writes coverage/lcov.info
 dart run tool/coverage_gate.dart         # prints the coverage table, fails under a threshold
 ```
 
-The coverage gate is on lines, the only figure that `flutter test --coverage` reports. Generated files (`*.g.dart`, `*.freezed.dart` and the localization classes) are left out. The thresholds are the ones of the React Native repository:
+The coverage gate is on lines, the only figure that `flutter test --coverage` reports. Generated files (`*.g.dart`, `*.freezed.dart`, `*.drift.dart` and the localization classes) are left out. The thresholds are the ones of the React Native repository:
 
 | Scope                                                                      | Threshold |
 | -------------------------------------------------------------------------- | --------- |
@@ -69,7 +70,7 @@ The coverage gate is on lines, the only figure that `flutter test --coverage` re
 
 A layer with no code yet is not checked. `tool/coverage_helper.dart` imports every library of `lib/` in a generated test, so a file that no test loads counts as 0 % instead of being missing from the report. In CI the table is added to the summary of the run and `coverage/lcov.info` is uploaded as an artifact.
 
-**Scenario parity with React Native** (job `Scenario parity with React Native`): the Flutter tests of the domain and of the application (the `domain` and `application` folders of `test/core` and `test/features/*`, and the fakes in `test/support/fakes`) must be the tests of the React Native app, one for one, with the same names. The React Native repository is checked out at the commit written in [`docs/parity/RN_COMMIT`](docs/parity/RN_COMMIT).
+**Scenario parity with React Native** (job `Scenario parity with React Native`): the Flutter tests of the domain and of the application (the `domain` and `application` folders of `test/core` and `test/features/*`, `test/app/composition`, and the fakes in `test/support/fakes`) must be the tests of the React Native app, one for one, with the same names. The React Native repository is checked out at the commit written in [`docs/parity/RN_COMMIT`](docs/parity/RN_COMMIT).
 
 ```sh
 git clone https://github.com/Rileyjrjohns/boardroom ../boardroom && git -C ../boardroom checkout "$(cat docs/parity/RN_COMMIT)"
@@ -90,18 +91,35 @@ The local database is encrypted at rest, with SQLCipher parameters and a key kep
 
 `ConsoleMonitoring` is the adapter in use. `SentryMonitoring` is written and tested but disabled, with no Sentry dependency; [`docs/monitoring.md`](docs/monitoring.md) says how to turn it on.
 
-## Layers
+## Features and layers
 
-The code is organised by feature (feature first), and inside each feature by layer (hexagonal).
+The code is organised by feature (feature first), and inside each feature by layer (hexagonal). [`docs/architecture.md`](docs/architecture.md) has the layout, the graph of the features, the inversions that keep it without cycle and how CI enforces it.
 
 | Folder                                      | Role                                                                                   |
 | ------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `lib/core`                                  | The shared kernel: `Result`, the ids, the errors, the clock, monitoring, connectivity, the offline policy, the HTTP client, the persistence machinery, the files and the secure storage; no business rule of a feature |
+| `lib/core`                                  | The shared kernel: `Result`, the ids, `AppError` and the errors of the core, the clock, monitoring, connectivity, the offline policy, the HTTP client, the persistence machinery, the files and the secure storage; no business rule of a feature, and it imports no feature |
 | `lib/features/auth`                         | The user, the session, the credentials, the app lock; sign in, sign out, restore the session, unlock; the session vault and the biometrics |
-| `lib/features/meetings`                     | The meetings, their agenda, resolutions and participants; the list and the detail; the repository and the cache |
-| `lib/features/documents`                    | The documents of a meeting: open, close, screen protection; the repository, the cache and the files |
+| `lib/features/meetings`                     | The meetings, their agenda, resolutions, participants and documents; the list and the detail; the repository and the cache |
+| `lib/features/documents`                    | Opening a document, the watermark, the screen protection; the repository, the cache and the files |
 | `lib/features/votes`                        | The votes and the outbox: cast, synchronise, list, acknowledge, discard; the repository and the outbox |
-| `lib/app`                                   | The composition: it may import everything. The app and its home screen, `persistence/` (the drift database of the whole file) and `dev/` (the simulated world of the development build: the fixture server, the in-memory adapters that need the simulated server, the PDF writer) |
+| `lib/app`                                   | The composition: it may import everything. The app and its home screen, `composition/` (the glue between features), `persistence/` (the drift database of the whole file and its migrations), `device/` (the seams of the phone) and `dev/` (the simulated world of the development build: the fixture server, the in-memory adapters that need the simulated server, the PDF writer) |
+
+The features depend on each other in one direction only, and the graph has no cycle:
+
+```mermaid
+graph TD
+  app --> auth
+  app --> meetings
+  app --> documents
+  app --> votes
+  votes --> meetings
+  votes --> auth
+  documents --> meetings
+  documents --> auth
+  meetings --> auth
+```
+
+Every feature also depends on `core`, and `core` on no feature. A feature imports the `domain` and the `application` of the features it depends on, never their `infrastructure` nor their `presentation`. When a feature needs something of one it may not import, it declares a port and `lib/app` wires an implementation.
 
 Inside `lib/core` and each feature, the layers are folders and follow the same rules:
 
@@ -114,8 +132,6 @@ Inside `lib/core` and each feature, the layers are folders and follow the same r
 
 `lib/main.dart` and `lib/app` may import anything. A Dart file outside `lib/core`, `lib/features/<feature>/<layer>`, `lib/app`, `lib/l10n` and `lib/main.dart` is refused.
 
-The features are meant to depend on each other in one direction only: every feature on `core`, `meetings` on `auth`, `documents` and `votes` on `meetings`, and `lib/app` on all of them. For now `tool/check_imports.dart` enforces the layers, not that graph.
-
 Each of `lib/core`, `lib/features/<feature>` and `lib/app` has a `README.md` with the details.
 
-`presentation` also never imports the packages behind the adapters (connectivity_plus, dio, drift, flutter_secure_storage, local_auth, path_provider, screen_protection, sqlite3), `domain` and `application` use only pure Dart (see the allowlists in `tool/check_imports.dart`), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this.
+`presentation` also never imports the packages behind the adapters (connectivity_plus, dio, drift, flutter_secure_storage, local_auth, path_provider, screen_protection, sqlite3), `domain` and `application` use only pure Dart (see the allowlists in `tool/check_imports.dart`), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this, and the graph of the features with it: the constant `featureGraph` says which feature may import which, and why.
