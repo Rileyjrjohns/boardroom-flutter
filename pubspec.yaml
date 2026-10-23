@@ -29,11 +29,15 @@ dependencies:
   # gen-l10n output (AppLocalizations) depends on it: the localization delegates and the ARB message formatting.
   flutter_localizations:
     sdk: flutter
+  # State management and dependency injection of the presentation: the providers that each feature declares and the composition overrides (docs/presentation.md).
+  flutter_riverpod: ^3.4.3
   # Keychain (iOS) and Keystore (Android) storage for the tokens and the key of the encrypted database.
   flutter_secure_storage: ^11.2.0
   # Annotations (@freezed) read by the freezed generator for the immutable entities of the domain, pure Dart.
   freezed_annotation: ^3.1.0
-  # Used by the generated AppLocalizations to format dates and plurals.
+  # The router: the routes of docs/spec/screens.md and the redirect driven by the access state of the session.
+  go_router: ^18.1.1
+  # Used by the generated AppLocalizations to format dates and plurals, and by the formatters of the screens.
   intl: ^0.20.3
   # Annotations (@JsonSerializable) read by json_serializable for the DTOs of the HTTP API, pure Dart.
   json_annotation: ^4.12.0
@@ -47,6 +51,8 @@ dependencies:
   meta: ^1.19.0
   # Folders of the application (documents, support) for the database file and the downloaded documents.
   path_provider: ^2.1.6
+  # The annotations (@riverpod) read by riverpod_generator, which writes the providers and the notifiers of the presentation.
+  riverpod_annotation: ^4.0.7
   # The local plugin that blocks screenshots and screen recording and reports attempts (FLAG_SECURE, privacy cover, secure view), behind the ScreenProtection port.
   screen_protection:
     path: packages/screen_protection
@@ -71,6 +77,8 @@ dev_dependencies:
   json_serializable: ^6.15.2
   # Joins and normalizes the paths of the files read by tool/check_imports.dart and tool/scenario_parity.dart.
   path: ^1.9.1
+  # Generates the *.g.dart files of the providers and the notifiers (@riverpod).
+  riverpod_generator: ^4.0.9
   # Lets the pure Dart layers (domain, application) run under plain `dart test`, without Flutter.
   test: ^1.31.1
   # Strict lint rule set, the base of analysis_options.yaml.
