@@ -131,10 +131,10 @@ const Set<String> purePackages = {
 
 /// Packages that belong to the adapters (HTTP, database, secure storage,
 /// biometrics, connectivity, the folders of the device, the native screen
-/// protection plugin). Only infrastructure and app use them: a screen that
-/// imports one skips the ports. A package named here also covers its federated
-/// parts (`local_auth_android`, `drift_flutter`...), matched on the `<name>_`
-/// prefix.
+/// protection plugin, the PDF engine). Only infrastructure and app use them: a
+/// screen that imports one skips the ports. A package named here also covers
+/// its federated parts (`local_auth_android`, `drift_flutter`...), matched on
+/// the `<name>_` prefix.
 const Set<String> adapterPackages = {
   'connectivity_plus',
   'dio',
@@ -142,6 +142,7 @@ const Set<String> adapterPackages = {
   'flutter_secure_storage',
   'local_auth',
   'path_provider',
+  'pdfrx',
   'screen_protection',
   'sqlite3',
 };
@@ -150,13 +151,19 @@ const Set<String> adapterPackages = {
 /// through, by file and then by URI: nothing else. A screen reaches an adapter
 /// through its port, but a native *view* cannot cross a port (a port carries
 /// data and calls, not an element of the widget tree), so the one file that
-/// mounts it imports the widget entry point of the plugin. The exemption is
-/// by exact path and exact URI, so a second file, or a second import in the
-/// same file (the calls and the events of the plugin, which stay behind the
-/// port), is still refused.
+/// mounts it imports the widget entry point of the plugin; the same goes for
+/// the PDF viewer, a widget of `pdfrx` that draws the document the port gave.
+/// The exemption is by exact path and exact URI, so a second file, or a second
+/// import in the same file (the calls and the events of the plugin, which stay
+/// behind the port), is still refused. A test of the presentation is not
+/// checked against these packages (only the tests of the domain and the
+/// application are), so the test that fakes the PDF document may import it.
 const Map<String, Set<String>> presentationExemptions = {
   'lib/features/documents/presentation/secure_content.dart': {
     'package:screen_protection/screen_protection_view.dart',
+  },
+  'lib/features/documents/presentation/components/pdf_view.dart': {
+    'package:pdfrx/pdfrx.dart',
   },
 };
 
