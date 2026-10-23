@@ -1,6 +1,6 @@
 # Domain
 
-The domain is the part of Boardroom that does not depend on a framework, a screen, a network or a database: the values, the entities, the business policies and the errors. A Flutter version of the app re-implements this file one to one, in `lib/core/domain` and `lib/features/<feature>/domain`, or wherever its architecture puts it. The use cases that orchestrate it are in [use-cases.md](use-cases.md), the interfaces it needs from the outside in [ports.md](ports.md).
+The domain is the part of Boardroom that does not depend on a framework, a screen, a network or a database: the values, the entities, the business policies and the errors. A Flutter version of the app re-implements this file one to one, in `lib/domain` or wherever its architecture puts it. The use cases that orchestrate it are in [use-cases.md](use-cases.md), the interfaces it needs from the outside in [ports.md](ports.md).
 
 The notation is the one of [README.md](README.md). Three rules apply to the whole domain:
 
