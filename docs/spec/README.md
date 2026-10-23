@@ -32,7 +32,7 @@ Read in this order when building the app again:
 4. **use-cases.md**: the behaviour. Each use case lists the ports it calls and the order of its steps.
 5. **screens.md**: what the user sees and does, and the ids a UI test can rely on.
 
-A Flutter implementation keeps the same layers: domain, application (ports and use cases), infrastructure (adapters), presentation. Dependencies only point inward: the domain imports nothing; the application imports the domain; the adapters implement the ports; the presentation calls the use cases and never an adapter. The composition root is the one place that builds the adapters and wires them (see the two configurations in [ports.md](ports.md#configurations)).
+A Flutter implementation keeps the same layers: domain, application (ports and use cases), infrastructure (adapters), presentation. Dependencies only point inward: the domain imports nothing; the application imports the domain; the adapters implement the ports; the presentation calls the use cases and never an adapter. The composition root is the one place that builds the adapters and wires them (see the two configurations in [ports.md](ports.md#configurations)). In the Flutter app of this repository the layers exist in `lib/core` (the shared kernel) and in each folder of `lib/features`, and the composition root is `lib/app`.
 
 ## Conventions
 

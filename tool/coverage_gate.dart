@@ -2,12 +2,15 @@
 // reads coverage/lcov.info (written by `flutter test --coverage`) and checks
 // two kinds of threshold:
 //
-// - 90 percent for each of lib/domain and lib/application, each on its own. A
-//   layer is checked as soon as it has code to measure; while it is empty, it
-//   is skipped.
-// - 70 percent for everything else together (infrastructure, presentation, di
-//   and the rest of lib/). The files that have a threshold of their own are
-//   taken out of this figure, as Jest does for the RN repo.
+// - 90 percent for each of the domain and the application, each on its own. The
+//   domain is lib/core/domain and lib/features/*/domain together, the
+//   application is lib/core/application and lib/features/*/application
+//   together. A layer is checked as soon as it has code to measure; while it
+//   is empty, it is skipped.
+// - 70 percent for everything else together (the infrastructure of the core and
+//   of the features, lib/app and the rest of lib/). The files that have a
+//   threshold of their own are taken out of this figure, as Jest does for the
+//   RN repo.
 //
 // lcov from `flutter test` has lines only: there is no branch nor function
 // data, so every figure here is a line figure. Generated files (see below) are
@@ -44,11 +47,12 @@ const layerThresholdPercent = 90;
 /// Gate of everything else together, in percent of lines.
 const restThresholdPercent = 70;
 
-const _domainFolder = 'lib/domain';
-const _applicationFolder = 'lib/application';
-const _infrastructureFolder = 'lib/infrastructure';
-const _presentationFolder = 'lib/presentation';
-const _diFolder = 'lib/di';
+const _coreFolder = 'lib/core';
+const _featuresFolder = 'lib/features';
+const _appFolder = 'lib/app';
+const _domainLayer = 'domain';
+const _applicationLayer = 'application';
+const _infrastructureLayer = 'infrastructure';
 
 const _title = '### Test coverage (lines)';
 const _lineOnlyNote =
@@ -86,12 +90,41 @@ bool isGeneratedFile(String path) {
   return inL10nOutput && normalized.endsWith('.dart');
 }
 
-/// Whether a file is under a folder (`lib/domain`). Absolute paths are
-/// accepted, and `lib/domain` does not match `lib/domainish/`.
+/// Whether a file is under a folder (`lib/app`). Absolute paths are accepted,
+/// and `lib/app` does not match `lib/application/`.
 bool isUnder(String path, String folder) {
   final normalized = normalizePath(path);
   return normalized.startsWith('$folder/') || normalized.contains('/$folder/');
 }
+
+/// Whether a file is in the [layer] folder of a feature, that is under
+/// `lib/features/<feature>/<layer>/`. Absolute paths are accepted, and the
+/// layer must be a whole folder name: `domain` does not match `domainish/`.
+bool isInFeatureLayer(String path, String layer) {
+  final normalized = normalizePath(path);
+  final int start;
+  if (normalized.startsWith('$_featuresFolder/')) {
+    start = 0;
+  } else {
+    final found = normalized.indexOf('/$_featuresFolder/');
+    if (found < 0) return false;
+    start = found + 1;
+  }
+  final inside = normalized
+      .substring(start + _featuresFolder.length + 1)
+      .split('/');
+  // <feature>/<layer>/<file...>: a file directly in the layer has three.
+  return inside.length >= 3 && inside[1] == layer;
+}
+
+/// Whether a file is in the [layer] folder of the core (`lib/core/<layer>`) or
+/// of any feature (`lib/features/*/<layer>`).
+bool isInLayer(String path, String layer) =>
+    isUnder(path, '$_coreFolder/$layer') || isInFeatureLayer(path, layer);
+
+/// The label of the scope of a [layer]: the core and the features together.
+String _layerLabel(String layer) =>
+    '`$_coreFolder/$layer` + `$_featuresFolder/*/$layer`';
 
 /// The lines of one file that hold code, and how many of them ran.
 class FileCoverage {
@@ -285,19 +318,19 @@ CoverageReport evaluateCoverage(String lcov) {
   }
 
   bool isGatedLayer(FileCoverage file) =>
-      isUnder(file.path, _domainFolder) ||
-      isUnder(file.path, _applicationFolder);
+      isInLayer(file.path, _domainLayer) ||
+      isInLayer(file.path, _applicationLayer);
 
   return CoverageReport([
     rowOf('Total (`$sourceFolder`)', (_) => true),
     rowOf(
-      '`$_domainFolder`',
-      (file) => isUnder(file.path, _domainFolder),
+      _layerLabel(_domainLayer),
+      (file) => isInLayer(file.path, _domainLayer),
       thresholdPercent: layerThresholdPercent,
     ),
     rowOf(
-      '`$_applicationFolder`',
-      (file) => isUnder(file.path, _applicationFolder),
+      _layerLabel(_applicationLayer),
+      (file) => isInLayer(file.path, _applicationLayer),
       thresholdPercent: layerThresholdPercent,
     ),
     rowOf(
@@ -305,16 +338,21 @@ CoverageReport evaluateCoverage(String lcov) {
       (file) => !isGatedLayer(file),
       thresholdPercent: restThresholdPercent,
     ),
-    for (final folder in [
-      _infrastructureFolder,
-      _presentationFolder,
-      _diFolder,
-    ])
-      rowOf(
-        '`$folder`',
-        (file) => isUnder(file.path, folder),
-        note: _partOfRest,
-      ),
+    rowOf(
+      '`$_coreFolder/$_infrastructureLayer`',
+      (file) => isUnder(file.path, '$_coreFolder/$_infrastructureLayer'),
+      note: _partOfRest,
+    ),
+    rowOf(
+      '`$_featuresFolder/*/$_infrastructureLayer`',
+      (file) => isInFeatureLayer(file.path, _infrastructureLayer),
+      note: _partOfRest,
+    ),
+    rowOf(
+      '`$_appFolder`',
+      (file) => isUnder(file.path, _appFolder),
+      note: _partOfRest,
+    ),
   ]);
 }
 

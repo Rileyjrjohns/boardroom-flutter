@@ -61,19 +61,35 @@ final class PortInterface {
   final List<Operation> operations;
 }
 
-/// The Dart files under [folder] (relative to [root]), the generated ones left
-/// out, sorted.
-List<File> sourceFilesUnder(Directory root, String folder) {
-  final directory = Directory(p.join(root.path, folder));
-  if (!directory.existsSync()) {
-    return [];
+/// The folders under [root] that match [pattern], a path relative to [root]
+/// with `/` separators in which a segment `*` stands for any one folder:
+/// `lib/features/*/domain` is the `domain` folder of every feature. Sorted; a
+/// pattern that matches nothing gives an empty list.
+List<Directory> foldersMatching(Directory root, String pattern) {
+  var matches = [root];
+  for (final segment in pattern.split('/')) {
+    matches = [
+      for (final directory in matches)
+        if (segment == '*')
+          ...directory.listSync().whereType<Directory>()
+        else if (Directory(p.join(directory.path, segment)).existsSync())
+          Directory(p.join(directory.path, segment)),
+    ];
   }
+  return matches..sort((a, b) => a.path.compareTo(b.path));
+}
+
+/// The Dart files under the folders that match [patterns] (see
+/// [foldersMatching]), the generated ones left out, sorted by path.
+List<File> sourceFilesUnder(Directory root, Iterable<String> patterns) {
   return [
-    for (final entity in directory.listSync(recursive: true))
-      if (entity is File &&
-          entity.path.endsWith('.dart') &&
-          !generatedSuffixes.any(entity.path.endsWith))
-        entity,
+    for (final pattern in patterns)
+      for (final directory in foldersMatching(root, pattern))
+        for (final entity in directory.listSync(recursive: true))
+          if (entity is File &&
+              entity.path.endsWith('.dart') &&
+              !generatedSuffixes.any(entity.path.endsWith))
+            entity,
   ]..sort((a, b) => a.path.compareTo(b.path));
 }
 

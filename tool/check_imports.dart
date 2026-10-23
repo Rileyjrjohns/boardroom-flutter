@@ -1,13 +1,21 @@
 // Checks the import rules of the hexagonal layers.
 //
-// The folders under lib/ are the layers. Dependencies point inward: the domain
-// imports nothing of the project, the application imports the domain, the
-// adapters implement the ports, and the UI reaches the adapters only through
-// the providers of di. Nothing in the compiler enforces that, so this script
-// does: it reads every import, export and part directive of lib/ and test/ with
-// the Dart parser (no regular expressions, so comments, strings, multi-line
-// directives and conditional imports cannot fool it) and fails when a file
-// steps outside its layer.
+// The code of lib/ is organised feature first: lib/core is the shared kernel,
+// lib/features/<feature> holds one folder per feature, and lib/app is the
+// composition (the app itself, the persistence of the whole file, the simulated
+// world of the development build). Inside core and inside each feature, the
+// folders are the layers (domain, application, infrastructure, presentation).
+// Dependencies point inward: the domain imports nothing but domain code, the
+// application imports the domain, the adapters implement the ports, the UI
+// never reaches an adapter, and only app/ and main.dart know them all. Nothing
+// in the compiler enforces that, so this script does: it reads every import,
+// export and part directive of lib/ and test/ with the Dart parser (no regular
+// expressions, so comments, strings, multi-line directives and conditional
+// imports cannot fool it) and fails when a file steps outside its layer.
+//
+// The rules are about layers only: an import counts by the layer of its target,
+// whatever the feature or core it sits in. Which feature may depend on which
+// other one is not checked here (yet).
 //
 // Usage: dart run tool/check_imports.dart [project-root]
 // Exit code 0 when every rule holds, 1 with one line per violation otherwise.
@@ -21,11 +29,25 @@ import 'package:path/path.dart' as p;
 /// Name of this package: `package:boardroom/...` URIs point inside lib/.
 const String projectPackage = 'boardroom';
 
-/// Source folder whose first-level folders are the layers.
+/// Source folder, made of the shared kernel, the features and the composition.
 const String libFolder = 'lib';
 
 /// Test folder, scanned for the layers that must run without Flutter.
 const String testFolder = 'test';
+
+/// Folder of lib/ (and of test/) that holds the shared kernel.
+const String coreFolder = 'core';
+
+/// Folder of lib/ (and of test/) that holds one folder per feature.
+const String featuresFolder = 'features';
+
+/// Folder of lib/ that holds the composition, and name of its layer: the one
+/// place that knows every other layer.
+const String appFolder = 'app';
+
+/// Folder of test/ that holds the helpers shared by the tests (builders, fakes,
+/// contract suites...).
+const String supportFolder = 'support';
 
 /// The entry point may wire everything together, so it is exempt from the layer
 /// rules.
@@ -55,6 +77,15 @@ const String _unknownLayer = 'unknown';
 /// Pseudo layer name for a file of test/.
 const String _testLayer = 'test';
 
+/// The layers a folder of core, or of a feature, is made of. A Dart file of
+/// lib/core or lib/features that is not in one of them is outside the layers.
+const Set<String> areaLayers = {
+  'domain',
+  'application',
+  'infrastructure',
+  'presentation',
+};
+
 /// `dart:` libraries that exist on every Dart platform and do no I/O. dart:io,
 /// dart:ui, dart:isolate, dart:ffi and dart:html tie code to a platform, so the
 /// pure layers cannot use them.
@@ -82,10 +113,10 @@ const Set<String> purePackages = {
 
 /// Packages that belong to the adapters (HTTP, database, secure storage,
 /// biometrics, connectivity, the folders of the device, the native screen
-/// protection plugin). Only infrastructure uses
-/// them: a screen or a provider that imports one skips the ports. A package
-/// named here also covers its federated parts (`local_auth_android`,
-/// `drift_flutter`...), matched on the `<name>_` prefix.
+/// protection plugin). Only infrastructure and app use them: a screen that
+/// imports one skips the ports. A package named here also covers its federated
+/// parts (`local_auth_android`, `drift_flutter`...), matched on the `<name>_`
+/// prefix.
 const Set<String> adapterPackages = {
   'connectivity_plus',
   'dio',
@@ -97,10 +128,42 @@ const Set<String> adapterPackages = {
   'sqlite3',
 };
 
-/// Packages that test/domain and test/application add to the rules of their
-/// layer: the test runner itself. package:flutter_test is deliberately absent,
-/// so these tests run with plain `dart test`.
+/// Packages that the pure tests add to the rules of their layer: the test
+/// runner itself. package:flutter_test is deliberately absent, so these tests
+/// run with plain `dart test`.
 const Set<String> pureTestPackages = {'test'};
+
+/// The imports of infrastructure code that reach into lib/app, which the layer
+/// rules refuse, listed until they are removed: the key is the importing file,
+/// the value the files of lib/app it imports. They are the adapters and the
+/// opening of the database, which are written against the concrete database of
+/// the whole file (`BoardroomDatabase`) that lives in lib/app/persistence.
+///
+/// This table is temporary. The imports it lists are removed when the database
+/// is split per feature, and the entries with them. An entry whose file no
+/// longer has the import is itself a violation, so the table cannot outlive the
+/// debt it records.
+const Map<String, Set<String>> temporaryExemptions = {
+  'lib/core/infrastructure/persistence/migrate.dart': {
+    'lib/app/persistence/migrations.dart',
+  },
+  'lib/core/infrastructure/persistence/protected_database.dart': {
+    'lib/app/persistence/boardroom_database.dart',
+    'lib/app/persistence/migrations.dart',
+  },
+  'lib/features/documents/infrastructure/drift_document_cache.dart': {
+    'lib/app/persistence/boardroom_database.dart',
+    'lib/app/persistence/schema.dart',
+  },
+  'lib/features/meetings/infrastructure/drift_meeting_cache.dart': {
+    'lib/app/persistence/boardroom_database.dart',
+    'lib/app/persistence/schema.dart',
+  },
+  'lib/features/votes/infrastructure/drift_vote_outbox.dart': {
+    'lib/app/persistence/boardroom_database.dart',
+    'lib/app/persistence/schema.dart',
+  },
+};
 
 /// What one layer is allowed to import, and the reasons given when it is not.
 class LayerRule {
@@ -113,13 +176,14 @@ class LayerRule {
     this.dartLibraries,
     this.packages,
     this.deniedPackages = const {},
-    this.allowedTestFolders = const {},
+    this.allowedTestScopes = const {},
   });
 
-  /// Name used in the messages, for example `domain` or `test/domain`.
+  /// Name used in the messages, for example `domain` or `test/core/domain`.
   final String label;
 
-  /// Layers of lib/ this layer may import (itself included).
+  /// Layers of lib/ this layer may import (itself included), whatever the
+  /// core or the feature they sit in.
   final Set<String> allowedLayers;
 
   /// Why an import of another layer of the project is refused, by layer name.
@@ -138,18 +202,21 @@ class LayerRule {
 
   /// Packages refused even though [packages] is null (any package allowed),
   /// with their federated parts. Used by the layers that must reach adapters
-  /// through the project's own infrastructure, never through its packages.
+  /// through the ports, never through their packages.
   final Set<String> deniedPackages;
 
-  /// Folders under test/ whose support files this rule may import. Empty for
-  /// the layers of lib/.
-  final Set<String> allowedTestFolders;
+  /// Folders under test/ (project-relative, without a trailing `/`) whose files
+  /// this rule may import. Empty for the layers of lib/.
+  final Set<String> allowedTestScopes;
 }
 
 /// The rules of the five layers.
 ///
-/// A layer is the first folder under lib/. Dependencies point inward, so the
-/// layers closer to the center know nothing about the outer ones.
+/// A layer is the folder under `lib/core/`, under `lib/features/<feature>/` or,
+/// for the composition, `lib/app` itself. Dependencies point inward, so the
+/// layers closer to the center know nothing about the outer ones. The rules
+/// look at the layer of the target only, not at the core or the feature it
+/// belongs to.
 const Map<String, LayerRule> layerRules = {
   // The business rules: they must outlive any framework, so they run with
   // `dart test` alone.
@@ -176,57 +243,68 @@ const Map<String, LayerRule> layerRules = {
     packages: purePackages,
   ),
   // Adapters implement the ports of the domain and application, with any
-  // platform library. They cannot know the UI nor the wiring that builds them.
+  // platform library. They cannot know the UI nor the composition that builds
+  // them.
   'infrastructure': LayerRule(
     label: 'infrastructure',
     allowedLayers: {'domain', 'application', 'infrastructure'},
     whyNotLayer: {
       'presentation': 'an adapter must not depend on the UI',
-      'di': 'an adapter must not depend on the wiring that builds it',
+      appFolder: 'an adapter must not depend on the composition that builds it',
       _unknownLayer: 'an adapter depends on the domain and application only',
     },
   ),
-  // Screens and notifiers read ports through the providers of di. They never
-  // build or import an adapter themselves, nor the package behind one. They may
-  // use the generated localizations.
+  // Screens and notifiers drive the use cases through ports. They never build
+  // or import an adapter themselves, nor the package behind one. They may use
+  // the generated localizations.
   'presentation': LayerRule(
     label: 'presentation',
-    allowedLayers: {'domain', 'application', 'presentation', 'di'},
+    allowedLayers: {'domain', 'application', 'presentation'},
     allowL10n: true,
     deniedPackages: adapterPackages,
     whyNotLayer: {
       'infrastructure':
-          'the UI reaches adapters through the providers of di, never directly',
-      _unknownLayer: 'the UI depends on the domain, application and di only',
+          'the UI never imports an adapter, it gets the ports from the '
+          'composition in app',
+      appFolder: 'the composition imports the UI, not the other way round',
+      _unknownLayer: 'the UI depends on the domain and application only',
     },
   ),
-  // The composition root: the only place that knows both the ports and their
-  // adapters, through the classes of infrastructure (the adapter packages stay
-  // inside infrastructure).
-  'di': LayerRule(
-    label: 'di',
-    allowedLayers: {'domain', 'application', 'infrastructure', 'di'},
-    deniedPackages: adapterPackages,
-    whyNotLayer: {
-      'presentation': 'the wiring must not depend on the UI that consumes it',
-      _unknownLayer:
-          'the wiring depends on the domain, application and infrastructure '
-          'only',
+  // The composition: the only place that knows every layer, so it chooses which
+  // adapter stands behind each port. It may use any package.
+  appFolder: LayerRule(
+    label: appFolder,
+    allowedLayers: {
+      'domain',
+      'application',
+      'infrastructure',
+      'presentation',
+      appFolder,
     },
+    allowL10n: true,
+    whyNotLayer: {},
   ),
 };
 
-/// Test folders that follow the rules of the layer of the same name, so they
-/// run under plain `dart test`. The other test folders (presentation,
-/// infrastructure, di, tool...) are free: they need Flutter or real adapters.
+/// Layers of the test folders that follow the rules of the layer of the same
+/// name, so they run under plain `dart test`. The other test folders
+/// (infrastructure, app, tool...) are free: they need Flutter or real adapters.
 const Set<String> pureTestLayers = {'domain', 'application'};
 
-/// Test folders whose support files a pure test may import, by test folder:
-/// the same layer and the layers below it (a domain test never needs an
-/// application helper).
+/// The folders of test/support that are pure, with the layer whose rules they
+/// follow. The others (infrastructure...) are free.
+const Map<String, String> pureSupportLayers = {
+  'builders': 'domain',
+  'contracts': 'application',
+  'fakes': 'application',
+};
+
+/// Folders of test/support that a pure test may import, by layer of the test:
+/// the same layer and the layers below it (a domain test never needs a fake of
+/// a port).
 const Map<String, Set<String>> pureTestSupport = {
-  'domain': {'domain'},
-  'application': {'domain', 'application'},
+  'domain': {'builders'},
+  'application': {'builders', 'contracts', 'fakes'},
 };
 
 /// One broken rule.
@@ -310,21 +388,25 @@ class _Target {
 }
 
 /// Checks every Dart file of lib/ and test/ under [root] and returns the
-/// violations.
-CheckResult checkImports(Directory root) {
+/// violations. [exemptions] lists the imports that the layer rules refuse but
+/// that are tolerated for now (see [temporaryExemptions]).
+CheckResult checkImports(
+  Directory root, {
+  Map<String, Set<String>> exemptions = temporaryExemptions,
+}) {
   final violations = <Violation>[];
   var filesChecked = 0;
 
   for (final relative in _dartFiles(root)) {
     final inLib = relative.startsWith('$libFolder/');
-    final layer = inLib ? _layerOfLibFile(relative) : _testLayerOf(relative);
-    if (layer == _entryLayer || layer == _l10nLayer) {
-      continue;
-    }
-
-    final rule = layer == null ? null : _ruleFor(relative, layer);
-    if (rule == null) {
-      if (inLib) {
+    final LayerRule? rule;
+    if (inLib) {
+      final layer = _layerOfLibFile(relative);
+      if (layer == _entryLayer || layer == _l10nLayer) {
+        continue;
+      }
+      rule = layerRules[layer];
+      if (rule == null) {
         // Not main.dart, not l10n, not a layer folder: the file belongs
         // nowhere.
         filesChecked++;
@@ -333,14 +415,21 @@ CheckResult checkImports(Directory root) {
             path: relative,
             line: 1,
             message:
-                'file outside the layers (every file of lib/ lives in one '
-                'of: ${layerRules.keys.join(', ')}; only $entryPointFile and '
-                'the files generated by gen-l10n in $l10nFolder are exempt)',
+                'file outside the layers (every file of lib/ lives in '
+                '$coreFolder/<layer>, $featuresFolder/<feature>/<layer> or '
+                '$appFolder, with <layer> one of: ${areaLayers.join(', ')}; '
+                'only $entryPointFile and the files generated by gen-l10n in '
+                '$l10nFolder are exempt)',
           ),
         );
+        continue;
       }
-      // Otherwise a free test folder.
-      continue;
+    } else {
+      rule = _pureTestRule(relative);
+      if (rule == null) {
+        // A free test folder.
+        continue;
+      }
     }
 
     filesChecked++;
@@ -364,17 +453,37 @@ CheckResult checkImports(Directory root) {
       continue;
     }
 
+    final exempted = exemptions[relative] ?? const <String>{};
+    final used = <String>{};
     for (final ref in _directiveUris(parsed)) {
-      final reason = _denial(rule, _resolve(ref.value, relative));
-      if (reason != null) {
-        violations.add(
-          Violation(
-            path: relative,
-            line: ref.line,
-            message: '${rule.label} may not import ${ref.value} ($reason)',
-          ),
-        );
+      final target = _resolve(ref.value, relative);
+      final reason = _denial(rule, target);
+      if (reason == null) {
+        continue;
       }
+      final targetPath = target.path;
+      if (targetPath != null && exempted.contains(targetPath)) {
+        used.add(targetPath);
+        continue;
+      }
+      violations.add(
+        Violation(
+          path: relative,
+          line: ref.line,
+          message: '${rule.label} may not import ${ref.value} ($reason)',
+        ),
+      );
+    }
+    for (final target in exempted.difference(used)) {
+      violations.add(
+        Violation(
+          path: relative,
+          line: 1,
+          message:
+              'stale exemption: the file no longer imports $target, remove '
+              'the entry from temporaryExemptions',
+        ),
+      );
     }
   }
 
@@ -405,6 +514,12 @@ List<String> _dartFiles(Directory root) {
 }
 
 /// The layer of a file of lib/: a key of [layerRules] or a pseudo layer.
+///
+/// - `lib/app/<file...>` is the composition;
+/// - `lib/core/<layer>/<file...>` and
+///   `lib/features/<feature>/<layer>/<file...>` are in the layer written in
+///   their path;
+/// - anything else is [_unknownLayer].
 String _layerOfLibFile(String relative) {
   if (relative == entryPointFile) {
     return _entryLayer;
@@ -413,9 +528,19 @@ String _layerOfLibFile(String relative) {
     return _l10nLayer;
   }
   final segments = relative.split('/');
-  // lib/<layer>/<file...>: a file directly under lib/ has only two segments.
-  if (segments.length >= 3 && layerRules.containsKey(segments[1])) {
-    return segments[1];
+  // A file directly under lib/ has only two segments.
+  if (segments.length >= 3 && segments[1] == appFolder) {
+    return appFolder;
+  }
+  if (segments.length >= 4 &&
+      segments[1] == coreFolder &&
+      areaLayers.contains(segments[2])) {
+    return segments[2];
+  }
+  if (segments.length >= 5 &&
+      segments[1] == featuresFolder &&
+      areaLayers.contains(segments[3])) {
+    return segments[3];
   }
   return _unknownLayer;
 }
@@ -426,30 +551,51 @@ bool _isGeneratedL10n(String relative) =>
     relative.endsWith('.dart') &&
     !relative.substring(generatedL10nPrefix.length).contains('/');
 
-/// The layer (`domain`, `application`) whose rules a file under test/ follows,
-/// or null when its folder is free.
-String? _testLayerOf(String relative) {
+/// The rule of a file under test/ that has to run without Flutter, or null when
+/// its folder is free.
+///
+/// Three kinds of folder are pure, and follow the rules of one layer:
+/// `test/core/<layer>`, `test/features/<feature>/<layer>` (the layer is the
+/// folder, `domain` or `application`) and the pure folders of `test/support`
+/// ([pureSupportLayers]). Such a file may import the lib code of its layer and
+/// of the layers below it, the support folders of [pureTestSupport], and the
+/// files of its own folder.
+LayerRule? _pureTestRule(String relative) {
   final segments = relative.split('/');
-  if (segments.length >= 3 && pureTestLayers.contains(segments[1])) {
-    return segments[1];
+  final String layer;
+  final int depth;
+  if (segments.length >= 4 &&
+      segments[1] == coreFolder &&
+      pureTestLayers.contains(segments[2])) {
+    layer = segments[2];
+    depth = 3;
+  } else if (segments.length >= 5 &&
+      segments[1] == featuresFolder &&
+      pureTestLayers.contains(segments[3])) {
+    layer = segments[3];
+    depth = 4;
+  } else if (segments.length >= 4 &&
+      segments[1] == supportFolder &&
+      pureSupportLayers.containsKey(segments[2])) {
+    layer = pureSupportLayers[segments[2]]!;
+    depth = 3;
+  } else {
+    return null;
   }
-  return null;
-}
-
-/// The rule that applies to [relative], or null when no layer claims it.
-LayerRule? _ruleFor(String relative, String layer) {
-  final base = layerRules[layer];
-  if (base == null || relative.startsWith('$libFolder/')) {
-    return base;
-  }
+  final base = layerRules[layer]!;
+  final folder = segments.take(depth).join('/');
   return LayerRule(
-    label: '$testFolder/$layer',
+    label: folder,
     allowedLayers: base.allowedLayers,
     whyNotLayer: base.whyNotLayer,
     dartLibraries: base.dartLibraries,
     packages: {...?base.packages, ...pureTestPackages},
     deniedPackages: base.deniedPackages,
-    allowedTestFolders: pureTestSupport[layer] ?? const {},
+    allowedTestScopes: {
+      folder,
+      for (final name in pureTestSupport[layer]!)
+        '$testFolder/$supportFolder/$name',
+    },
   );
 }
 
@@ -578,18 +724,17 @@ String? _denial(LayerRule rule, _Target target) {
 
   final layer = target.layer;
   if (layer == _testLayer) {
-    // test/<folder>/...: only the support files of the folders the rule lists.
-    final folder = target.path?.split('/').elementAtOrNull(1);
-    if (folder != null && rule.allowedTestFolders.contains(folder)) {
+    // Only the files of the test folders the rule lists.
+    final path = target.path;
+    if (path != null &&
+        rule.allowedTestScopes.any((scope) => path.startsWith('$scope/'))) {
       return null;
     }
-    if (rule.allowedTestFolders.isEmpty) {
+    if (rule.allowedTestScopes.isEmpty) {
       return 'production code never imports test code';
     }
-    final folders = (rule.allowedTestFolders.toList()..sort()).map(
-      (name) => '$testFolder/$name',
-    );
-    return 'test support is limited to ${folders.join(', ')}';
+    final scopes = rule.allowedTestScopes.toList()..sort();
+    return 'test support is limited to ${scopes.join(', ')}';
   }
   if (layer == null || rule.allowedLayers.contains(layer)) {
     return null;

@@ -5,11 +5,13 @@
 // portable. The proof is that the Dart domain and application pass the same
 // scenarios as the TypeScript ones. This script lists the tests of the React
 // Native repository (src/domain and src/application, the *.test.ts files),
-// maps each file to its Dart test file, lists the tests that `dart test`
-// reports for the Dart files, and compares the full names of the two sides: a
-// scenario of the React Native repository that has no Dart test of the same
-// name is a gap, and a Dart test with no React Native counterpart is an extra
-// that must be explained.
+// maps each file to its Dart test file (the one file of the pure Dart test
+// folders, test/core, test/features/* and test/support, that has the snake case
+// name of the React Native one, see dartTestPathFor), lists the tests that
+// `dart test` reports for the Dart files, and compares the full names of the
+// two sides: a scenario of the React Native repository that has no Dart test of
+// the same name is a gap, and a Dart test with no React Native counterpart is
+// an extra that must be explained.
 //
 //   dart run tool/scenario_parity.dart --rn ../boardroom
 //   dart run tool/scenario_parity.dart --rn ../boardroom --only src/domain/shared
@@ -57,8 +59,30 @@ const String rnSupportFolder = 'testing';
 /// Dart name of the support folder.
 const String dartSupportFolder = 'support';
 
-/// Folder of the Dart tests that are compared with the React Native ones.
+/// Folder of the Dart tests.
 const String dartTestFolder = 'test';
+
+/// The layers of the React Native repository whose tests are compared. They
+/// are also the names of the layer folders of the Dart core and features.
+const List<String> parityLayers = ['domain', 'application'];
+
+/// The layer whose React Native tests are kept beside the Dart support code:
+/// the fakes and their tests are in [dartSupportFolder].
+const String supportLayer = 'application';
+
+/// Folder of the Dart core, under [dartTestFolder].
+const String dartCoreFolder = 'core';
+
+/// Folder of the Dart features, under [dartTestFolder].
+const String dartFeaturesFolder = 'features';
+
+/// The folders of [dartSupportFolder] that are pure Dart, so that `dart test`
+/// runs the tests they hold: the builders, the contract suites and the fakes.
+/// The support of the infrastructure needs Flutter and is never run here.
+const List<String> pureSupportFolders = ['builders', 'contracts', 'fakes'];
+
+/// The path shown for a React Native test file that has no Dart test file.
+const String missingDartFolder = '$dartTestFolder/**';
 
 /// File that lists the React Native scenarios that cannot exist in Dart.
 const String exceptionsFile = 'docs/parity/exceptions.md';
@@ -69,54 +93,111 @@ const String extrasFile = 'docs/parity/extras.md';
 /// What an extras entry says when the whole Dart file is Dart specific.
 const String wholeFileMarker = '*';
 
-/// The Dart path of the test file that stands for the React Native test file
+/// The layer (`domain` or `application`) of the React Native test file
 /// [rnTestPath] (relative to the React Native repository), or null when the
 /// path is not one of a test of the domain or of the application.
-///
-/// `src/domain/value-objects/EmailAddress.test.ts` is
-/// `test/domain/value_objects/email_address_test.dart`;
-/// `src/application/testing/fakes.contracts.test.ts` is
-/// `test/application/support/fakes_contracts_test.dart`.
-String? dartTestPathFor(String rnTestPath) {
+String? parityLayerOf(String rnTestPath) {
   if (!rnTestPath.endsWith(rnTestSuffix)) {
     return null;
   }
   final segments = rnTestPath.split('/');
   if (segments.length < 3 ||
       segments.first != 'src' ||
-      !(segments[1] == 'domain' || segments[1] == 'application')) {
+      !parityLayers.contains(segments[1])) {
     return null;
   }
-  final directories = segments
-      .sublist(2, segments.length - 1)
-      .map(_dartSegment);
-  final stem = segments.last.substring(
-    0,
-    segments.last.length - rnTestSuffix.length,
+  return segments[1];
+}
+
+/// The Dart path of the test file that stands for the React Native test file
+/// [rnTestPath] (relative to the React Native repository), or null when the
+/// path is not one of a test of the domain or of the application.
+///
+/// It is the file of [dartTestFiles] (project-relative paths with `/`, the
+/// Dart tests that are compared) whose name is the snake case of the name of
+/// the React Native one: `src/domain/value-objects/EmailAddress.test.ts` is
+/// `email_address_test.dart`, `src/application/testing/fakes.contracts.test.ts`
+/// is `fakes_contracts_test.dart`. Two files may have the same name in two
+/// layers (`app_lock_test.dart` tests a policy of the domain and a function of
+/// the application): then the file in a folder named after the layer of the
+/// React Native one is meant. When no file has the name, the result is
+/// `test/**/<name>`, a path that stands for the missing file in the report.
+///
+/// Throws a [FormatException] when several files are still possible: the
+/// comparison would be a guess.
+String? dartTestPathFor(String rnTestPath, Iterable<String> dartTestFiles) {
+  final layer = parityLayerOf(rnTestPath);
+  if (layer == null) {
+    return null;
+  }
+  final fileName = p.posix.basename(rnTestPath);
+  final stem = fileName.substring(0, fileName.length - rnTestSuffix.length);
+  final dartName = '${snakeCase(stem)}$dartTestSuffix';
+  final named = {
+    for (final file in dartTestFiles)
+      if (p.posix.basename(file) == dartName) file,
+  }.toList()..sort();
+  if (named.isEmpty) {
+    return '$missingDartFolder/$dartName';
+  }
+  if (named.length == 1) {
+    return named.single;
+  }
+  final inLayer = [
+    for (final file in named)
+      if (p.posix.dirname(file).split('/').contains(layer)) file,
+  ];
+  if (inLayer.length == 1) {
+    return inLayer.single;
+  }
+  throw FormatException(
+    '$rnTestPath has several Dart test files named $dartName and none can be '
+    'chosen by its layer ($layer): ${named.join(', ')}',
   );
-  return [
-    dartTestFolder,
-    segments[1],
-    ...directories,
-    '${snakeCase(stem)}$dartTestSuffix',
-  ].join('/');
 }
 
 String _dartSegment(String segment) =>
     segment == rnSupportFolder ? dartSupportFolder : snakeCase(segment);
 
-/// The Dart path prefix that corresponds to the React Native path prefix
-/// [rnPrefix], to find the Dart-only files of a folder.
-String? dartPrefixFor(String rnPrefix) {
+/// Whether the Dart test file [dartFile] is in the folder that the React
+/// Native path prefix [rnPrefix] (the value of `--only`) stands for, to find
+/// the Dart-only files of a folder.
+///
+/// The prefix `src/<layer>` stands for the files in a folder named after the
+/// layer (`test/features/auth/domain/...`, `test/core/application/...`); the
+/// fakes and their tests are in `test/support`, which counts as the
+/// application. Each further segment of the prefix, in snake case with
+/// `testing` as `support`, must appear in the path of the file, one after the
+/// other: `src/domain/value-objects` stands for the files in a folder
+/// `domain/value_objects`, `src/application/testing` for the files in
+/// `test/support`.
+bool dartFileMatchesPrefix(String dartFile, String rnPrefix) {
   final segments = rnPrefix.split('/').where((s) => s.isNotEmpty).toList();
-  if (segments.length < 2 || segments.first != 'src') {
-    return null;
+  if (segments.length < 2 ||
+      segments.first != 'src' ||
+      !parityLayers.contains(segments[1])) {
+    return false;
   }
-  return [
-    dartTestFolder,
-    segments[1],
+  final layer = segments[1];
+  final folders = p.posix.dirname(dartFile).split('/');
+  final inSupport =
+      layer == supportLayer && folders.contains(dartSupportFolder);
+  if (!folders.contains(layer) && !inSupport) {
+    return false;
+  }
+  final wanted = [
     for (final segment in segments.skip(2)) _dartSegment(segment),
-  ].join('/');
+  ];
+  if (wanted.isEmpty) {
+    return true;
+  }
+  for (var start = 0; start + wanted.length <= folders.length; start++) {
+    if (folders.sublist(start, start + wanted.length).join('/') ==
+        wanted.join('/')) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /// `FooBar` and `fooBar` are `foo_bar`, `use-cases` is `use_cases`,
@@ -323,6 +404,10 @@ class ParityReport {
 /// Compares the React Native tests [rnTests] (by React Native test file) with
 /// the Dart tests [dartTests] (by Dart test file).
 ///
+/// - The Dart file of a React Native file is found among [dartTestFiles] (see
+///   [dartTestPathFor]); when it is null, the files that [dartTests] and
+///   [dartLoadErrors] name. Throws a [FormatException] when two Dart files are
+///   possible.
 /// - A React Native scenario matches a Dart test of the same full name. A
 ///   scenario whose name holds a wildcard (a title the reader of the sources
 ///   could not compute) matches any Dart test whose name fits the rest.
@@ -333,7 +418,7 @@ class ParityReport {
 ///   Dart file, by name or with [wholeFileMarker].
 /// - [only] restricts the comparison to the React Native files whose path
 ///   starts with one of the prefixes, and to the Dart-only files of the same
-///   folders. Empty means everything.
+///   folders (see [dartFileMatchesPrefix]). Empty means everything.
 ParityReport compareScenarios({
   required Map<String, List<TsTest>> rnTests,
   required Map<String, List<String>> dartTests,
@@ -341,11 +426,15 @@ ParityReport compareScenarios({
   List<ParityNote> extras = const [],
   List<String> only = const [],
   Set<String> dartLoadErrors = const {},
+  Iterable<String>? dartTestFiles,
 }) {
+  final candidates = List<String>.of(
+    dartTestFiles ?? {...dartTests.keys, ...dartLoadErrors},
+  );
   bool inScope(String rnFile) => only.isEmpty || only.any(rnFile.startsWith);
-  final dartPrefixes = [for (final prefix in only) ?dartPrefixFor(prefix)];
   bool dartInScope(String dartFile) =>
-      only.isEmpty || dartPrefixes.any(dartFile.startsWith);
+      only.isEmpty ||
+      only.any((prefix) => dartFileMatchesPrefix(dartFile, prefix));
 
   final results = <FileParity>[];
   final mappedDart = <String>{};
@@ -353,7 +442,7 @@ ParityReport compareScenarios({
     if (!inScope(rnFile)) {
       continue;
     }
-    final dartFile = dartTestPathFor(rnFile);
+    final dartFile = dartTestPathFor(rnFile, candidates);
     if (dartFile == null) {
       continue;
     }
@@ -405,7 +494,7 @@ ParityReport compareScenarios({
       results.add(
         FileParity(
           rnFile: note.file,
-          dartFile: dartTestPathFor(note.file) ?? '',
+          dartFile: dartTestPathFor(note.file, candidates) ?? '',
           rnCount: 0,
           dartCount: 0,
           dartFileExists: false,
@@ -634,14 +723,61 @@ TsTest _jestTest(Map<String, Object?> assertion) => TsTest([
 /// Runs `dart test` on the folders that hold tests and returns its JSON output.
 typedef DartTestRunner = Future<String> Function(Directory root);
 
-/// The default [DartTestRunner]: `dart test test/domain test/application
-/// --reporter json`.
-Future<String> runDartTest(Directory root) async {
-  final folders = [
-    for (final layer in const ['domain', 'application'])
-      if (_hasDartTests(Directory(p.join(root.path, dartTestFolder, layer))))
-        '$dartTestFolder/$layer',
+/// The pure Dart test folders of the project under [root] that hold a test,
+/// relative to [root] with `/` separators: the domain and the application of
+/// the core (`test/core/domain`, `test/core/application`) and of each feature
+/// (`test/features/<feature>/domain`, `test/features/<feature>/application`),
+/// and the pure folders of `test/support` (the fakes and their tests). They run
+/// under `dart test`; the infrastructure, the app and the support that needs
+/// Flutter do not.
+List<String> pureTestFolders(Directory root) {
+  final features = Directory(
+    p.join(root.path, dartTestFolder, dartFeaturesFolder),
+  );
+  final featureNames = features.existsSync()
+      ? [
+          for (final entity in features.listSync())
+            if (entity is Directory) p.basename(entity.path),
+        ]
+      : <String>[];
+  final candidates = [
+    for (final layer in parityLayers) '$dartTestFolder/$dartCoreFolder/$layer',
+    for (final feature in featureNames..sort())
+      for (final layer in parityLayers)
+        '$dartTestFolder/$dartFeaturesFolder/$feature/$layer',
+    for (final folder in pureSupportFolders)
+      '$dartTestFolder/$dartSupportFolder/$folder',
   ];
+  return [
+    for (final folder in candidates)
+      if (_hasDartTests(
+        Directory(p.joinAll([root.path, ...folder.split('/')])),
+      ))
+        folder,
+  ];
+}
+
+/// The Dart test files (`*_test.dart`) in [folders], relative to [root] with
+/// `/` separators, sorted.
+List<String> dartTestFilesIn(Directory root, Iterable<String> folders) {
+  final files = <String>[];
+  for (final folder in folders) {
+    final directory = Directory(p.joinAll([root.path, ...folder.split('/')]));
+    for (final entity in directory.listSync(recursive: true)) {
+      if (entity is File && entity.path.endsWith(dartTestSuffix)) {
+        files.add(
+          p.posix.joinAll(p.split(p.relative(entity.path, from: root.path))),
+        );
+      }
+    }
+  }
+  return files..sort();
+}
+
+/// The default [DartTestRunner]: `dart test` on the pure test folders, with the
+/// JSON reporter (see [pureTestFolders]).
+Future<String> runDartTest(Directory root) async {
+  final folders = pureTestFolders(root);
   if (folders.isEmpty) {
     return '';
   }
@@ -672,6 +808,9 @@ Usage: dart run tool/scenario_parity.dart --rn <react-native-repo> [options]
   --rn-names <file>    read the React Native names from `jest --json` output
   --dart-names <file>  read the Dart names from `dart test --reporter json`
   --root <path>        the Flutter project (default: the current directory)
+
+The Dart tests are those of the pure folders: test/core/{domain,application},
+test/features/*/{domain,application} and test/support/{builders,contracts,fakes}.
 ''';
 
 /// The command line, with the output streams and the runner of `dart test`
@@ -744,7 +883,7 @@ Future<int> runScenarioParity(
     final all = readJestNames(File(rnNames).readAsStringSync(), rnRoot);
     rnTests.addAll({
       for (final MapEntry(:key, :value) in all.entries)
-        if (dartTestPathFor(key) != null) key: value,
+        if (parityLayerOf(key) != null) key: value,
     });
   } else {
     for (final file in findRnTestFiles(rnRoot)) {
@@ -766,14 +905,29 @@ Future<int> runScenarioParity(
     return file.existsSync() ? parseParityNotes(file.readAsStringSync()) : [];
   }
 
-  final report = compareScenarios(
-    rnTests: rnTests,
-    dartTests: dart.tests,
-    exceptions: notes(exceptionsFile),
-    extras: notes(extrasFile),
-    only: only,
-    dartLoadErrors: dart.loadErrors.toSet(),
-  );
+  // The Dart test files that can stand for a React Native one: those on disk
+  // and those that dart test reported.
+  final dartTestFiles = {
+    ...dartTestFilesIn(projectRoot, pureTestFolders(projectRoot)),
+    ...dart.tests.keys,
+    ...dart.loadErrors,
+  };
+
+  final ParityReport report;
+  try {
+    report = compareScenarios(
+      rnTests: rnTests,
+      dartTests: dart.tests,
+      exceptions: notes(exceptionsFile),
+      extras: notes(extrasFile),
+      only: only,
+      dartLoadErrors: dart.loadErrors.toSet(),
+      dartTestFiles: dartTestFiles,
+    );
+  } on FormatException catch (error) {
+    err.writeln(error.message);
+    return 2;
+  }
   out.write(table ? renderUseCaseTable(report) : renderReport(report));
   if (dart.loadErrors.isNotEmpty) {
     err.writeln(

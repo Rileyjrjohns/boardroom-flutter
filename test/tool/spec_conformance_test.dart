@@ -1,23 +1,23 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:boardroom/domain/entities/agenda_item.dart';
-import 'package:boardroom/domain/entities/document.dart';
-import 'package:boardroom/domain/entities/meeting_summary.dart';
-import 'package:boardroom/domain/entities/outbox_vote.dart';
-import 'package:boardroom/domain/entities/participant.dart';
-import 'package:boardroom/domain/entities/resolution.dart';
-import 'package:boardroom/domain/entities/user.dart';
-import 'package:boardroom/domain/entities/vote.dart';
-import 'package:boardroom/domain/shared/result.dart';
-import 'package:boardroom/domain/value_objects/document_location.dart';
-import 'package:boardroom/domain/value_objects/duration.dart';
-import 'package:boardroom/domain/value_objects/email_address.dart';
-import 'package:boardroom/domain/value_objects/ids.dart';
-import 'package:boardroom/domain/value_objects/instant.dart';
-import 'package:boardroom/domain/value_objects/page_cursor.dart';
-import 'package:boardroom/domain/value_objects/page_request.dart';
-import 'package:boardroom/domain/value_objects/vote_choice.dart';
+import 'package:boardroom/core/domain/shared/result.dart';
+import 'package:boardroom/core/domain/value_objects/duration.dart';
+import 'package:boardroom/core/domain/value_objects/ids.dart';
+import 'package:boardroom/core/domain/value_objects/instant.dart';
+import 'package:boardroom/core/domain/value_objects/page_cursor.dart';
+import 'package:boardroom/core/domain/value_objects/page_request.dart';
+import 'package:boardroom/features/auth/domain/entities/user.dart';
+import 'package:boardroom/features/auth/domain/value_objects/email_address.dart';
+import 'package:boardroom/features/documents/domain/value_objects/document_location.dart';
+import 'package:boardroom/features/meetings/domain/entities/agenda_item.dart';
+import 'package:boardroom/features/meetings/domain/entities/document.dart';
+import 'package:boardroom/features/meetings/domain/entities/meeting_summary.dart';
+import 'package:boardroom/features/meetings/domain/entities/participant.dart';
+import 'package:boardroom/features/meetings/domain/entities/resolution.dart';
+import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dart';
+import 'package:boardroom/features/votes/domain/entities/outbox_vote.dart';
+import 'package:boardroom/features/votes/domain/entities/vote.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -50,13 +50,31 @@ const String _settingsOutOfScope =
     'src/di/config.ts), which is built with the providers, after the '
     'infrastructure; this test covers the domain, the use cases and the ports.';
 
-/// The part of the project the conformance test reads.
+/// The part of the project the conformance test reads. A `*` stands for any
+/// one folder: the code of a layer is in the core and in every feature.
 const String _specFolder = 'docs/spec';
-const String _domainFolder = 'lib/domain';
-const String _errorsFolder = 'lib/domain/errors';
-const String _portsFolder = 'lib/application/ports';
-const String _sharedFolder = 'lib/application/shared';
-const String _useCasesFolder = 'lib/application/use_cases';
+const List<String> _domainFolders = [
+  'lib/core/domain',
+  'lib/features/*/domain',
+];
+const List<String> _applicationFolders = [
+  'lib/core/application',
+  'lib/features/*/application',
+];
+const List<String> _errorsFolders = ['lib/core/domain/errors'];
+const List<String> _portsFolders = [
+  'lib/core/application/ports',
+  'lib/features/*/application/ports',
+];
+const List<String> _useCasesFolders = [
+  'lib/core/application/use_cases',
+  'lib/features/*/application/use_cases',
+];
+
+/// The names of the folders of the application that hold the ports and the use
+/// cases. The rest of the application code is the shared code (the rules of the
+/// session, the loading with a fallback to the cache, the retryable codes...).
+const List<String> _portsAndUseCasesNames = ['ports', 'use_cases'];
 
 /// The suffix of the Dart enums of error codes.
 const String _errorCodeSuffix = 'ErrorCode';
@@ -77,7 +95,14 @@ final Directory _root = Directory.current;
 SpecDocument _spec(String file) =>
     readSpecFile(p.join(_root.path, _specFolder, file));
 
-List<File> _files(String folder) => sourceFilesUnder(_root, folder);
+List<File> _files(List<String> folders) => sourceFilesUnder(_root, folders);
+
+/// The files of the application that are not in a `ports` or a `use_cases`
+/// folder: what the specification calls the shared code of the use cases.
+List<File> _sharedFiles() => [
+  for (final file in _files(_applicationFolders))
+    if (!p.split(file.path).any(_portsAndUseCasesNames.contains)) file,
+];
 
 /// Fails with the two lists that differ, instead of a bare "not equal".
 void expectSameSet(List<String> inCode, List<String> inSpec) {
@@ -313,11 +338,11 @@ void main() {
   // -------------------------------------------------------------------------
 
   final knownEnums = enumMembersIn([
-    ..._files('lib/domain'),
-    ..._files('lib/application'),
+    ..._files(_domainFolders),
+    ..._files(_applicationFolders),
   ]);
   final errorCodeEnumerations =
-      enumerationsIn(_root, _files(_errorsFolder), knownEnums)
+      enumerationsIn(_root, _files(_errorsFolders), knownEnums)
           .where((enumeration) => enumeration.name.endsWith(_errorCodeSuffix))
           .toList();
   final errorCodes = [
@@ -338,9 +363,9 @@ void main() {
     });
 
     final sources = <(SpecDocument, List<File>)>[
-      (spec.domain, _files(_domainFolder)),
-      (spec.ports, _files(_portsFolder)),
-      (spec.useCases, [..._files(_sharedFolder), ..._files(_useCasesFolder)]),
+      (spec.domain, _files(_domainFolders)),
+      (spec.ports, _files(_portsFolders)),
+      (spec.useCases, [..._sharedFiles(), ..._files(_useCasesFolders)]),
     ];
     for (final (document, files) in sources) {
       group('documented in ${document.file}', () {
@@ -394,7 +419,7 @@ void main() {
       final names = [
         for (final enumeration in enumerationsIn(
           _root,
-          _files(_domainFolder),
+          _files(_domainFolders),
           knownEnums,
         ))
           if (!enumeration.name.endsWith(_errorCodeSuffix)) enumeration.name,
@@ -413,22 +438,25 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('the use cases', () {
-    final inCode = useCaseNamesIn(_files(_useCasesFolder));
+    final inCode = useCaseNamesIn(_files(_useCasesFolders));
     final indexTables = spec.useCases.tablesOfKind([TableKind.useCase]);
     final inSpec = [for (final table in indexTables) ...table.identifiers];
     final portNames = [
-      for (final port in portsIn(_files(_portsFolder))) port.name,
+      for (final port in portsIn(_files(_portsFolders))) port.name,
     ];
 
     test('are found in the code', () {
       expect(inCode.length, greaterThanOrEqualTo(15));
     });
 
-    test('are the use case classes of lib/application/use_cases, '
-        'no more, no fewer', () {
-      expect(indexTables, hasLength(1));
-      expectSameSet(inCode, inSpec);
-    });
+    test(
+      'are the use case classes of the use_cases folders of the application, '
+      'no more, no fewer',
+      () {
+        expect(indexTables, hasLength(1));
+        expectSameSet(inCode, inSpec);
+      },
+    );
 
     for (final name in inCode) {
       group(name, () {
@@ -487,7 +515,7 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('the ports', () {
-    final inCode = portsIn(_files(_portsFolder));
+    final inCode = portsIn(_files(_portsFolders));
     final indexTables = spec.ports.tablesOfKind([TableKind.port]);
     final operationTables = spec.ports.tablesOfKind([TableKind.operation]);
 
@@ -495,7 +523,7 @@ void main() {
       expect(inCode.length, greaterThanOrEqualTo(10));
     });
 
-    test('are the interfaces with operations of lib/application/ports, '
+    test('are the interfaces with operations of the ports folders, '
         'no more, no fewer', () {
       expect(indexTables, hasLength(1));
       expectSameSet(
@@ -775,11 +803,11 @@ void main() {
   }, skip: _settingsOutOfScope);
 
   group('the constants of the application', () {
-    final inCode = numericConstantsIn(_files(_sharedFolder));
+    final inCode = numericConstantsIn(_sharedFiles());
     final tables = spec.useCases.tablesOfKind([TableKind.constant]);
     final rows = [for (final table in tables) ...table.rows];
 
-    test('are the numeric constants of lib/application/shared, '
+    test('are the numeric constants of the shared code of the application, '
         'no more, no fewer', () {
       expect(tables, hasLength(1));
       expectSameSet(inCode.keys.toList(), [

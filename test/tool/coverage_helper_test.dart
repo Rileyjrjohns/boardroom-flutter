@@ -35,15 +35,15 @@ void main() {
   group('buildCoverageHelper', () {
     test('imports each library once, sorted, and has an empty main', () {
       final source = buildCoverageHelper('boardroom', [
-        'lib/presentation/app.dart',
-        'lib/domain/meeting.dart',
+        'lib/app/app.dart',
+        'lib/features/meetings/domain/entities/meeting.dart',
       ]);
 
       expect(
         source,
         contains(
-          "import 'package:boardroom/domain/meeting.dart';\n"
-          "import 'package:boardroom/presentation/app.dart';\n",
+          "import 'package:boardroom/app/app.dart';\n"
+          "import 'package:boardroom/features/meetings/domain/entities/meeting.dart';\n",
         ),
       );
       expect(source, contains('void main() {}'));
