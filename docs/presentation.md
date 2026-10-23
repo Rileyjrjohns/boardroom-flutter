@@ -22,7 +22,7 @@ lib/core/presentation/
   components/       the shared widgets: AppButton, AppBadge, AppTextField, AppDialog, ErrorState, InlineError, LiveText,
                     LoadingState, Message, StatusBanner, ConnectionBanner, DemoOfflineSwitch, DemoAccounts, PrivacyCover, ContentHost
   errors/           ErrorCatalog: code -> text, and which codes are retryable
-  query/            QueryFailure and unwrapResult, RetryPolicy, keepQueryFor (freshness), runResultAction and ActionState
+  query/            QueryFailure and unwrapResult, RetryPolicy, keepQueryFor (freshness) and the query registry, runResultAction and ActionState
   state/            ui_state.dart: connectivityStateProvider, privacyCoverUpProvider, localDataResetNoticeProvider
   navigation/       routes.dart (AppRoutes, RouteParams), navigate.dart (openMeeting, openDocument, openPendingVotes, pushOnce)
   format/           Formatters (dateTime, fullDateTime, number)
@@ -70,13 +70,13 @@ A screen that reads server data uses a provider that returns the data or **throw
 ```dart
 @riverpod
 Future<Loaded<Meeting>> meeting(Ref ref, MeetingId id) async {
-  ref.keepQueryFor();                       // 60 s fresh, 5 min in memory, dropped when the user leaves the open app
+  ref.keepQueryFor();                       // 60 s fresh, 5 min in memory, dropped when the access moves
   final result = await ref.read(getMeetingUseCaseProvider).execute(meetingId: id);
   return unwrapResult(result);               // throws QueryFailure(result.error)
 }
 ```
 
-- `ref.keepQueryFor()` is the first line of every query that holds data of the user. It mirrors the stale time (60 s) and the gc time (5 min) of the React Native query client, and drops the data when the epoch of the access moves (the user left the open app).
+- `ref.keepQueryFor()` is the first line of every query that holds data of the user. It mirrors the stale time (60 s) and the gc time (5 min) of the React Native query client, and drops the data when the epoch of the access moves (the user left the open app). The drop is done by the container, not by the query: `keepQueryFor` registers the query in `queryRegistryProvider`, and `dropQueriesWhenSessionMoves(container)` (called by `StartupGate` and by `TestApp.providers`) listens to `sessionEpochProvider` for as long as the container lives and lets go of every registered query. A listener a query makes itself would be paused while nobody listens to it, and a second user could be handed what the first one loaded. So a screen needs no per-screen filter on the epoch: a query read after a user switch is a new one. A query reads the epoch (`ref.read(sessionEpochProvider)`) to say which access its answer is for (`unwrapResult(startedUnder:)`), it does not watch it.
 - A query is retried by the root container's policy (`RetryPolicy`): at most twice, after 0.5 s then 1 s, only for the codes the catalog calls retryable. A non-retryable failure is reported at once. A failure whose code ends the session (`unauthorized`, `notAuthenticated`, `sessionExpired`, `sessionChanged`, `appLocked`) ends the session for the whole app (through `sessionEndHandlerProvider`) before the screen sees it. You write none of that.
 - The screen reads `AsyncValue`: `loading`, `error` (`QueryFailure`: use `errorCodeOf(error, catalog)` or `(error as QueryFailure).error.code`), `value`. A failed refresh keeps the previous value next to the error (`hasValue && hasError`): that is the "refresh failed" state, shown with an `InlineError`. **A refusal of the item** (`forbidden`, `notFound`, `itemRefusalCodes`) makes the screen drop the data it held: show the final error, not the old value.
 - **A paginated list** is an `AsyncNotifier` that keeps the pages and the cursor; "refresh" restarts from the first page; "next page failed" is a field of its state, not an `AsyncError` (the pages loaded stay).
@@ -143,11 +143,11 @@ AppButton(key: const Key(AuthTestIds.signInSubmit), ...)
 
   | Owner       | RN namespaces                                                                                                       | ARB prefix   | Example                                              |
   | ----------- | ------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------- |
-  | `core`      | `app`, `common`, `navigation`, `states`, `errors`, `startup`, `banner` (offline, dismiss, localDataReset), `demo`, `privacy` | `core`       | `errors.notFound` -> `coreErrorsNotFound`            |
+  | `core`      | `app`, `common`, `navigation`, `states`, `errors`, `startup`, `banner` (offline, dismiss, localDataReset, rejected), `demo`, `privacy` | `core`       | `errors.notFound` -> `coreErrorsNotFound`            |
   | `auth`      | `signIn`, `lock`, `unlockErrors`, `signOut`, `biometric`                                                            | `auth`       | `signIn.title` -> `authSignInTitle`                  |
   | `meetings`  | `meetings`, `meeting`, `participantRole`, `votingState`, `confidentiality`                                          | `meetings`   | `meetings.empty.upcoming` -> `meetingsEmptyUpcoming`, `meeting.agenda` -> `meetingsMeetingAgenda` |
   | `documents` | `document`                                                                                                          | `documents`  | `document.capture.screenshot` -> `documentsDocumentCaptureScreenshot` |
-  | `votes`     | `voting`, `voteChoice`, `voteBiometric`, `pendingVotes`, `banner.sent`, `banner.rejected`                           | `votes`      | `voting.queued` -> `votesVotingQueued`, `banner.sent` -> `votesBannerSent` |
+  | `votes`     | `voting`, `voteChoice`, `voteBiometric`, `pendingVotes`, `banner.sent`                                                | `votes`      | `voting.queued` -> `votesVotingQueued`, `banner.sent` -> `votesBannerSent`; `banner.rejected` is the core's `coreBannerRejected` |
 
   Parameters keep their name (`{date}`, `{choice}`, `{name}`...): the generated method takes them in the order of the ARB `placeholders`, e.g. `l10n.coreStatesStaleData(date)`. Plurals are ICU (`{count, plural, one{...} other{...}}`): the method takes the **int** `count` and formats it with the locale (`l10n.votesBannerSent(3)`). Dates are formatted by `Formatters` and passed as strings.
 - **Add a key** only when the spec needs a text the port lacks: add it at the end of `app_en.arb` (with its `@key` description and `placeholders`) and of `app_fr.arb`, with the right prefix, in one edit of each file, then run `flutter gen-l10n`. The agents work in parallel: do not rewrite or reformat the files, only append.
@@ -182,18 +182,20 @@ A placeholder is a file with the agreed class name and constructor: replace its 
 | A session a failure ended is forgotten on the device | `signOutEndedSessionProvider` (`session/session_ended.dart`)                          |
 | Background / return, privacy cover, lock        | `AppLifecycleHandler` (`lib/app/shell/app_lifecycle.dart`), driven by `AppLifecycleListener` in `SessionController` |
 | Connectivity                                    | `connectivityObserverProvider` (`lib/app/shell/connectivity_observer.dart`)                |
-| Vote synchronisation trigger                    | `requestVoteSyncProvider` (`features/votes/presentation/state/vote_sync.dart`): **a placeholder the votes agent fills** |
+| Vote synchronisation trigger                    | `requestVoteSyncProvider` (`features/votes/presentation/state/vote_sync.dart`) |
 
 `SessionController` mounts all of them above the navigator. The actions: `SignInAction`, `SignOutAction`, `UnlockAction` (`state/*_action.dart`).
 
 ## Links between features
 
-No feature imports `lib/app`. Two links are made in `lib/app/providers/slot_overrides.dart` (empty today):
+No feature imports `lib/app`. Two links are made in `lib/app/providers/slot_overrides.dart`:
 
 - **The banner notices**: the core declares `BannerNotices` and `bannerNoticesProvider` (`status_banner.dart`); the votes implement it (the sync summary: `hasNotices` is a provider of bool, `builder` builds the lines) and the override `bannerNoticesProvider.overrideWithValue(...)` goes in `slotOverrides()`.
 - **The resolution actions slot**: the meetings declare it (`features/meetings/presentation/slots/resolution_actions.dart`: a provider of a builder that gets the meeting, the resolution and the loaded-at instant; the default builds nothing); the votes implement it (the voting block of a resolution); the override goes in `slotOverrides()`.
 
-The header actions of the list (pending votes with its count, sign out) are `lib/app/shell/header_actions.dart`, a placeholder (`SizedBox.shrink`) that the integration step writes once `pendingVotesProvider` and `SignOutDialog` exist.
+The header actions of the list are `lib/app/shell/header_actions.dart`: the pending votes button (the count is pending plus rejected from `pendingVotesProvider`, shown in a badge only once the outbox is read) and the sign-out button, which opens `showSignOutDialog` with the number of pending votes (null while it is unknown). The shell is in `lib/app` because it is the one place that knows both `auth` and `votes`.
+
+The label and the tone of a confidentiality level are `confidentialityLabel` and `confidentialityTone` in `features/meetings/presentation/messages.dart`; the document screen uses the same (a feature may import the presentation of the features it depends on, never the reverse).
 
 ## How to write a widget test
 
@@ -218,7 +220,7 @@ testWidgets('signs in and opens the app', (tester) async {
 });
 ```
 
-- `TestApp({fakes, demoControls, notices, startsLocked, adaptPorts})`: `adaptPorts` replaces a port (to hold an answer with a `Completer`, to see the busy state). `app.useCases`, `app.container`, `app.overrides` are there if needed. `app.providers(access:, extra:)` gives the container without a widget (for a notifier test, under `fakeAsync` if there are timers).
+- `TestApp({fakes, demoControls, notices, startsLocked, meetingsPageSize, adaptPorts})`: `meetingsPageSize` sets the size of a page of the list (a pagination test uses a small one); `adaptPorts` replaces a port (to hold an answer with a `Completer`, to see the busy state). `app.useCases`, `app.container`, `app.overrides` are there if needed. `app.providers(access:, extra:)` gives the container without a widget (for a notifier test, under `fakeAsync` if there are timers).
 - `extra: [someProvider.overrideWithValue(...)]` overrides one more provider (e.g. `requestVoteSyncProvider`, `bannerNoticesProvider`).
 - Seed data on the fakes before pumping (`app.fakes.meetings.addMeeting(aMeeting())`, `app.fakes.auth.session = null`); the builders are in `test/support/builders`.
 - After a change of a provider that nothing in the tree watches, the container refreshes lazily: keep a widget that watches it in the tree (the screens do), or read the provider.
@@ -233,7 +235,7 @@ testWidgets('signs in and opens the app', (tester) async {
 | `auth`        | `LockScreen`, `SignOutDialog` (+ its use from the lock screen and the header), `SessionNotice` (done), the tests of the sign-in (done as the reference)                                                                              | `UnlockAction`, `SignOutAction` (done), `unlockErrorMessage` (done), `AuthTestIds` (done)                                                                          |
 | `meetings`    | `MeetingsListScreen` (period control, pagination, pull to refresh, every state), `MeetingDetailScreen` (agenda, documents, participants, `ResolutionView`, `DocumentRow`, `ParticipantRow`), the **ResolutionActions slot**, the period state (kept while a meeting is open) | `listMeetingsUseCaseProvider`, `getMeetingUseCaseProvider`, `meetingsPageSizeProvider`, `MeetingsTestIds`, `StatusBanner`, `ErrorState`, `openMeeting`/`openDocument`   |
 | `documents`   | `DocumentScreen` (lifecycle open/close tied to the screen having focus and the access, PDF viewer (add the PDF package then), watermark, `SecureContent` (exists), capture notice, `DocumentErrorState`), the demo screen (exists)     | `openDocumentUseCaseProvider`, `closeDocumentUseCaseProvider`, `observeScreenCaptureUseCaseProvider`, `DocumentsTestIds`, `sessionOpenProvider`, `privacyCoverUpProvider` |
-| `votes`       | `VoteDialog`, `ResolutionVoting` / the resolution actions (implements the meetings slot), `PendingVotesScreen`, `OutboxVoteRow`, `AcknowledgeButton`, `UnreadableVotesNotice`, `SyncSummaryNotice` (implements `BannerNotices`), the vote sync trigger (**`requestVoteSyncProvider`**), `HeaderActions` count | `castVoteUseCaseProvider` and the four others, `VotesTestIds`, `slotOverrides()`, `votesBannerSent`/`votesBannerRejected`                                           |
+| `votes`       | `VoteDialog`, `ResolutionVoting` / the resolution actions (implements the meetings slot), `PendingVotesScreen`, `OutboxVoteRow`, `AcknowledgeButton`, `UnreadableVotesNotice`, `SyncSummaryNotice` (implements `BannerNotices`), the vote sync trigger (**`requestVoteSyncProvider`**), `HeaderActions` count | `castVoteUseCaseProvider` and the four others, `VotesTestIds`, `slotOverrides()`, `votesBannerSent` (the rejected-sync banner is `coreBannerRejected`, owned by the core)                                           |
 
 ## Checks
 

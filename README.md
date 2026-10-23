@@ -6,7 +6,7 @@ Board meetings, documents and votes: the Flutter port of Boardroom, built to sho
 
 Port of [Boardroom (React Native)](https://github.com/Rileyjrjohns/boardroom) with the same domain. Both apps follow the same specification, kept in [`docs/spec`](docs/spec).
 
-Status: step 4 of 8, the screen protection plugin, done. The app shows a placeholder home screen with a way to a demo screen that tries the screen protection on a device; the domain and the application are translated, the adapters are written and tested (dio against the fixtures, the encrypted drift database, secure storage, biometrics, connectivity, monitoring), and the local plugin `packages/screen_protection` (Pigeon, Kotlin, Swift: [`docs/native-module.md`](docs/native-module.md)) is the native half of the `ScreenProtection` port. Nothing else is wired yet: the screens and the providers come in the next steps. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md); the infrastructure and the plugin are mapped in [`docs/parity/infrastructure.md`](docs/parity/infrastructure.md). The code is organised by feature, then by layer: see [Features and layers](#features-and-layers) and [`docs/architecture.md`](docs/architecture.md).
+Status: step 5 of 8, the presentation, done. The app has all its screens (see [Screens](#screens)); the domain and the application are translated, the adapters are written and tested (dio against the fixtures, the encrypted drift database, secure storage, biometrics, connectivity, monitoring), and the local plugin `packages/screen_protection` (Pigeon, Kotlin, Swift: [`docs/native-module.md`](docs/native-module.md)) is the native half of the `ScreenProtection` port. How the code is translated, file by file and test by test, is written in [`docs/porting.md`](docs/porting.md); the infrastructure and the plugin are mapped in [`docs/parity/infrastructure.md`](docs/parity/infrastructure.md), the presentation in [`docs/parity/presentation.md`](docs/parity/presentation.md), and the pattern of the screens is in [`docs/presentation.md`](docs/presentation.md). The code is organised by feature, then by layer: see [Features and layers](#features-and-layers) and [`docs/architecture.md`](docs/architecture.md).
 
 ## Requirements
 
@@ -20,6 +20,7 @@ flutter pub get      # installs the dependencies and generates the localization 
 dart run build_runner build   # generates the freezed classes and the JSON code of the DTOs
 flutter gen-l10n     # regenerates the localization classes by hand (after editing an ARB file)
 flutter run          # runs the app (the dev configuration: the fixtures behind the simulated server)
+flutter run --dart-define=BOARDROOM_ADAPTERS=dev    # the same, named: the simulated server, with the demo accounts and the offline switch
 flutter run --dart-define=BOARDROOM_ADAPTERS=http --dart-define=BOARDROOM_API_BASE_URL=https://api.example.com   # against a real API
 flutter test         # runs all the tests
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # runs the pure Dart tests, without Flutter
@@ -56,7 +57,7 @@ dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos --fatal-warnings
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # pure Dart tests, no Flutter
 flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure   # the adapters: dio on the fixtures, drift, encrypted SQLite
-flutter test test/core/presentation test/features/*/presentation   # the shared components and the screens
+flutter test test/core/presentation test/features/*/presentation   # the shared components, the query layer and the screens of every feature (the shell, the router and the header actions are in test/app, run by the step above)
 (cd packages/screen_protection && flutter test)   # the Dart side of the screen protection plugin
 (cd android && ./gradlew :screen_protection:testDebugUnitTest)   # its Kotlin logic, on the JVM
 (cd packages/screen_protection && dart run pigeon --input pigeons/screen_protection_api.dart && dart format lib && git diff --exit-code .)   # the generated channel is up to date
@@ -95,6 +96,20 @@ The local database is encrypted at rest, with SQLCipher parameters and a key kep
 ## Monitoring
 
 `ConsoleMonitoring` is the adapter in use. `SentryMonitoring` is written and tested but disabled, with no Sentry dependency; [`docs/monitoring.md`](docs/monitoring.md) says how to turn it on.
+
+## Screens
+
+The routes, the states and the test ids of each screen are specified in [`docs/spec/screens.md`](docs/spec/screens.md) and are the same as the React Native app's. The pattern they follow in Flutter (Riverpod, go_router, gen-l10n) is in [`docs/presentation.md`](docs/presentation.md).
+
+| Route                  | Screen                  | Feature     | What it does                                                                                  |
+| ---------------------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------------- |
+| `/sign-in`             | `SignInScreen`          | `auth`      | Email and password, the demo accounts of the dev configuration, the notice of a session that ended |
+| `/lock`                | `LockScreen`            | `auth`      | Unlocks the app with the biometrics or the password; signing out                              |
+| `/`                    | `MeetingsListScreen`    | `meetings`  | Upcoming and past meetings, paginated, pull to refresh; the header has the pending votes and sign-out actions |
+| `/meetings/:meetingId` | `MeetingDetailScreen`   | `meetings`  | Agenda, documents, participants and the resolutions, with the voting block of the votes       |
+| `/documents/:documentId` | `DocumentScreen`      | `documents` | The PDF with its watermark, in a view the system cannot capture, and the capture notice       |
+| `/pending-votes`       | `PendingVotesScreen`    | `votes`     | The votes waiting to be sent and the rejected ones, with acknowledge and discard              |
+| `/screen-protection-demo` | `ScreenProtectionDemoScreen` | `documents` | Development only: tries the screen protection on a device                         |
 
 ## Features and layers
 
@@ -139,4 +154,4 @@ Inside `lib/core` and each feature, the layers are folders and follow the same r
 
 Each of `lib/core`, `lib/features/<feature>` and `lib/app` has a `README.md` with the details.
 
-`presentation` also never imports the packages behind the adapters (connectivity_plus, dio, drift, flutter_secure_storage, local_auth, path_provider, screen_protection, sqlite3), with one exception: `lib/features/documents/presentation/secure_content.dart` may import the widget of `screen_protection` (a native view cannot cross a port; [`docs/native-module.md`](docs/native-module.md)), `domain` and `application` use only pure Dart (see the allowlists in `tool/check_imports.dart`), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this, and the graph of the features with it: the constant `featureGraph` says which feature may import which, and why.
+`presentation` also never imports the packages behind the adapters (connectivity_plus, dio, drift, flutter_secure_storage, local_auth, path_provider, pdfrx, screen_protection, sqlite3), with two exceptions: `lib/features/documents/presentation/secure_content.dart` may import the widget of `screen_protection` (a native view cannot cross a port; [`docs/native-module.md`](docs/native-module.md)), and `lib/features/documents/presentation/components/pdf_view.dart` may import `package:pdfrx/pdfrx.dart` (the PDF viewer is a widget too), `domain` and `application` use only pure Dart (see the allowlists in `tool/check_imports.dart`), and only the files that `flutter gen-l10n` writes are exempt in `lib/l10n`. `tool/check_imports.dart` enforces all of this, and the graph of the features with it: the constant `featureGraph` says which feature may import which, and why.
