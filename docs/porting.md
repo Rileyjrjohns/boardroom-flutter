@@ -1,6 +1,6 @@
 # Porting the React Native code to Dart
 
-The Flutter app has the same domain and the same application as the React Native one ([Boardroom](https://github.com/Rileyjrjohns/boardroom), the commit in [`parity/RN_COMMIT`](parity/RN_COMMIT)). The specification in [`spec/`](spec) is the contract; the TypeScript code under `src/domain` and `src/application` conforms to it and is the reference implementation to translate. Every file of the `domain` and `application` folders of `lib/core` and `lib/features` is the translation of one TypeScript file, and every test is the translation of one React Native test, with the same name.
+The Flutter app has the same domain and the same application as the React Native one ([Boardroom](https://github.com/Rileyjrjohns/boardroom), the commit in [`parity/RN_COMMIT`](parity/RN_COMMIT)). The specification in [`spec/`](spec) is the contract; the TypeScript code under `src/core` and `src/features` conforms to it and is the reference implementation to translate. Every file of the `domain` and `application` folders of `lib/core` and `lib/features` is the translation of one TypeScript file, and every test is the translation of one React Native test, with the same name.
 
 These rules are binding and mechanical. When the code you translate does something this document does not cover, do not invent: follow the TypeScript code, and write the point in [`parity/open-questions.md`](parity/open-questions.md). When the specification and the TypeScript code disagree, implement the specification and write it there too.
 
@@ -37,18 +37,20 @@ Inside the folder of the layer the path follows the TypeScript one: `src/domain/
 | `src/application/use-cases/auth/SignIn.ts`    | `lib/features/auth/application/use_cases/sign_in.dart`                    | `use-cases` is `use_cases`                                            |
 | `src/application/use-cases/connectivity/ObserveConnectivity.ts` | `lib/core/application/use_cases/observe_connectivity.dart` | Connectivity is not a feature                                 |
 | `X.test.ts` (next to `X.ts`)                  | `test/<same folders as the Dart file>/x_test.dart`                        | The test tree mirrors the `lib` tree                                  |
-| `src/domain/limits.test.ts`                   | `test/core/domain/limits_test.dart`                                       | A test that spans the features stays in `test/core/domain`            |
-| `src/domain/literals.test.ts`                 | `test/core/domain/literals_test.dart`                                     | Same                                                                  |
+| `src/composition/glue/limits.test.ts`         | `test/core/domain/limits_test.dart`                                       | A test that spans the features stays in `test/core/domain`            |
+| `src/composition/glue/domainLiterals.test.ts` | `test/core/domain/domain_literals_test.dart`                              | Same                                                                  |
 | `src/domain/testing/builders.ts`              | `test/support/builders/builders.dart`                                     | `testing` is `test/support`                                           |
 | `src/application/testing/FakeClock.ts`        | `test/support/fakes/fake_clock.dart`                                      |                                                                       |
 | `src/application/testing/createFakes.ts`      | `test/support/fakes/create_fakes.dart`                                    |                                                                       |
 | `src/application/testing/contracts/xContract.ts` | `test/support/contracts/x_contract.dart`                               | The contract suites                                                   |
 | `src/application/testing/fakes.test.ts`       | `test/support/fakes/fakes_test.dart`                                      | A test of the support code stays with it                              |
 | `src/application/testing/fakes.contracts.test.ts` | `test/support/fakes/fakes_contracts_test.dart`                        | `.` in a file name is `_`                                             |
-| `src/application/literals.test.ts`            | `test/core/application/literals_test.dart`                                | A test that spans the features stays in `test/core/application`       |
-| `src/application/securityScenarios.test.ts`   | `test/core/application/security_scenarios_test.dart`                      | Same                                                                  |
-| `src/domain/errors/errors.test.ts`            | `test/core/domain/errors/errors_test.dart` and four more files            | Split by family, with the same names: `tool/scenario_parity.dart` (`splitScenarioFiles`) reads them for the one file |
-| `src/domain/entities/Meeting.test.ts`         | `test/features/meetings/domain/entities/meeting_test.dart` and `test/features/votes/domain/with_vote_recorded_test.dart` | Split: the scenarios of `withVoteRecorded` follow the function |
+| `src/composition/glue/applicationLiterals.test.ts` | `test/core/application/application_literals_test.dart`               | A test that spans the features stays in `test/core/application`       |
+| `src/composition/glue/securityScenarios.test.ts` | `test/core/application/security_scenarios_test.dart`                   | Same                                                                  |
+| `src/composition/glue/MeetingCacheVoteRecorder.test.ts` | `test/app/composition/meeting_cache_vote_recorder_test.dart`    | The glue between features is `test/app/composition`                   |
+| `src/composition/glue/retryableCodes.test.ts` | `test/app/composition/retryable_codes_test.dart`                          | Same; the codes of the core and of the documents have a file each     |
+| `src/features/auth/domain/errors/errors.test.ts` | `test/features/auth/domain/errors/auth_errors_test.dart`               | The name `errors.test.ts` is shared by the core and three features, so the Dart files of the features are named after the family (`dartFileNames`) |
+| `src/features/votes/domain/withVoteRecorded.test.ts` | `test/features/votes/domain/with_vote_recorded_test.dart`          | `.` and the case are the only changes                                 |
 
 The shared test support is in `test/support`, importable by any test: `builders/` (the builders, the matchers and the name helpers of the domain), `fakes/` (the fakes of the ports, `createFakes`, the fake clock and monitoring), `contracts/` (the contract suites that every adapter of a port runs), and `infrastructure/` (what the adapters need: the in-memory volumes, the test databases, the HTTP world, the fixture files). The first three are pure Dart; `infrastructure/` is not, and a pure test never imports it. The tests of the support code stay with it: `test/support/fakes/*_test.dart` run under `dart test`, `test/support/infrastructure/*_test.dart` under `flutter test`.
 
@@ -279,8 +281,8 @@ Assert the same things with the same values and the same error codes. A Dart tes
 ```sh
 dart run build_runner build
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/support/fakes test/tool
-dart run tool/scenario_parity.dart --rn ../boardroom --only src/domain/shared
-dart run tool/scenario_parity.dart --rn ../boardroom --only src/application/use-cases --table
+dart run tool/scenario_parity.dart --rn ../boardroom --only src/core/domain/shared
+dart run tool/scenario_parity.dart --rn ../boardroom --only src/features/votes/application/use-cases --table
 ```
 
-`--rn` is a checkout of the React Native repository at the commit of [`parity/RN_COMMIT`](parity/RN_COMMIT). The checker reads its test sources (`src/domain` and `src/application`, `*.test.ts`), expands the `.each` tables the way Jest does (it follows the constants of the file and of the files it imports, and the contract suites a test file calls), asks `dart test --reporter json` for the names of the Dart tests, and compares the full names per file. It exits with 1 on any difference that no note explains.
+`--rn` is a checkout of the React Native repository at the commit of [`parity/RN_COMMIT`](parity/RN_COMMIT). The checker reads its test sources (`*.test.ts` in the `domain` and `application` folders of `src/core` and `src/features/*`, in `src/composition/glue` and in `src/testing/application`), expands the `.each` tables the way Jest does (it follows the constants of the file and of the files it imports, and the contract suites a test file calls), asks `dart test --reporter json` for the names of the Dart tests, and compares the full names per file. It exits with 1 on any difference that no note explains.

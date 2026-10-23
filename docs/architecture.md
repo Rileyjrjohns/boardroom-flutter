@@ -2,7 +2,7 @@
 
 The code is organised **feature first**, and inside each feature **by layer** (hexagonal). The dependencies between features are few, go one way and have no cycle; where two features need each other, the one that owns the rule declares a port, the other implements it, and `lib/app` wires them. `tool/check_imports.dart` enforces all of it in CI.
 
-The React Native app is still layered first (`src/domain`, `src/application`, `src/infrastructure`...), until its own refactor. The deviations from its structure are listed in [`parity/open-questions.md`](parity/open-questions.md), and the mapping of the files in [`porting.md`](porting.md).
+The React Native app is organised feature first too (`src/core`, `src/features/*`, `src/composition`), and the dependencies between features are inverted the same way. The deviations from its structure are listed in [`parity/open-questions.md`](parity/open-questions.md), and the mapping of the files in [`porting.md`](porting.md).
 
 ## The layout
 
