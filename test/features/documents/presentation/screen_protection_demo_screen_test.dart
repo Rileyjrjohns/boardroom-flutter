@@ -37,8 +37,14 @@ void main() {
       final l10n = await pump(tester, protection);
 
       expect(tester.widget<Switch>(switchFinder()).value, isFalse);
-      expect(find.text(l10n.screenProtectionDemoConfidential), findsOneWidget);
-      expect(find.text(l10n.screenProtectionDemoEventsEmpty), findsOneWidget);
+      expect(
+        find.text(l10n.documentsScreenProtectionDemoConfidential),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.documentsScreenProtectionDemoEventsEmpty),
+        findsOneWidget,
+      );
       expect(protection.enableCalls, equals(0));
     },
   );
@@ -72,12 +78,15 @@ void main() {
       ..emit(_stopped);
     await tester.pump();
 
-    expect(find.text(l10n.screenProtectionDemoEventsEmpty), findsNothing);
+    expect(
+      find.text(l10n.documentsScreenProtectionDemoEventsEmpty),
+      findsNothing,
+    );
     final tops = [
       for (final text in [
-        l10n.screenProtectionDemoScreenshot,
-        l10n.screenProtectionDemoRecordingStarted,
-        l10n.screenProtectionDemoRecordingStopped,
+        l10n.documentsScreenProtectionDemoScreenshot,
+        l10n.documentsScreenProtectionDemoRecordingStarted,
+        l10n.documentsScreenProtectionDemoRecordingStopped,
       ])
         tester.getTopLeft(find.text(text)).dy,
     ];
@@ -90,12 +99,12 @@ void main() {
         (
           'unsupported',
           screenProtectionUnsupported(),
-          (l10n) => l10n.screenProtectionDemoErrorUnsupported,
+          (l10n) => l10n.documentsScreenProtectionDemoErrorUnsupported,
         ),
         (
           'failed',
           screenProtectionFailed(),
-          (l10n) => l10n.screenProtectionDemoErrorFailed,
+          (l10n) => l10n.documentsScreenProtectionDemoErrorFailed,
         ),
       ]) {
     testWidgets('says so when the protection cannot be turned on ($name), '
@@ -115,12 +124,13 @@ void main() {
     final protection = FakeScreenProtection();
     final l10n = await pump(tester, protection, locale: const Locale('fr'));
 
-    expect(find.text(l10n.screenProtectionDemoTitle), findsOneWidget);
-    expect(find.text(l10n.screenProtectionDemoSwitch), findsOneWidget);
+    expect(find.text(l10n.documentsScreenProtectionDemoTitle), findsOneWidget);
+    expect(find.text(l10n.documentsScreenProtectionDemoSwitch), findsOneWidget);
     expect(
-      l10n.screenProtectionDemoSwitch,
+      l10n.documentsScreenProtectionDemoSwitch,
       isNot(
-        lookupAppLocalizations(const Locale('en')).screenProtectionDemoSwitch,
+        lookupAppLocalizations(const Locale('en'))
+            .documentsScreenProtectionDemoSwitch,
       ),
     );
   });

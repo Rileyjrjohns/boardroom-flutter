@@ -80,13 +80,13 @@ class _ScreenProtectionDemoScreenState
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.screenProtectionDemoTitle)),
+      appBar: AppBar(title: Text(l10n.documentsScreenProtectionDemoTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           SwitchListTile(
-            title: Text(l10n.screenProtectionDemoSwitch),
-            subtitle: Text(l10n.screenProtectionDemoSwitchHelp),
+            title: Text(l10n.documentsScreenProtectionDemoSwitch),
+            subtitle: Text(l10n.documentsScreenProtectionDemoSwitchHelp),
             value: _enabled,
             onChanged: _busy
                 ? null
@@ -106,18 +106,18 @@ class _ScreenProtectionDemoScreenState
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(l10n.screenProtectionDemoConfidential),
+                child: Text(l10n.documentsScreenProtectionDemoConfidential),
               ),
             ),
           ),
           const SizedBox(height: 24),
           Text(
-            l10n.screenProtectionDemoEventsTitle,
+            l10n.documentsScreenProtectionDemoEventsTitle,
             style: theme.textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
           if (_captures.isEmpty)
-            Text(l10n.screenProtectionDemoEventsEmpty)
+            Text(l10n.documentsScreenProtectionDemoEventsEmpty)
           else
             for (final kind in _captures)
               ListTile(
@@ -134,15 +134,17 @@ class _ScreenProtectionDemoScreenState
 String _errorText(AppLocalizations l10n, ScreenProtectionError error) =>
     switch (error) {
       ScreenProtectionUnsupportedError() =>
-        l10n.screenProtectionDemoErrorUnsupported,
-      ScreenProtectionFailedError() => l10n.screenProtectionDemoErrorFailed,
+        l10n.documentsScreenProtectionDemoErrorUnsupported,
+      ScreenProtectionFailedError() =>
+        l10n.documentsScreenProtectionDemoErrorFailed,
     };
 
 String _captureText(AppLocalizations l10n, ScreenCaptureKind kind) =>
     switch (kind) {
-      ScreenCaptureKind.screenshotTaken => l10n.screenProtectionDemoScreenshot,
+      ScreenCaptureKind.screenshotTaken =>
+        l10n.documentsScreenProtectionDemoScreenshot,
       ScreenCaptureKind.recordingStarted =>
-        l10n.screenProtectionDemoRecordingStarted,
+        l10n.documentsScreenProtectionDemoRecordingStarted,
       ScreenCaptureKind.recordingStopped =>
-        l10n.screenProtectionDemoRecordingStopped,
+        l10n.documentsScreenProtectionDemoRecordingStopped,
     };
