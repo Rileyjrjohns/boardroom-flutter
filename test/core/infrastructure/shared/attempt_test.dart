@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/core/infrastructure/shared/attempt.dart';
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:sqlite3/sqlite3.dart' show SqliteException;
 import 'package:test/test.dart';
 
@@ -110,6 +111,25 @@ void main() {
           ),
         ),
         equals('os error 28'),
+      );
+    });
+
+    test('keeps the code of a failure that has one in the form of a code', () {
+      expect(
+        describeFailure(
+          PlatformException(
+            code: 'ERR_ACTIVITY',
+            message: '/private/var/mobile/secret.pdf',
+          ),
+        ),
+        equals('ERR_ACTIVITY'),
+      );
+    });
+
+    test('says nothing specific about a code with free text', () {
+      expect(
+        describeFailure(PlatformException(code: 'cannot open /secret/path')),
+        equals('unknown failure'),
       );
     });
 
