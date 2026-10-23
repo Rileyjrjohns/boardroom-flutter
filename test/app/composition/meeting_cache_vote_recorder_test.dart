@@ -17,11 +17,11 @@ import '../../support/fakes/create_fakes.dart';
 import '../../support/fakes/fake_monitoring.dart';
 import '../../support/fakes/holding_meeting_cache.dart';
 
-// The scenarios of `recordVoteInCache` in React Native. In Dart the function is
-// the `MeetingCacheVoteRecorder` of the composition, the implementation of the
-// `RecordedVoteSink` port of the votes (see docs/architecture.md), so the
-// scenarios, with the same names, run against it. The file keeps the name of
-// the React Native test file, which `tool/scenario_parity.dart` maps by name.
+// The scenarios of `MeetingCacheVoteRecorder` in React Native, with the same
+// names. In Dart it is the implementation of the `RecordedVoteSink` port of the
+// votes, wired by the composition (see docs/architecture.md). The file has the
+// snake case name of the React Native test file, which
+// `tool/scenario_parity.dart` maps by name.
 
 /// Records [vote] with the recorder of the app, over the cache of meetings of
 /// [fakes] or over [cache], the Dart counterpart of
@@ -40,7 +40,7 @@ final _attributes = <LogAttribute, Object>{
 };
 
 void main() {
-  group('recordVoteInCache', () {
+  group('MeetingCacheVoteRecorder', () {
     test('records the vote on the cached meeting of the voter and keeps the '
         'date it was cached at', () async {
       final fakes = createFakes();

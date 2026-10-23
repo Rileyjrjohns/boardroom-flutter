@@ -8,19 +8,19 @@ import 'package:test/test.dart';
 import '../../../support/builders/builders.dart';
 import '../../../support/fakes/fake_document_cache.dart';
 
-// Dart only: the purger is how the documents feature takes part in the end of
-// a session without auth importing its cache (see docs/architecture.md).
+// The purger is how the documents feature takes part in the end of a session
+// without auth importing its cache (see docs/architecture.md).
 
 void main() {
   group('DocumentCachePurger', () {
-    test('is named after the document cache in the logs', () {
+    test('names the documents as what it empties, for the monitoring', () {
       expect(
         DocumentCachePurger(FakeDocumentCache()).resource,
         equals(CacheResource.document),
       );
     });
 
-    test('empties the document cache of every owner', () async {
+    test('empties the cache of the documents, for every owner', () async {
       final cache = FakeDocumentCache();
       final viewable = ViewableDocument(
         document: aDocument(),
@@ -35,13 +35,13 @@ void main() {
       expect(cache.isEmpty(), isTrue);
     });
 
-    test('returns the failure of the cache', () async {
+    test('gives the failure of a cache that cannot be emptied', () async {
       final cache = FakeDocumentCache()
-        ..purgeFailure = storageWriteFailed('content locked');
+        ..purgeFailure = storageWriteFailed('locked');
 
       final purged = await DocumentCachePurger(cache).purge();
 
-      expect(purged, equals(err(storageWriteFailed('content locked'))));
+      expect(purged, equals(err(storageWriteFailed('locked'))));
     });
   });
 }

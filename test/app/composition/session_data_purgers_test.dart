@@ -1,5 +1,6 @@
 import 'package:boardroom/app/composition/session_data_purgers.dart';
 import 'package:boardroom/core/application/offline/cache_resource.dart';
+import 'package:boardroom/core/domain/shared/result.dart';
 import 'package:boardroom/features/documents/application/ports/document_cache.dart';
 import 'package:test/test.dart';
 
@@ -7,15 +8,16 @@ import '../../support/builders/builders.dart';
 import '../../support/fakes/fake_document_cache.dart';
 import '../../support/fakes/fake_meeting_cache.dart';
 
-// Dart only: the composition is where `auth` learns which features keep data
-// for a user (see docs/architecture.md).
+// The composition is where `auth` learns which features keep data for a user
+// (see docs/architecture.md).
 
 void main() {
   group('sessionDataPurgers', () {
     final meetingCache = FakeMeetingCache();
     final documentCache = FakeDocumentCache();
 
-    test('lists the meetings, then the documents', () {
+    test('is one purger for each feature that keeps data for a user: the '
+        'meetings, then the documents', () {
       final purgers = sessionDataPurgers(
         meetingCache: meetingCache,
         documentCache: documentCache,
@@ -26,7 +28,7 @@ void main() {
       ], equals([CacheResource.meeting, CacheResource.document]));
     });
 
-    test('purges the caches it is given', () async {
+    test('empties the cache of each feature', () async {
       final meetings = FakeMeetingCache();
       final documents = FakeDocumentCache();
       await meetings.saveMeeting(aUserId(), aMeeting(), now);
@@ -40,7 +42,7 @@ void main() {
         meetingCache: meetings,
         documentCache: documents,
       )) {
-        await purger.purge();
+        expect(isOk(await purger.purge()), isTrue);
       }
 
       expect(meetings.isEmpty(), isTrue);

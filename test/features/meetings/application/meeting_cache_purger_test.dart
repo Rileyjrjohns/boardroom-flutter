@@ -7,19 +7,19 @@ import 'package:test/test.dart';
 import '../../../support/builders/builders.dart';
 import '../../../support/fakes/fake_meeting_cache.dart';
 
-// Dart only: the purger is how the meetings feature takes part in the end of a
-// session without auth importing its cache (see docs/architecture.md).
+// The purger is how the meetings feature takes part in the end of a session
+// without auth importing its cache (see docs/architecture.md).
 
 void main() {
   group('MeetingCachePurger', () {
-    test('is named after the meeting cache in the logs', () {
+    test('names the meetings as what it empties, for the monitoring', () {
       expect(
         MeetingCachePurger(FakeMeetingCache()).resource,
         equals(CacheResource.meeting),
       );
     });
 
-    test('empties the meeting cache of every owner', () async {
+    test('empties the cache of the meetings, for every owner', () async {
       final cache = FakeMeetingCache();
       await cache.saveMeeting(aUserId(), aMeeting(), now);
       await cache.saveMeeting(aUserId('user-2'), aMeeting(), now);
@@ -30,12 +30,13 @@ void main() {
       expect(cache.isEmpty(), isTrue);
     });
 
-    test('returns the failure of the cache', () async {
-      final cache = FakeMeetingCache()..purgeFailure = storageWriteFailed('x');
+    test('gives the failure of a cache that cannot be emptied', () async {
+      final cache = FakeMeetingCache()
+        ..purgeFailure = storageWriteFailed('locked');
 
       final purged = await MeetingCachePurger(cache).purge();
 
-      expect(purged, equals(err(storageWriteFailed('x'))));
+      expect(purged, equals(err(storageWriteFailed('locked'))));
     });
   });
 }
