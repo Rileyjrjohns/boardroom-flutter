@@ -79,7 +79,15 @@ void main() {
         ).allMatches(withoutComments(read(file))).map((m) => m.group(1)!);
         expect(uses, isNotEmpty);
         for (final name in uses) {
-          expect(name, matches(RegExp(r'^[\w.-]+/[\w./-]+@v\d+(\.\d+)*$')));
+          // A workflow of this repository is called by its path, which has no version.
+          expect(
+            name,
+            matches(
+              RegExp(
+                r'^(?:[\w.-]+/[\w./-]+@v\d+(\.\d+)*|\./\.github/workflows/[\w-]+\.yml)$',
+              ),
+            ),
+          );
         }
       });
 
@@ -121,43 +129,57 @@ void main() {
       },
     );
 
-    test(
-      'has the verify job and one job per platform, each with a timeout',
-      () {
-        expect(jobs.keys, ['verify', 'ios', 'android']);
-        for (final job in jobs.values) {
-          expect(
-            job,
-            matches(RegExp(r'^ {4}timeout-minutes: \d+$', multiLine: true)),
-          );
-        }
-        expect(jobs['ios'], contains('runs-on: macos-15'));
-        expect(jobs['android'], contains('runs-on: ubuntu-24.04'));
+    test('has the verify job, the CI and one job per platform, each with a timeout', () {
+      expect(jobs.keys, ['verify', 'ci', 'ios', 'android']);
+      // The `ci` job calls a workflow, whose jobs have their own timeouts.
+      for (final job
+          in jobs.entries.where((e) => e.key != 'ci').map((e) => e.value)) {
         expect(
-          release,
-          matches(
-            RegExp(
-              r'# .*ubuntu-24\.04.*ubuntu-latest.*Ubuntu 26.*19 October 2026',
-            ),
-          ),
+          job,
+          matches(RegExp(r'^ {4}timeout-minutes: \d+$', multiLine: true)),
         );
-      },
-    );
+      }
+      expect(jobs['ios'], contains('runs-on: macos-15'));
+      expect(jobs['android'], contains('runs-on: ubuntu-24.04'));
+      expect(
+        release,
+        matches(
+          RegExp(
+            r'# .*ubuntu-24\.04.*ubuntu-latest.*Ubuntu 26.*19 October 2026',
+          ),
+        ),
+      );
+    });
 
-    test('builds and uploads a platform only when its values exist: a skipped job, not a failed one', () {
+    test('calls the CI on a tag only, and not by hand', () {
+      expect(
+        jobs['ci'],
+        contains("    if: \${{ github.event_name == 'push' }}\n"),
+      );
+      expect(jobs['ci'], contains('    uses: ./.github/workflows/ci.yml\n'));
+      expect(jobs['ci'], isNot(contains('secrets:')));
+      expect(
+        withoutComments(read('.github/workflows/ci.yml')),
+        contains('  workflow_call:\n'),
+      );
+    });
+
+    test('builds and uploads a platform only when the CI did not fail and its values exist: a skipped job, not a failed one', () {
       for (final platform in ['ios', 'android']) {
         final job = jobs[platform]!;
-        expect(job, contains('    needs: [verify]\n'));
+        expect(job, contains('    needs: [verify, ci]\n'));
+        // Never after a failed or cancelled CI (or verify), and never without the values.
         expect(
           job,
           contains(
-            "    if: \${{ needs.verify.outputs.$platform == 'true' }}\n",
+            "    if: \${{ !failure() && !cancelled() && needs.verify.outputs.$platform == 'true' }}\n",
           ),
         );
         // No step of a platform job has a condition of its own that could let it run without the gate.
         expect(job, isNot(contains('always()')));
       }
       expect(jobs['verify'], isNot(contains('needs:')));
+      expect(jobs['ci'], isNot(contains('needs:')));
     });
 
     test('reads a secret only in the verify gate and in the steps of the gated jobs', () {

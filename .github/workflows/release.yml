@@ -4,7 +4,8 @@
 # NOTHING IS DEPLOYED FROM THIS REPOSITORY. Every step that signs or uploads is gated on the secrets
 # of the stores, and this repository has none: a tag runs the `verify` job (the tag against the
 # version of pubspec.yaml), says in the run summary which platform is skipped and why, and the two
-# platform jobs are skipped (a skipped job is not a failure). A real project adds the secrets listed
+# platform jobs are skipped (a skipped job is not a failure). A tag also runs the CI (ci.yml) first,
+# and no platform is built if it fails. A real project adds the secrets listed
 # in the README and the same workflow then builds and uploads, with no change.
 name: Release
 
@@ -96,11 +97,20 @@ jobs:
           report ios "$(missing IOS_BUNDLE_ID APPLE_TEAM_ID IOS_CERTIFICATE_P12_BASE64 IOS_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_BASE64)"
           report android "$(missing ANDROID_PACKAGE_NAME ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_PASSWORD ANDROID_KEY_ALIAS PLAY_SERVICE_ACCOUNT_JSON_BASE64)"
 
+  # A tag is built only if the code it points at passes the same checks as a pull request: every job
+  # of the CI, since the result of this job is that of every job of the workflow it calls. Not run
+  # by hand. A called workflow inherits the read-only permissions of this one, which are all it needs.
+  ci:
+    name: CI
+    if: ${{ github.event_name == 'push' }}
+    uses: ./.github/workflows/ci.yml
+
   ios:
     name: Build and upload to TestFlight
-    needs: [verify]
-    # Skipped (not failed) without the iOS values: the macOS runner is never started.
-    if: ${{ needs.verify.outputs.ios == 'true' }}
+    needs: [verify, ci]
+    # Runs when the CI passed (a tag) or was not asked for (by hand), never when it failed, and
+    # skipped (not failed) without the iOS values: the macOS runner is never started.
+    if: ${{ !failure() && !cancelled() && needs.verify.outputs.ios == 'true' }}
     runs-on: macos-15
     timeout-minutes: 60
     env:
@@ -160,9 +170,9 @@ jobs:
 
   android:
     name: Build and upload to Google Play (internal)
-    needs: [verify]
-    # Skipped (not failed) without the Android values.
-    if: ${{ needs.verify.outputs.android == 'true' }}
+    needs: [verify, ci]
+    # Same condition on the CI as iOS, and skipped (not failed) without the Android values.
+    if: ${{ !failure() && !cancelled() && needs.verify.outputs.android == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
