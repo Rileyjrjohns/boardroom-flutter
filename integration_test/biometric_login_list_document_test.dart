@@ -33,14 +33,13 @@ void main() {
   patrolTest(
     'biometric login, meetings list, confidential document',
     config: flowConfig,
+    timeout: flowTimeout,
     ($) async {
       await launchApp($);
       await signIn($);
 
       // Leave the app for longer than the grace period, then come back.
-      await $.platform.mobile.pressHome();
-      await Future<void>.delayed(_timeInBackground);
-      await $.platform.mobile.openApp();
+      await leaveAppFor($, _timeInBackground);
 
       // The app is locked: the lock screen is shown, nothing of the signed-in
       // user is behind it.

@@ -4,11 +4,14 @@
 // taken from
 // the constants of the app so that a renamed id breaks the build and not just
 // the run.
+import 'dart:async';
+
 import 'package:boardroom/core/presentation/test_ids.dart';
 import 'package:boardroom/features/auth/presentation/test_ids.dart';
 import 'package:boardroom/features/meetings/presentation/test_ids.dart';
 import 'package:boardroom/main.dart' as app;
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart' show Timeout;
 import 'package:patrol/patrol.dart';
 
 /// The demo account every flow signs in with: the first one of the fixtures,
@@ -24,11 +27,39 @@ const Duration screenTimeout = Duration(seconds: 30);
 
 /// The settings of every flow: Patrol's finders wait this long for a widget to
 /// appear.
+///
+/// `printLogs` prints each step as it runs, so that a run which stops shows
+/// where.
 const PatrolTesterConfig flowConfig = PatrolTesterConfig(
   existsTimeout: screenTimeout,
   visibleTimeout: screenTimeout,
   settleTimeout: Duration(seconds: 5),
+  printLogs: true,
 );
+
+/// The most a whole flow may take (a few minutes on a slow emulator): past it
+/// the test fails instead of waiting for ever. Passed to
+/// `patrolTest(timeout:)`.
+const Timeout flowTimeout = Timeout(Duration(minutes: 6));
+
+/// The most a call to the system (sending the app to the background, bringing
+/// it back) may take.
+const Duration nativeTimeout = Duration(seconds: 60);
+
+/// Sends the app to the background, waits [time] there, and brings it back.
+/// Each system call is bounded, so that a stuck one fails the test with its
+/// name.
+Future<void> leaveAppFor(PatrolIntegrationTester $, Duration time) async {
+  await $.platform.mobile.pressHome().timeout(
+    nativeTimeout,
+    onTimeout: () => throw TimeoutException('pressHome', nativeTimeout),
+  );
+  await Future<void>.delayed(time);
+  await $.platform.mobile.openApp().timeout(
+    nativeTimeout,
+    onTimeout: () => throw TimeoutException('openApp', nativeTimeout),
+  );
+}
 
 /// The finder of a widget by its test id (the `Key` the app gives it).
 PatrolFinder byTestId(PatrolIntegrationTester $, String id) => $(Key(id));

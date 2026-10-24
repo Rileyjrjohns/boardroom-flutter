@@ -24,6 +24,7 @@ void main() {
   patrolTest(
     'offline vote, pending votes, synchronisation',
     config: flowConfig,
+    timeout: flowTimeout,
     ($) async {
       Future<void> toggleOfflineSwitch() async {
         await byTestId(
