@@ -1,0 +1,85 @@
+# The two end-to-end flows (integration_test/), run with Patrol on an Android emulator. They are the
+# flows of the Maestro suite of the React Native app: biometric login, meetings, confidential
+# document; and offline vote, then synchronisation. They take several minutes (an emulator boot, a
+# full app build, a 35 second wait for the app lock), so they are not part of the CI of every pull
+# request (ci.yml): they run by hand, and on a version tag.
+name: End-to-end
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+# A second run for the same ref cancels the first.
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Pinned to ubuntu-24.04: GitHub began moving ubuntu-latest to Ubuntu 26 on 19 October 2026.
+  android:
+    name: Patrol on an Android emulator
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: pubspec.yaml
+          cache: true
+
+      # The emulator needs hardware acceleration: the hosted Linux runners have KVM, but its device
+      # file is not usable by the runner user until this rule is added.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install the dependencies
+        run: flutter pub get
+
+      - name: Generate the code (build_runner)
+        run: dart run build_runner build
+
+      # The version of patrol_cli is pinned: it must work with the version of patrol in pubspec.lock.
+      - name: Install patrol_cli
+        run: |
+          dart pub global activate patrol_cli 4.8.0
+          echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
+
+      # Builds the app and the test app, starts the emulator, then installs and runs both flows with
+      # the development configuration (the simulated server). With no biometric enrolled on the
+      # emulator, the unlock is the simulated one (see README, "End-to-end tests").
+      - name: Run the Patrol flows
+        uses: reactivecircus/android-emulator-runner@v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: patrol test --dart-define=BOARDROOM_ADAPTERS=dev
+
+      - name: Upload the Gradle test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: patrol-reports
+          path: build/app/reports
+          if-no-files-found: ignore
+          retention-days: 14

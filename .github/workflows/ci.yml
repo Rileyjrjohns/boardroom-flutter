@@ -133,6 +133,22 @@ jobs:
           fi
           flutter test "${folders[@]}"
 
+      # The golden images of the three key screens (the meetings list, the meeting detail and the
+      # document) in English and French: test/golden, the tag `golden`. They are compared with the CI
+      # goldens committed in test/golden/goldens/ci, where the text is drawn as blocks, so the
+      # images are the same on macOS and on Linux. The images a change breaks are uploaded below.
+      - name: Golden tests
+        run: flutter test --tags golden test/golden
+
+      - name: Upload the golden failures
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-failures
+          path: test/golden/failures
+          if-no-files-found: ignore
+          retention-days: 14
+
       # Writes test/coverage_helper_test.dart, which imports every library of lib/: a file that no
       # test loads would be missing from the coverage report instead of counting as 0 percent.
       - name: Load every library for the coverage
