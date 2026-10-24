@@ -62,6 +62,8 @@ dependencies:
   sqlite3: ^3.7.1
 
 dev_dependencies:
+  # Golden tests of the screens: its CI goldens use a plain test font, so they are identical on macOS and Linux (test/golden).
+  alchemist: ^0.14.1
   # Parses the import/export/part directives in tool/check_imports.dart and the test names in tool/scenario_parity.dart (syntax only, no resolution).
   analyzer: ^13.3.0
   # Runs the code generators (freezed, json_serializable, drift): `dart run build_runner build`.
@@ -79,6 +81,8 @@ dev_dependencies:
   json_serializable: ^6.15.2
   # Joins and normalizes the paths of the files read by tool/check_imports.dart and tool/scenario_parity.dart.
   path: ^1.9.1
+  # End-to-end tests of the two device flows (integration_test/), with native automation (sending the app to the background); run by patrol_cli.
+  patrol: ^4.10.0
   # Generates the *.g.dart files of the providers and the notifiers (@riverpod).
   riverpod_generator: ^4.0.9
   # Lets the pure Dart layers (domain, application) run under plain `dart test`, without Flutter.
@@ -103,3 +107,13 @@ flutter:
     - docs/spec/fixtures/accounts.json
     - docs/spec/fixtures/meetings.json
     - docs/spec/fixtures/recorded-votes.json
+
+# Configuration of patrol_cli (`patrol test`, `patrol build`): where the end-to-end tests are, and the
+# identifiers of the app on each platform.
+patrol:
+  app_name: Boardroom
+  test_directory: integration_test
+  android:
+    package_name: com.boardroom.flutterdemo
+  ios:
+    bundle_id: com.boardroom.flutterdemo

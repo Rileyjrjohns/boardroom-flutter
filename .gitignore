@@ -87,3 +87,11 @@ app.*.map.json
 
 # The generated Dart of the screen protection plugin is the exception to the rule above: the native builds need it, so it is committed and CI checks that regenerating it changes nothing (packages/screen_protection/README.md)
 !/packages/screen_protection/lib/src/messages.g.dart
+
+# Golden tests: only the CI goldens (text drawn as blocks, the same on every operating system) are fixtures; the platform ones (real text, one folder per operating system) are for reading by eye and depend on the machine (README, "Golden tests")
+/test/golden/goldens/*
+!/test/golden/goldens/ci/
+/test/golden/failures/
+
+# Written by patrol_cli when it runs the tests (the entrypoint that lists them): not a source file.
+/integration_test/test_bundle.dart

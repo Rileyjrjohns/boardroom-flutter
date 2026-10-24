@@ -1,0 +1,5 @@
+# The golden tests of test/golden carry this tag (the package alchemist adds it), so that
+# `flutter test --tags golden` runs only them and `flutter test --exclude-tags golden` runs
+# everything else.
+tags:
+  golden:
