@@ -1,8 +1,23 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// The upload key of the release build, as Flutter documents it (https://docs.flutter.dev/deployment/android):
+// android/key.properties (storePassword, keyPassword, keyAlias, storeFile; ignored by Git). The
+// Fastlane lane `ci_signing` writes it in CI from secrets. It is absent from this repository and
+// from a developer's machine, and then the release build is signed with the debug key so that
+// `flutter run --release` and `flutter build appbundle` still work. Such a build can never be
+// uploaded to Google Play, which refuses a debug-signed bundle.
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties()
+if (keyPropertiesFile.exists()) {
+    keyPropertiesFile.inputStream().use { keyProperties.load(it) }
+}
+val hasReleaseKey = keyPropertiesFile.exists()
 
 android {
     namespace = "com.boardroom.flutterdemo"
@@ -38,11 +53,24 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                keyAlias = keyProperties.getProperty("keyAlias")
+                keyPassword = keyProperties.getProperty("keyPassword")
+                storeFile = keyProperties.getProperty("storeFile")?.let { file(it) }
+                storePassword = keyProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
