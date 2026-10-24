@@ -8,6 +8,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Called by the release workflow, which runs these same checks on a version tag before it builds.
+  workflow_call:
 
 # A new push to a branch cancels the run of the previous one. The group has the ref in it, so a pull
 # request and main never cancel each other.
