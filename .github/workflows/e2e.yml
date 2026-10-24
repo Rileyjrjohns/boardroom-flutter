@@ -65,7 +65,7 @@ jobs:
 
       # Builds the app and the test app, starts the emulator, then installs and runs both flows with
       # the development configuration (the simulated server). With no biometric enrolled on the
-      # emulator, the unlock is the simulated one (see README, "End-to-end tests").
+      # emulator, the unlock is the simulated one (see docs/development.md, "End-to-end tests").
       - name: Run the Patrol flows
         uses: reactivecircus/android-emulator-runner@v2.38.0
         with:

@@ -7,8 +7,8 @@
 #
 # Everything secret or personal is read from the environment, and nothing has a default: a lane that
 # lacks a variable stops at once and names it. The list is the table "Secrets and variables" of
-# README.md. This repository holds no such value, so nothing here ever runs against Apple's servers
-# from it (see "Delivery" in README.md).
+# docs/delivery.md. This repository holds no such value, so nothing here ever runs against Apple's servers
+# from it (see docs/delivery.md).
 
 require 'base64'
 require 'securerandom'
@@ -28,7 +28,7 @@ def require_env!(*names)
   missing = names.select { |name| ENV.fetch(name, '').strip.empty? }
   return if missing.empty?
 
-  UI.user_error!("Missing environment variable(s): #{missing.join(', ')}. See \"Delivery\" in README.md.")
+  UI.user_error!("Missing environment variable(s): #{missing.join(', ')}. See docs/delivery.md.")
 end
 
 # The lanes that touch a keychain or a store run in CI only, unless the person who runs them says

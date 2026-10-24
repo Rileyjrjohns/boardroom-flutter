@@ -345,16 +345,13 @@ void main() {
         );
       }
 
-      test(
-        'tests the names that the lanes need, and the README lists every one',
-        () {
-          final readme = read('README.md');
-          expect(env, isNotEmpty);
-          for (final name in env) {
-            expect(readme, contains('`$name`'));
-          }
-        },
-      );
+      test('tests the names that the lanes need, and docs/delivery.md lists every one', () {
+        final readme = read('docs/delivery.md');
+        expect(env, isNotEmpty);
+        for (final name in env) {
+          expect(readme, contains('`$name`'));
+        }
+      });
 
       test('skips both platforms, and says why, when this repository has no secret (as it has none)', () {
         final result = run({});
@@ -572,8 +569,8 @@ void main() {
       expect(ios, isNot(contains('FASTLANE_PASSWORD')));
     });
 
-    test('lists every variable of the Fastfiles in the README', () {
-      final readme = read('README.md');
+    test('lists every variable of the Fastfiles in docs/delivery.md', () {
+      final readme = read('docs/delivery.md');
       final names =
           {
             for (final f in files.values)

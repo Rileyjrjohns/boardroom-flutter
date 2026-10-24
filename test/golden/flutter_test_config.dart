@@ -16,7 +16,7 @@ import 'support/edge_tolerant_comparator.dart';
 //   and on Linux. They are the ones that are committed and that CI compares.
 // - the platform goldens (goldens/<os>), with the real text, to read the screens
 //   by eye. They depend on the machine, so they are never committed and are
-//   only produced when PLATFORM_GOLDENS=1 is set (README, "Golden tests").
+//   only produced when PLATFORM_GOLDENS=1 is set (docs/development.md, "Golden tests").
 //
 // The images are compared up to the smoothing of edges, which differs by
 // operating system (support/edge_tolerant_comparator.dart).

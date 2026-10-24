@@ -12,7 +12,7 @@ analyzer:
     missing_required_param: error
     missing_return: error
   exclude:
-    # Generated code is never linted nor committed (see the README for the commands that rebuild it).
+    # Generated code is never linted nor committed (see docs/development.md for the commands that rebuild it).
     - '**/*.g.dart'
     - '**/*.freezed.dart'
     - '**/*.drift.dart'
