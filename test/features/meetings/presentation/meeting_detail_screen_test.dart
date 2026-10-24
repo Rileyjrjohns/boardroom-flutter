@@ -11,6 +11,7 @@ import 'package:boardroom/features/meetings/domain/value_objects/vote_choice.dar
 import 'package:boardroom/features/meetings/presentation/screens/meeting_detail_screen.dart';
 import 'package:boardroom/features/meetings/presentation/state/meeting_query.dart';
 import 'package:boardroom/features/meetings/presentation/test_ids.dart';
+import 'package:boardroom/features/votes/presentation/test_ids.dart';
 import 'package:boardroom/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -511,6 +512,30 @@ void main() {
 
           expect(byTestId(MeetingsTestIds.meetingDetail), findsOneWidget);
           expect(byTestId(MeetingsTestIds.meetingError), findsNothing);
+          await finish(tester, providers);
+        },
+      );
+
+      testWidgets(
+        'tells once, above the header, that the votes of the user cannot be '
+        'read, keeps the meeting, and drops the error when asked again',
+        (tester) async {
+          final app = TestApp(meetingsPageSize: testPageSize);
+          app.fakes.outbox.listFailure = storageReadFailed();
+          final (:providers, app: _) = await _renderDetail(tester, given: app);
+          await tester.pumpAndSettle();
+
+          expect(byTestId(VotesTestIds.votingError), findsOneWidget);
+          expect(find.text(en.coreErrorsStorageReadFailed), findsOneWidget);
+          expect(byTestId(MeetingsTestIds.meetingDetail), findsOneWidget);
+          expect(find.text(_meeting.title), findsOneWidget);
+
+          app.fakes.outbox.listFailure = null;
+          await tester.tap(byTestId(CoreTestIds.retryButton));
+          await tester.pumpAndSettle();
+
+          expect(byTestId(VotesTestIds.votingError), findsNothing);
+          expect(find.text(_meeting.title), findsOneWidget);
           await finish(tester, providers);
         },
       );
