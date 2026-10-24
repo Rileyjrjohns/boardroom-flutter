@@ -15,8 +15,16 @@ final class Formatters {
       _numbers = NumberFormat.decimalPattern(locale);
 
   /// The formatters for the locale of the widget tree at [context].
-  factory of(BuildContext context) =>
-      Formatters(Localizations.localeOf(context).toString());
+  factory of(BuildContext context) => Formatters(
+    Localizations.localeOf(context).toString(),
+    toLocal: deviceTimeOverride,
+  );
+
+  /// The time zone the screens use instead of the one of the device, set by
+  /// the golden tests so that a date reads the same on every machine. Never
+  /// set by the app.
+  @visibleForTesting
+  static DateTime Function(int epochMillis)? deviceTimeOverride;
 
   final DateTime Function(int epochMillis) _toLocal;
   final DateFormat _compact;
