@@ -241,4 +241,4 @@ testWidgets('signs in and opens the app', (tester) async {
 
 `dart run tool/check_imports.dart` (the layers, the feature graph, presentation imports), `dart test test/tool` (the specification, the literals, the ARB files), `flutter analyze --fatal-infos --fatal-warnings`, `dart format`, `flutter test`. See the README for the commands in order.
 
-The three key screens (the meetings list, the meeting detail, the document) also have golden images, in `test/golden` (README, "Golden tests"). A screen change that moves them is regenerated with `flutter test --update-goldens --tags golden test/golden`.
+The three key screens (the meetings list, the meeting detail, the document) also have golden images, in `test/golden` (docs/development.md, "Golden tests"). A screen change that moves them is regenerated with `flutter test --update-goldens --tags golden test/golden`.

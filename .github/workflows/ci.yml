@@ -1,7 +1,7 @@
 # The checks every change has to pass, in four jobs that run in parallel (the import rules of the
 # architecture, everything else, the screen protection plugin, and the parity of the tests with the React Native app) and in
 # steps, so that the one that fails is the first thing the run page shows. They are the commands
-# listed in the "Checks" section of the README, so anyone can run them locally.
+# listed in the "Checks" section of docs/development.md, so anyone can run them locally.
 name: CI
 
 on:

@@ -31,11 +31,11 @@ Every workflow declares `permissions: contents: read`, pins each action to a maj
 
 ## CI
 
-The checks are the commands of the "Checks" section of the [README](../README.md), so anyone can run them locally. A new push to a branch cancels the run of the previous one (the group has the ref in it, so a pull request and `main` never cancel each other). No secret is used, so a pull request from a fork runs the same checks. The coverage table is added to the summary of the run, the coverage report and the images of a failed golden test are uploaded as artifacts.
+The checks are the commands of the "Checks" section of [development.md](development.md#checks), so anyone can run them locally. A new push to a branch cancels the run of the previous one (the group has the ref in it, so a pull request and `main` never cancel each other). No secret is used, so a pull request from a fork runs the same checks. The coverage table is added to the summary of the run, the coverage report and the images of a failed golden test are uploaded as artifacts.
 
 ## End-to-end
 
-`e2e.yml` boots an Android emulator (`reactivecircus/android-emulator-runner`), and `patrol test --dart-define=BOARDROOM_ADAPTERS=dev` builds the app and the test app and runs the two flows of `integration_test/`. It takes several minutes, so it is not part of the CI of every pull request: it runs by hand and on a version tag. The flows and their setup are in the README ("End-to-end tests"). iOS is not run in CI (a macOS runner and a simulator for two flows cost more than they tell).
+`e2e.yml` boots an Android emulator (`reactivecircus/android-emulator-runner`), and `patrol test --dart-define=BOARDROOM_ADAPTERS=dev` builds the app and the test app and runs the two flows of `integration_test/`. It takes several minutes, so it is not part of the CI of every pull request: it runs by hand and on a version tag. The flows and their setup are in [development.md](development.md#end-to-end-tests). iOS is not run in CI (a macOS runner and a simulator for two flows cost more than they tell).
 
 ## Release
 
@@ -47,7 +47,7 @@ The checks are the commands of the "Checks" section of the [README](../README.md
 
 ### Fastlane
 
-One `fastlane/` folder per native project, as [docs.flutter.dev/deployment/cd](https://docs.flutter.dev/deployment/cd) shows, and one `Gemfile` at the root with Fastlane pinned to an exact version. The lanes are described in the README ("Delivery"). Their rules:
+One `fastlane/` folder per native project, as [docs.flutter.dev/deployment/cd](https://docs.flutter.dev/deployment/cd) shows, and one `Gemfile` at the root with Fastlane pinned to an exact version. The lanes are described in [delivery.md](delivery.md). Their rules:
 
 - All identity and secrets come from the environment, with no default: no team id, bundle identifier, password or key is written in the repository, and a test looks for them.
 - A lane stops first, naming every missing variable. `ci_signing` and `beta` refuse to run outside CI unless `FORCE_DELIVERY=1`.
@@ -61,4 +61,4 @@ One `fastlane/` folder per native project, as [docs.flutter.dev/deployment/cd](h
 2. `verify` finds no secret: `ios=false`, `android=false`, and the summary says `skipped, nothing is built or uploaded. Missing: ...` for each.
 3. The `ios` and `android` jobs are skipped (and would be whatever the secrets if the CI failed). The run is green if the CI is. Nothing was signed, built or uploaded.
 
-To ship for real, a project sets the values of the table "Secrets and variables" in the README, replaces the bundle identifier and the application id (`com.boardroom.flutterdemo`, a placeholder of the demo) with its own and makes the matching profile and Play Console entry. No change to the workflow or the lanes is needed. An ADR that compares Fastlane here with EAS in the React Native app belongs to step 8.
+To ship for real, a project sets the values of the table "Secrets and variables" of [delivery.md](delivery.md#secrets-and-variables), replaces the bundle identifier and the application id (`com.boardroom.flutterdemo`, a placeholder of the demo) with its own and makes the matching profile and Play Console entry. No change to the workflow or the lanes is needed. The choice of Fastlane, against EAS in the React Native app, is [ADR 0006](adr/0006-fastlane-for-delivery.md).
