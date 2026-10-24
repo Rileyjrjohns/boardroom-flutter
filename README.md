@@ -58,6 +58,7 @@ flutter analyze --fatal-infos --fatal-warnings
 dart test test/core/domain test/core/application test/features/*/domain test/features/*/application test/app/composition test/support/fakes test/tool   # pure Dart tests, no Flutter
 flutter test test/core/infrastructure test/features/*/infrastructure test/app test/support/infrastructure   # the adapters: dio on the fixtures, drift, encrypted SQLite
 flutter test test/core/presentation test/features/*/presentation   # the shared components, the query layer and the screens of every feature (the shell, the router and the header actions are in test/app, run by the step above)
+flutter test --tags golden test/golden   # the golden images of the three key screens (see "Golden tests" below)
 (cd packages/screen_protection && flutter test)   # the Dart side of the screen protection plugin
 (cd android && ./gradlew :screen_protection:testDebugUnitTest)   # its Kotlin logic, on the JVM
 (cd packages/screen_protection && dart run pigeon --input pigeons/screen_protection_api.dart && dart format lib && git diff --exit-code .)   # the generated channel is up to date
@@ -76,6 +77,22 @@ The coverage gate is on lines, the only figure that `flutter test --coverage` re
 
 A layer with no code yet is not checked. `tool/coverage_helper.dart` imports every library of `lib/` in a generated test, so a file that no test loads counts as 0 % instead of being missing from the report. In CI the table is added to the summary of the run and `coverage/lcov.info` is uploaded as an artifact.
 
+**Golden tests** (step `Golden tests` of the same job): the meetings list, the meeting detail (with the vote block under each resolution) and the document screen (the PDF view stood in for by a drawn page, with the watermark and the protected badge) are compared with images, in English and in French, at the width of a phone (390 logical pixels), with the light theme. Each image shows the states side by side. The package [alchemist](https://pub.dev/packages/alchemist) draws them.
+
+| Image (`test/golden/goldens/ci/`)                | States, left to right                                  |
+| ------------------------------------------------ | ------------------------------------------------------ |
+| `meetings_list_en.png`, `meetings_list_fr.png`   | loaded, empty, saved copy while offline, error         |
+| `meeting_detail_en.png`, `meeting_detail_fr.png` | loaded with the votes, saved copy while offline, error |
+| `document_en.png`, `document_fr.png`             | loaded and protected, saved copy while offline, error  |
+
+The images are **test fixtures, committed on purpose** (they are not generated code, unlike `*.g.dart`): a change of a screen shows in the review as a changed image. They are the same on macOS and on Linux because the CI goldens of alchemist draw the text as plain blocks (no font, so no difference of text rendering between systems) and no shadow, the clock and the data are fixed (the fakes stand at one instant), and the dates are formatted in UTC (`Formatters.deviceTimeOverride`, set by `test/golden/flutter_test_config.dart`), so the time zone of the machine does not matter. The software renderer smooths rounded corners and lines in a slightly different way on each system (measured: about 0.6 % of the pixels of an image, on the edges only), so `test/golden/support/edge_tolerant_comparator.dart` accepts an image whose only differences are such edges and refuses any difference that forms an area (a text of another length, a colour, a moved element). When a change of a screen is wanted, regenerate the images and commit them:
+
+```sh
+flutter test --update-goldens --tags golden test/golden
+```
+
+To read the screens with their real text, ask for the platform goldens too: `PLATFORM_GOLDENS=1 flutter test --update-goldens --tags golden test/golden` writes `test/golden/goldens/<os>/`, which Git ignores (they depend on the machine). When an image differs, the test writes the expected, the actual and the difference to `test/golden/failures/`, and CI uploads that folder as the artifact `golden-failures`. The goldens also run in the step `flutter test --coverage`; `flutter test --exclude-tags golden` leaves them out.
+
 **Scenario parity with React Native** (job `Scenario parity with React Native`): the Flutter tests of the domain and of the application (the `domain` and `application` folders of `test/core` and `test/features/*`, `test/app/composition`, and the fakes in `test/support/fakes`) must be the tests of the React Native app, one for one, with the same names. The React Native repository is checked out at the commit written in [`docs/parity/RN_COMMIT`](docs/parity/RN_COMMIT).
 
 ```sh
@@ -88,6 +105,29 @@ dart run tool/scenario_parity.dart --rn ../boardroom --only src/features/votes/a
 The script reads the test sources of the feature-first layout of the React Native app (the `domain` and `application` folders of `src/core` and of `src/features/*`, `src/composition/glue`, and the tests of the fakes in `src/testing/application`), expands the `it.each` tables the way Jest does, runs `dart test --reporter json` to get the names of the Dart tests, and compares the full names file by file (the Dart test file of a React Native one is the single `<snake_name>_test.dart` among the pure test folders; when two share the name, the one in the folder of the same part of the code (`core` or the feature) and then of the same layer (`domain` or `application`); a file name shared by several features, `errors.test.ts`, is given its Dart name in `dartFileNames`; the mapping of the paths, the formation of the names and the translation of the assertions are in [`docs/porting.md`](docs/porting.md)). It fails on a scenario with no Dart test and on a Dart test with no scenario, unless [`docs/parity/exceptions.md`](docs/parity/exceptions.md) (a scenario that cannot exist in Dart) or [`docs/parity/extras.md`](docs/parity/extras.md) (a Dart-only test) explains it. The points where the specification was ambiguous, or where Dart forced a choice, are in [`docs/parity/open-questions.md`](docs/parity/open-questions.md).
 
 The lint rules are those of `very_good_analysis` with `strict-casts`, `strict-inference` and `strict-raw-types`.
+
+## End-to-end tests
+
+Two flows run the real app on a device, with [Patrol](https://patrol.leancode.co) (`integration_test/`). They are the two flows of the Maestro suite of the React Native app, with the same steps and the same test ids:
+
+| Test                                                | What it does                                                                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `biometric_login_list_document_test.dart`           | Signs in with the demo account, leaves the app for 35 seconds (the grace period of the app lock is 30), comes back, unlocks it, opens `meeting-001` and its confidential document (protected badge, PDF view). |
+| `offline_vote_resync_test.dart`                     | Signs in, opens `meeting-002`, turns the demo offline switch on, votes on its resolution, checks "waiting to be sent" and the pending votes badge and screen, turns the switch off, checks the sync summary and the vote as recorded. |
+
+The app runs in the development configuration (`--dart-define=BOARDROOM_ADAPTERS=dev`): the fixtures are served by the simulated server, in process, and the dates are shifted so that there are always upcoming meetings. On a simulator or an emulator with no fingerprint or face enrolled, the biometric gate is the simulated one (it always recognises the user), so the unlock is one tap on the button of the lock screen. With a biometric enrolled, the system prompt appears and the first flow cannot answer it: run the flows on a device with nothing enrolled.
+
+```sh
+dart pub global activate patrol_cli 4.8.0    # once; then add ~/.pub-cache/bin to the PATH
+patrol doctor                                # checks the Android and iOS tooling
+flutter pub get && dart run build_runner build
+patrol test -d <device id> --dart-define=BOARDROOM_ADAPTERS=dev                                     # both flows (flutter devices lists the ids)
+patrol test -d <device id> --dart-define=BOARDROOM_ADAPTERS=dev --target integration_test/offline_vote_resync_test.dart   # one flow (Android; iOS runs both)
+patrol build android --dart-define=BOARDROOM_ADAPTERS=dev                                           # only builds the app and the test app
+patrol build ios --simulator --dart-define=BOARDROOM_ADAPTERS=dev
+```
+
+The native setup Patrol needs is committed: on Android the instrumentation runner and the test orchestrator in `android/app/build.gradle.kts` and `android/app/src/androidTest/.../MainActivityTest.java`; on iOS the `RunnerUITests` target (`ios/RunnerUITests/RunnerUITests.m`, the `Podfile` and the `Runner` scheme). The `patrol:` section of `pubspec.yaml` gives `patrol_cli` the test folder and the identifiers of the app. `integration_test/` is not run by `flutter test` (which reads `test/`), so the checks above stay fast; the workflow [`e2e.yml`](.github/workflows/e2e.yml) runs the flows on an Android emulator, by hand (`workflow_dispatch`) and on a version tag (`v*`).
 
 ## Native libraries
 
