@@ -34,6 +34,10 @@ target 'Runner' do
   target 'RunnerTests' do
     inherit! :search_paths
   end
+  # Patrol (end-to-end tests): the UI test target links the same pods as the app.
+  target 'RunnerUITests' do
+    inherit! :complete
+  end
 end
 
 post_install do |installer|
