@@ -95,3 +95,13 @@ app.*.map.json
 
 # Written by patrol_cli when it runs the tests (the entrypoint that lists them): not a source file.
 /integration_test/test_bundle.dart
+
+# Delivery (README, "Delivery"): the Bundler install, the Android signing files that the CI lane writes, the Fastlane reports
+/.bundle/
+/vendor/bundle/
+/android/key.properties
+/android/app/upload-keystore.jks
+/ios/fastlane/report.xml
+/android/fastlane/report.xml
+/ios/fastlane/README.md
+/android/fastlane/README.md

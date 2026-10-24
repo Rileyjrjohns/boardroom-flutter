@@ -1,0 +1,153 @@
+# Delivery of the iOS app: a signed release build with `flutter build ipa`, and an upload to
+# TestFlight. Run from the ios/ folder (the Gemfile is in the parent):
+#
+#   bundle exec fastlane ios ci_signing   import the certificate and the provisioning profile in a temporary keychain
+#   bundle exec fastlane ios build        sign (ci_signing runs first) and build build/ios/ipa/*.ipa
+#   bundle exec fastlane ios beta         upload that IPA to TestFlight (CI only, see below)
+#
+# Everything secret or personal is read from the environment, and nothing has a default: a lane that
+# lacks a variable stops at once and names it. The list is the table "Secrets and variables" of
+# README.md. This repository holds no such value, so nothing here ever runs against Apple's servers
+# from it (see "Delivery" in README.md).
+
+require 'base64'
+require 'securerandom'
+require 'tmpdir'
+
+default_platform(:ios)
+
+# The root of the Flutter project (pubspec.yaml), whatever the folder fastlane was started from.
+PROJECT_ROOT = File.expand_path('../..', __dir__)
+XCODE_PROJECT = File.join(PROJECT_ROOT, 'ios', 'Runner.xcodeproj')
+IOS_TARGET = 'Runner'.freeze
+IPA_FOLDER = File.join(PROJECT_ROOT, 'build', 'ios', 'ipa')
+KEYCHAIN_NAME = 'boardroom-ci.keychain'.freeze
+
+# Stops the lane with the list of the variables that are missing or empty, before anything is done.
+def require_env!(*names)
+  missing = names.select { |name| ENV.fetch(name, '').strip.empty? }
+  return if missing.empty?
+
+  UI.user_error!("Missing environment variable(s): #{missing.join(', ')}. See \"Delivery\" in README.md.")
+end
+
+# The lanes that touch a keychain or a store run in CI only, unless the person who runs them says
+# they mean it (FORCE_DELIVERY=1): a local run must never upload by accident.
+def require_ci!(lane_name)
+  return if ENV['CI'] == 'true' || ENV['FORCE_DELIVERY'] == '1'
+
+  UI.user_error!("The lane #{lane_name} runs in CI only. Set FORCE_DELIVERY=1 to run it on this machine on purpose.")
+end
+
+# Writes a secret that is stored in base64 to a file, and returns its path. The file is in a folder
+# that is created for the run, which the runner discards.
+def decode_secret(name, file_name)
+  folder = (@secret_folder ||= Dir.mktmpdir('boardroom-secrets'))
+  path = File.join(folder, file_name)
+  File.binwrite(path, Base64.decode64(ENV.fetch(name)))
+  path
+end
+
+# The path of the IPA that `build` wrote, or a stop if there is none.
+def built_ipa
+  ipas = Dir.glob(File.join(IPA_FOLDER, '*.ipa'))
+  UI.user_error!("No IPA in #{IPA_FOLDER}. Run the lane build first.") if ipas.empty?
+  ipas.max_by { |file| File.mtime(file) }
+end
+
+# The settings that a release build is told on the command line. A release build must be told which
+# adapters it uses (see "Composition root" in docs/architecture.md): `dev` is the simulated server,
+# which is what a build with no real API behind it wants.
+def dart_defines
+  defines = ["--dart-define=BOARDROOM_ADAPTERS=#{ENV.fetch('BOARDROOM_ADAPTERS', 'dev')}"]
+  api = ENV.fetch('BOARDROOM_API_BASE_URL', '')
+  defines << "--dart-define=BOARDROOM_API_BASE_URL=#{api}" unless api.empty?
+  defines
+end
+
+platform :ios do
+  desc 'Import the certificate and the provisioning profile from the environment into a temporary keychain'
+  lane :ci_signing do
+    require_ci!('ci_signing')
+    require_env!('IOS_CERTIFICATE_P12_BASE64', 'IOS_CERTIFICATE_PASSWORD', 'IOS_PROVISIONING_PROFILE_BASE64',
+                 'APPLE_TEAM_ID', 'IOS_BUNDLE_ID')
+
+    keychain_password = SecureRandom.hex(16)
+    create_keychain(
+      name: KEYCHAIN_NAME,
+      password: keychain_password,
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: false
+    )
+    import_certificate(
+      certificate_path: decode_secret('IOS_CERTIFICATE_P12_BASE64', 'distribution.p12'),
+      certificate_password: ENV.fetch('IOS_CERTIFICATE_PASSWORD'),
+      keychain_name: KEYCHAIN_NAME,
+      keychain_password: keychain_password
+    )
+
+    profile_path = decode_secret('IOS_PROVISIONING_PROFILE_BASE64', 'app.mobileprovision')
+    install_provisioning_profile(path: profile_path)
+    ENV['BOARDROOM_PROFILE_NAME'] = FastlaneCore::ProvisioningProfile.name(profile_path)
+
+    # The project is signed automatically, for development. The release build is signed by hand,
+    # with the profile that was just installed.
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: XCODE_PROJECT,
+      team_id: ENV.fetch('APPLE_TEAM_ID'),
+      code_sign_identity: 'Apple Distribution',
+      profile_name: ENV.fetch('BOARDROOM_PROFILE_NAME'),
+      targets: [IOS_TARGET]
+    )
+  end
+
+  desc 'Build the signed release IPA (flutter build ipa)'
+  lane :build do
+    ci_signing
+
+    options_path = File.join(PROJECT_ROOT, 'build', 'ExportOptions.plist')
+    FileUtils.mkdir_p(File.dirname(options_path))
+    File.write(options_path, <<~PLIST)
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>method</key><string>app-store-connect</string>
+        <key>teamID</key><string>#{ENV.fetch('APPLE_TEAM_ID')}</string>
+        <key>signingStyle</key><string>manual</string>
+        <key>provisioningProfiles</key>
+        <dict><key>#{ENV.fetch('IOS_BUNDLE_ID')}</key><string>#{ENV.fetch('BOARDROOM_PROFILE_NAME')}</string></dict>
+      </dict>
+      </plist>
+    PLIST
+
+    command = ['flutter', 'build', 'ipa', '--release', "--export-options-plist=#{options_path}", *dart_defines]
+    command << "--build-number=#{ENV['BUILD_NUMBER']}" unless ENV.fetch('BUILD_NUMBER', '').empty?
+    Dir.chdir(PROJECT_ROOT) { sh(*command) }
+    UI.success("Built #{built_ipa}")
+  end
+
+  desc 'Upload the IPA to TestFlight with an App Store Connect API key (CI only)'
+  lane :beta do
+    require_ci!('beta')
+    require_env!('APP_STORE_CONNECT_KEY_ID', 'APP_STORE_CONNECT_ISSUER_ID', 'APP_STORE_CONNECT_KEY_BASE64')
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV.fetch('APP_STORE_CONNECT_KEY_ID'),
+      issuer_id: ENV.fetch('APP_STORE_CONNECT_ISSUER_ID'),
+      # The content of the .p8 file, in base64.
+      key_content: ENV.fetch('APP_STORE_CONNECT_KEY_BASE64'),
+      is_key_content_base64: true,
+      in_house: false
+    )
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: built_ipa,
+      # Processing takes several minutes: the lane does not wait for it.
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
