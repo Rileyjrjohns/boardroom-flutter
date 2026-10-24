@@ -1,7 +1,7 @@
 # Source of this folder
 
 This folder is a verbatim copy of `docs/spec` of the React Native repo
-(https://github.com/Rileyjrjohns/boardroom) at commit `d75a69b`.
+(https://github.com/Rileyjrjohns/boardroom) at commit `c88a4b2`.
 
 It is the reference both apps follow: the domain, the ports, the use cases, the screens and the
 shared JSON fixtures are specified once there, and the Flutter port implements the same contract.
