@@ -133,7 +133,7 @@ The native setup Patrol needs is committed: on Android the instrumentation runne
 
 ## Delivery
 
-**Nothing is deployed from this repository.** The release pipeline is written, wired and tested, but it never uploads anything here: every step that signs or uploads is gated on the secrets of the stores, and this repository has none. Pushing a tag `v*` runs the check of the tag, writes in the summary of the run which platform is skipped and why, and stops: the two platform jobs are *skipped*, not failed (the same pattern as the `eas-update` job of the React Native repository, which is skipped without `EAS_PROJECT_ID`). What follows is what a real project would set to make it ship. The full description, with the diagram, is in [`docs/ci-cd.md`](docs/ci-cd.md).
+**Nothing is deployed from this repository.** The release pipeline is written, wired and tested, but it never uploads anything here: every step that signs or uploads is gated on the secrets of the stores, and this repository has none. Pushing a tag `v*` runs the CI and the check of the tag, writes in the summary of the run which platform is skipped and why, and stops: the two platform jobs are *skipped*, not failed (the same pattern as the `eas-update` job of the React Native repository, which is skipped without `EAS_PROJECT_ID`). What follows is what a real project would set to make it ship. The full description, with the diagram, is in [`docs/ci-cd.md`](docs/ci-cd.md).
 
 **Layout.** Fastlane is set up the way [the Flutter documentation](https://docs.flutter.dev/deployment/cd) recommends: one `fastlane/` folder per native project, [`ios/fastlane`](ios/fastlane) and [`android/fastlane`](android/fastlane), each with its `Fastfile` and its `Appfile`, so that each platform has its own lanes and its own environment. A single `Gemfile` at the root pins Fastlane to one exact version (`2.240.1`, locked in `Gemfile.lock`); Bundler finds it from the two folders. The Flutter project is built with `flutter build`, and Fastlane signs, uploads and fails early: it does not replace Flutter's build.
 
@@ -179,12 +179,12 @@ A platform is released only when **all** of its own rows (the ones that are not 
 
 ### What happens on a tag in this repository
 
-1. `git tag v1.0.0 && git push origin v1.0.0` (not done here) starts three workflows: `CI` does not (it runs on branches), `End-to-end` runs its Android flows, and `Release` starts.
-2. `Release`, job `verify`: checks that the tag is the `version` of `pubspec.yaml` (without the build number), or that version and a suffix for a candidate (`v1.0.0-rc.1`); a tag that lies fails here, before anything else.
+1. `git tag v1.0.0 && git push origin v1.0.0` (not done here) starts two workflows: `End-to-end` runs its Android flows, and `Release` starts (`CI` is not started by the tag, but `Release` calls it, job `ci`).
+2. `Release`, job `ci`: runs the checks of `ci.yml` on the tag; if they fail, no platform job runs. Job `verify`: checks that the tag is the `version` of `pubspec.yaml` (without the build number), or that version and a suffix for a candidate (`v1.0.0-rc.1`); a tag that lies fails here, before anything else.
 3. Same job: tests the presence of the variables and the secrets of each platform. This repository has none, so both outputs are `false`, and the summary of the run says `ios: skipped, nothing is built or uploaded. Missing: ...` and the same for Android.
-4. Jobs `ios` and `android` have `if: needs.verify.outputs.<platform> == 'true'`: both are skipped (the macOS runner is never started), the run is green, and nothing was signed, built or uploaded.
+4. Jobs `ios` and `android` need `verify` and `ci` and have `if: !failure() && !cancelled() && needs.verify.outputs.<platform> == 'true'`: both are skipped (the macOS runner is never started), the run is green, and nothing was signed, built or uploaded.
 
-With the secrets of a platform set, the same tag instead runs, on that platform: `flutter pub get`, `build_runner`, `fastlane <platform> build`, `fastlane <platform> beta`, and keeps the IPA or the bundle as an artifact of the run. A run started by hand (`workflow_dispatch`) does the same without the check of the tag. The choice between Fastlane here and EAS in the React Native repository is an architecture decision, written in step 8 of the work (an ADR), not here.
+With the secrets of a platform set, the same tag instead runs, on that platform: `flutter pub get`, `build_runner`, `fastlane <platform> build`, `fastlane <platform> beta`, and keeps the IPA or the bundle as an artifact of the run. A run started by hand (`workflow_dispatch`) does the same without the check of the tag and without the CI. The choice between Fastlane here and EAS in the React Native repository is an architecture decision, written in step 8 of the work (an ADR), not here.
 
 ## Native libraries
 
