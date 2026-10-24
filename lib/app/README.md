@@ -12,7 +12,7 @@ The composition: the one place that knows every feature and chooses an implement
 
 | Folder | What |
 | ------ | ---- |
-| `in_memory/` | The simulated server (`InMemoryBackend`, `SimulatedNetwork`) and its seed, made of the fixtures (`fixtures/`: the loader that shifts the dates by whole days, the bundled files), and the adapters of the mock configuration that read the simulated server: the session store, the biometric gate, the connectivity that follows the switch of the simulated network, and the three repositories. The caches, the outbox and the screen protection are in their feature |
+| `in_memory/` | The simulated server (`InMemoryBackend`, `SimulatedNetwork`) and its seed, made of the fixtures (`fixtures/`: the loader that shifts the dates by whole days, the bundled files), and the adapters of the mock configuration that read the simulated server: the session store, the biometric gate (used only when the device has no biometrics enrolled: the dev configuration otherwise uses the gate of the device, so a demo on a phone asks for Face ID or the fingerprint), the connectivity that follows the switch of the simulated network, and the three repositories. The caches, the outbox and the screen protection are in their feature |
 | `fixture_server/` | The routes of `docs/api.md` over the simulated server (`MockApi`) and a dio `HttpClientAdapter` in front of them (`FixtureServerAdapter`): the real HTTP adapters run unchanged against the fixtures in the development build and in the tests. `FixtureServer.create` builds it all |
 | `pdf/` | A small PDF writer for the demo documents |
 

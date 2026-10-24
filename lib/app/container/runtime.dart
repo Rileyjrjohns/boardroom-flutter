@@ -64,7 +64,9 @@ final class ContainerRuntime {
 
   /// The real device: the engine of the database, the secure storage, the
   /// random generator, the biometrics and the network. A phone by default
-  /// (`createDevicePlatform`). Only the real configuration uses it.
+  /// (`createDevicePlatform`). The real configuration uses all of it; the
+  /// development one asks it only for the biometrics, to know whether the
+  /// device has some enrolled.
   final DevicePlatform? platform;
 
   /// The screen protection of the app, in place of the default: the native one

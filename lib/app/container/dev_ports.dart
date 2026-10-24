@@ -2,6 +2,7 @@ import 'package:boardroom/app/composition/ports.dart';
 import 'package:boardroom/app/composition/settings.dart';
 import 'package:boardroom/app/container/configuration.dart';
 import 'package:boardroom/app/container/container_error.dart';
+import 'package:boardroom/app/container/http_ports.dart' show defaultPromptText;
 import 'package:boardroom/app/container/monitoring.dart';
 import 'package:boardroom/app/container/runtime.dart';
 import 'package:boardroom/app/container/wiring.dart';
@@ -19,7 +20,10 @@ import 'package:boardroom/core/infrastructure/files/create_device_file_store.dar
 import 'package:boardroom/core/infrastructure/http/http_client.dart';
 import 'package:boardroom/core/presentation/demo/demo_controls.dart';
 import 'package:boardroom/core/presentation/notices/app_notices.dart';
+import 'package:boardroom/features/auth/application/ports/biometric_gate.dart';
 import 'package:boardroom/features/auth/domain/value_objects/credentials.dart';
+import 'package:boardroom/features/auth/infrastructure/biometrics/device_biometric_gate.dart';
+import 'package:boardroom/features/auth/infrastructure/biometrics/device_local_authentication.dart';
 import 'package:boardroom/features/auth/infrastructure/http_auth_session.dart';
 import 'package:boardroom/features/auth/infrastructure/session_vault.dart';
 import 'package:boardroom/features/documents/infrastructure/http_document_repository.dart';
@@ -58,6 +62,29 @@ final class _DemoNetworkOf implements DemoNetwork {
   @override
   Unsubscribe subscribe(void Function({required bool online}) listener) =>
       _network.subscribe(listener);
+}
+
+/// The biometrics of the development configuration: those of the device when
+/// it can do them (biometric hardware, and a biometric enrolled, the very
+/// question `DeviceBiometricGate.checkAvailability` answers), so that a demo
+/// on a phone asks for Face ID or the fingerprint like the real app; else the
+/// gate in memory, which always recognises the user, so that a simulator, an
+/// emulator without enrolment, a test or a CI run can still sign in, unlock and
+/// vote. The choice is made once, when the container is built.
+Future<BiometricGate> _chooseBiometricGate(
+  ContainerRuntime runtime,
+  Monitoring monitoring,
+) async {
+  final device = DeviceBiometricGate(
+    api: runtime.platform?.localAuthentication ?? DeviceLocalAuthentication(),
+    promptText: runtime.biometricPromptText ?? defaultPromptText,
+    monitoring: monitoring,
+    allowDevicePasscode: allowDevicePasscodeFallback,
+  );
+  return switch (await device.checkAvailability()) {
+    Ok() => device,
+    Err() => InMemoryBiometricGate(),
+  };
 }
 
 /// The adapters of the development configuration, wired to each other. They are
@@ -148,13 +175,15 @@ Future<Result<Wiring, ContainerError>> createDevPorts(
     }
   }
 
+  final biometricGate = await _chooseBiometricGate(runtime, monitoring);
+
   return ok(
     Wiring(
       ports: Ports(
         clock: clock,
         monitoring: monitoring,
         auth: auth,
-        biometricGate: InMemoryBiometricGate(),
+        biometricGate: biometricGate,
         connectivity: SimulatedConnectivity(server.backend.network),
         screenProtection:
             runtime.screenProtection ?? InMemoryScreenProtection(),
