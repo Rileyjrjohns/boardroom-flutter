@@ -12,6 +12,8 @@ flowchart LR
   TAG --> E2E["End-to-end<br/>Patrol, Android emulator"]
   TAG --> REL["Release"]
   REL --> V{"verify<br/>tag = pubspec version,<br/>secrets present?"}
+  REL --> RCI{"ci<br/>the CI, called on a tag"}
+  RCI -->|"failed"| STOP["no platform job runs"]
   V -->|"no secret (this repository)"| SKIP["ios and android jobs skipped<br/>summary says why"]
   V -->|"iOS secrets set"| IOS["ios: fastlane build, beta<br/>IPA to TestFlight"]
   V -->|"Android secrets set"| AND["android: fastlane build, beta<br/>AAB to Play internal track"]
@@ -23,7 +25,7 @@ flowchart LR
 | --------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.github/workflows/ci.yml`        | Pull requests, pushes to `main`      | Four jobs in parallel: the import rules, the analysis, format, tests and coverage gate (with the goldens), the screen protection plugin, and the parity of the tests with React Native |
 | `.github/workflows/e2e.yml`       | A tag `v*`, or by hand               | Builds the app and runs the two Patrol flows on an Android emulator (API 34) with the development configuration                                                                 |
-| `.github/workflows/release.yml`   | A tag `v*`, or by hand               | Checks the tag, then builds the signed IPA and AAB and uploads them with Fastlane, per platform and only when that platform's secrets exist                                      |
+| `.github/workflows/release.yml`   | A tag `v*`, or by hand               | Runs the CI on a tag and checks the tag, then builds the signed IPA and AAB and uploads them with Fastlane, per platform and only when that platform's secrets exist                                      |
 
 Every workflow declares `permissions: contents: read`, pins each action to a major version, runs on a named runner (`ubuntu-24.04`, `macos-15`; GitHub began moving `ubuntu-latest` to Ubuntu 26 on 19 October 2026 and the runner should not change under the repository) and has timeouts on its jobs. `test/tool/release_test.dart` checks these rules, and the safety rules of the release.
 
@@ -37,10 +39,11 @@ The checks are the commands of the "Checks" section of the [README](../README.md
 
 ## Release
 
-`release.yml` starts on a tag `v*` and by hand (`workflow_dispatch`). A second run for the same ref waits for the first (`cancel-in-progress: false`): an upload under way is never cut off. Three jobs:
+`release.yml` starts on a tag `v*` and by hand (`workflow_dispatch`). A second run for the same ref waits for the first (`cancel-in-progress: false`): an upload under way is never cut off. Four jobs:
 
+- **`ci`** (a tag only, `if: github.event_name == 'push'`). Calls `ci.yml` (`uses: ./.github/workflows/ci.yml`, which declares `workflow_call:`), so a tag is built only if the code it points at passes the same checks as a pull request. The called workflow inherits the read-only permissions, which are all it needs. A run started by hand skips this job.
 - **`verify`** (Ubuntu, always run). On a tag, checks that it is the `version` of `pubspec.yaml` without its build number, or that version and a suffix for a candidate (`v1.0.0`, `v1.0.0-rc.1`), like the React Native workflow does for `app.config.ts`. Then turns the presence of the signing and store values of each platform into two outputs, `ios` and `android` (a secret cannot be read in the `if:` of a job), and writes in `$GITHUB_STEP_SUMMARY` which platform is released and which is skipped, with the names of the missing values. It never writes a value.
-- **`ios`** (`macos-15`) and **`android`** (`ubuntu-24.04`), each with `if: needs.verify.outputs.<platform> == 'true'`. A job whose condition is false is *skipped*, not failed, and a skipped job starts no runner, so the expensive macOS minutes are not spent. When it runs: Flutter (the version of `pubspec.yaml`), Ruby with the locked gems (`bundler-cache`), `flutter pub get`, `dart run build_runner build`, then `bundle exec fastlane <platform> build` and `bundle exec fastlane <platform> beta` from the `ios/` or `android/` folder, and the IPA or the bundle kept as an artifact for 14 days. The secrets are given to the one step that needs them, as environment variables, and the lanes decode the base64 ones.
+- **`ios`** (`macos-15`) and **`android`** (`ubuntu-24.04`), each with `needs: [verify, ci]` and `if: !failure() && !cancelled() && needs.verify.outputs.<platform> == 'true'`: they run when the CI passed (a tag) or was not asked for (by hand), never when it or `verify` failed, and only with their values. A job whose condition is false is *skipped*, not failed, and a skipped job starts no runner, so the expensive macOS minutes are not spent. When it runs: Flutter (the version of `pubspec.yaml`), Ruby with the locked gems (`bundler-cache`), `flutter pub get`, `dart run build_runner build`, then `bundle exec fastlane <platform> build` and `bundle exec fastlane <platform> beta` from the `ios/` or `android/` folder, and the IPA or the bundle kept as an artifact for 14 days. The secrets are given to the one step that needs them, as environment variables, and the lanes decode the base64 ones.
 
 ### Fastlane
 
@@ -54,8 +57,8 @@ One `fastlane/` folder per native project, as [docs.flutter.dev/deployment/cd](h
 
 ### What a tag does here
 
-1. `verify` checks the tag against the version of `pubspec.yaml`.
+1. `ci` runs the checks of `ci.yml` on the tag, and `verify` checks the tag against the version of `pubspec.yaml`.
 2. `verify` finds no secret: `ios=false`, `android=false`, and the summary says `skipped, nothing is built or uploaded. Missing: ...` for each.
-3. The `ios` and `android` jobs are skipped. The run is green. Nothing was signed, built or uploaded.
+3. The `ios` and `android` jobs are skipped (and would be whatever the secrets if the CI failed). The run is green if the CI is. Nothing was signed, built or uploaded.
 
 To ship for real, a project sets the values of the table "Secrets and variables" in the README, replaces the bundle identifier and the application id (`com.boardroom.flutterdemo`, a placeholder of the demo) with its own and makes the matching profile and Play Console entry. No change to the workflow or the lanes is needed. An ADR that compares Fastlane here with EAS in the React Native app belongs to step 8.
