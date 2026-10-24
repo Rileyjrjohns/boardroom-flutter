@@ -1,4 +1,5 @@
 PODS:
+  - CocoaAsyncSocket (7.6.5)
   - connectivity_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -6,6 +7,10 @@ PODS:
     - Flutter
     - FlutterMacOS
   - local_auth_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - patrol (0.0.1):
+    - CocoaAsyncSocket (~> 7.6)
     - Flutter
     - FlutterMacOS
   - pdfium_flutter (0.1.5):
@@ -21,9 +26,14 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage_darwin (from `.symlinks/plugins/flutter_secure_storage_darwin/darwin`)
   - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
+  - patrol (from `.symlinks/plugins/patrol/darwin`)
   - pdfium_flutter (from `.symlinks/plugins/pdfium_flutter/darwin`)
   - screen_protection (from `.symlinks/plugins/screen_protection/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - CocoaAsyncSocket
 
 EXTERNAL SOURCES:
   connectivity_plus:
@@ -34,6 +44,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage_darwin/darwin"
   local_auth_darwin:
     :path: ".symlinks/plugins/local_auth_darwin/darwin"
+  patrol:
+    :path: ".symlinks/plugins/patrol/darwin"
   pdfium_flutter:
     :path: ".symlinks/plugins/pdfium_flutter/darwin"
   screen_protection:
@@ -42,14 +54,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   connectivity_plus: cb623214f4e1f6ef8fe7403d580fdad517d2f7dd
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   flutter_secure_storage_darwin: 46e401699982ee74142909676535e0f6a7321e58
   local_auth_darwin: c3ee6cce0a8d56be34c8ccb66ba31f7f180aaebb
+  patrol: 09773d9cd563ec54230813755b3231b2e8252aac
   pdfium_flutter: f29beeb612293cc42df95beee223a4925ce2458e
   screen_protection: b645297c1d298c500fca7d32c0bf7af705ae8010
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
 
-PODFILE CHECKSUM: 3ba3a73b1b12adcf321a227a745625fe0888cc82
+PODFILE CHECKSUM: 43d20d699740809347394dc3cbd77e7b22db8977
 
 COCOAPODS: 1.16.2
