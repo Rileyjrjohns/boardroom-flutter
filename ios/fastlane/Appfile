@@ -1,0 +1,6 @@
+# The identity of the app, read from the environment: nothing that belongs to an Apple developer
+# account is written in this repository. In CI they come from the variable IOS_BUNDLE_ID and the
+# secret APPLE_TEAM_ID (see "Delivery" in README.md). Without them the lanes that need them stop
+# with a message that names the missing one.
+app_identifier(ENV.fetch('IOS_BUNDLE_ID', nil))
+team_id(ENV.fetch('APPLE_TEAM_ID', nil))

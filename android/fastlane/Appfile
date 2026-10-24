@@ -1,0 +1,4 @@
+# The identity of the app, read from the environment: the application id is the variable
+# ANDROID_PACKAGE_NAME in CI (see "Delivery" in README.md). The service account of Google Play is
+# read by the lane `beta` from its own secret, not here.
+package_name(ENV.fetch('ANDROID_PACKAGE_NAME', nil))

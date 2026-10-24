@@ -1,0 +1,96 @@
+# Delivery of the Android app: a signed release bundle with `flutter build appbundle`, and an upload
+# to the internal track of Google Play. Run from the android/ folder (the Gemfile is in the parent):
+#
+#   bundle exec fastlane android ci_signing   write the upload keystore and android/key.properties
+#   bundle exec fastlane android build        sign (ci_signing runs first) and build the .aab
+#   bundle exec fastlane android beta         upload that bundle to the internal track (CI only, see below)
+#
+# Everything secret or personal is read from the environment, and nothing has a default: a lane that
+# lacks a variable stops at once and names it. The list is the table "Secrets and variables" of
+# README.md. This repository holds no such value, so nothing here ever runs against Google's servers
+# from it (see "Delivery" in README.md).
+
+require 'base64'
+
+default_platform(:android)
+
+# The root of the Flutter project (pubspec.yaml), whatever the folder fastlane was started from.
+PROJECT_ROOT = File.expand_path('../..', __dir__)
+KEYSTORE_PATH = File.join(PROJECT_ROOT, 'android', 'app', 'upload-keystore.jks')
+KEY_PROPERTIES_PATH = File.join(PROJECT_ROOT, 'android', 'key.properties')
+BUNDLE_PATH = File.join(PROJECT_ROOT, 'build', 'app', 'outputs', 'bundle', 'release', 'app-release.aab')
+
+# Stops the lane with the list of the variables that are missing or empty, before anything is done.
+def require_env!(*names)
+  missing = names.select { |name| ENV.fetch(name, '').strip.empty? }
+  return if missing.empty?
+
+  UI.user_error!("Missing environment variable(s): #{missing.join(', ')}. See \"Delivery\" in README.md.")
+end
+
+# The lanes that write signing material or touch a store run in CI only, unless the person who runs
+# them says they mean it (FORCE_DELIVERY=1): a local run must never upload by accident.
+def require_ci!(lane_name)
+  return if ENV['CI'] == 'true' || ENV['FORCE_DELIVERY'] == '1'
+
+  UI.user_error!("The lane #{lane_name} runs in CI only. Set FORCE_DELIVERY=1 to run it on this machine on purpose.")
+end
+
+# The settings that a release build is told on the command line. A release build must be told which
+# adapters it uses (see "Composition root" in docs/architecture.md): `dev` is the simulated server,
+# which is what a build with no real API behind it wants.
+def dart_defines
+  defines = ["--dart-define=BOARDROOM_ADAPTERS=#{ENV.fetch('BOARDROOM_ADAPTERS', 'dev')}"]
+  api = ENV.fetch('BOARDROOM_API_BASE_URL', '')
+  defines << "--dart-define=BOARDROOM_API_BASE_URL=#{api}" unless api.empty?
+  defines
+end
+
+platform :android do
+  desc 'Write the upload keystore and android/key.properties from the environment (both are ignored by Git)'
+  lane :ci_signing do
+    require_ci!('ci_signing')
+    require_env!('ANDROID_KEYSTORE_BASE64', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_PASSWORD', 'ANDROID_KEY_ALIAS')
+
+    File.binwrite(KEYSTORE_PATH, Base64.decode64(ENV.fetch('ANDROID_KEYSTORE_BASE64')))
+    # The format Flutter documents; android/app/build.gradle.kts reads it. storeFile is relative to
+    # the app module.
+    File.write(KEY_PROPERTIES_PATH, <<~PROPERTIES)
+      storePassword=#{ENV.fetch('ANDROID_KEYSTORE_PASSWORD')}
+      keyPassword=#{ENV.fetch('ANDROID_KEY_PASSWORD')}
+      keyAlias=#{ENV.fetch('ANDROID_KEY_ALIAS')}
+      storeFile=#{File.basename(KEYSTORE_PATH)}
+    PROPERTIES
+  end
+
+  desc 'Build the signed release app bundle (flutter build appbundle)'
+  lane :build do
+    ci_signing
+
+    command = ['flutter', 'build', 'appbundle', '--release', *dart_defines]
+    command << "--build-number=#{ENV['BUILD_NUMBER']}" unless ENV.fetch('BUILD_NUMBER', '').empty?
+    Dir.chdir(PROJECT_ROOT) { sh(*command) }
+    UI.user_error!("No bundle at #{BUNDLE_PATH}.") unless File.exist?(BUNDLE_PATH)
+    UI.success("Built #{BUNDLE_PATH}")
+  end
+
+  desc 'Upload the bundle to the internal track of Google Play with a service account (CI only)'
+  lane :beta do
+    require_ci!('beta')
+    require_env!('PLAY_SERVICE_ACCOUNT_JSON_BASE64', 'ANDROID_PACKAGE_NAME')
+    UI.user_error!("No bundle at #{BUNDLE_PATH}. Run the lane build first.") unless File.exist?(BUNDLE_PATH)
+
+    upload_to_play_store(
+      package_name: ENV.fetch('ANDROID_PACKAGE_NAME'),
+      track: 'internal',
+      aab: BUNDLE_PATH,
+      json_key_data: Base64.decode64(ENV.fetch('PLAY_SERVICE_ACCOUNT_JSON_BASE64')),
+      # A draft is not visible to the testers until someone releases it in the Play Console.
+      release_status: 'draft',
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
