@@ -1,12 +1,12 @@
 # Builds the signed iOS and Android releases with Fastlane on a version tag, and uploads them to
-# TestFlight and to the internal track of Google Play (README, "Delivery").
+# TestFlight and to the internal track of Google Play (docs/delivery.md).
 #
 # NOTHING IS DEPLOYED FROM THIS REPOSITORY. Every step that signs or uploads is gated on the secrets
 # of the stores, and this repository has none: a tag runs the `verify` job (the tag against the
 # version of pubspec.yaml), says in the run summary which platform is skipped and why, and the two
 # platform jobs are skipped (a skipped job is not a failure). A tag also runs the CI (ci.yml) first,
 # and no platform is built if it fails. A real project adds the secrets listed
-# in the README and the same workflow then builds and uploads, with no change.
+# in docs/delivery.md and the same workflow then builds and uploads, with no change.
 name: Release
 
 on:
@@ -91,7 +91,7 @@ jobs:
           {
             echo '### Release'
             echo
-            echo 'Nothing is deployed unless the signing and store values of a platform are all set (see "Delivery" in the README).'
+            echo 'Nothing is deployed unless the signing and store values of a platform are all set (see docs/delivery.md).'
             echo
           } >> "$GITHUB_STEP_SUMMARY"
           report ios "$(missing IOS_BUNDLE_ID APPLE_TEAM_ID IOS_CERTIFICATE_P12_BASE64 IOS_CERTIFICATE_PASSWORD IOS_PROVISIONING_PROFILE_BASE64 APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_BASE64)"
