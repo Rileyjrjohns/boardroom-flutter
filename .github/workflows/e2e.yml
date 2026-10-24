@@ -23,7 +23,9 @@ jobs:
   android:
     name: Patrol on an Android emulator
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # A run takes about 15 minutes (the build is the longest); the flows themselves a few. A longer one is
+    # a hang, and tool/ci/e2e_android.sh and the timeouts of the flows end it with logs before this does.
+    timeout-minutes: 30
     steps:
       - name: Check out the code
         uses: actions/checkout@v7
@@ -72,8 +74,9 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
+          ram-size: 4096M
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: patrol test --dart-define=BOARDROOM_ADAPTERS=dev
+          script: tool/ci/e2e_android.sh
 
       - name: Upload the Gradle test reports
         if: ${{ !cancelled() }}
@@ -81,5 +84,15 @@ jobs:
         with:
           name: patrol-reports
           path: build/app/reports
+          if-no-files-found: ignore
+          retention-days: 14
+
+      # The logcat of the emulator and the output of patrol, to find where a run that failed or hung stopped.
+      - name: Upload the logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: patrol-logs
+          path: build/e2e-logs
           if-no-files-found: ignore
           retention-days: 14
