@@ -105,3 +105,6 @@ app.*.map.json
 /android/fastlane/report.xml
 /ios/fastlane/README.md
 /android/fastlane/README.md
+
+# Gradle caches of the local plugins, written by an Android build.
+/packages/*/android/.gradle/
