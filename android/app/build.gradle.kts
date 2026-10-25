@@ -42,10 +42,14 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // Patrol (end-to-end tests, integration_test/): its runner starts the Dart tests, and each
-        // test starts from a clean app.
+        // Patrol (end-to-end tests, integration_test/): its runner starts the Dart tests.
+        // clearPackageData is deliberately not set: with it the orchestrator wipes the app between
+        // two tests while the previous task is still being destroyed, and on a slow emulator the
+        // next instrumentation is killed ("Destroy timeout of remove-task"). Each test already gets
+        // a fresh process, and the development configuration keeps nothing across processes (the
+        // secure storage, caches and outbox are in memory; the files of the documents are deleted
+        // when the container is built).
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments["clearPackageData"] = "true"
     }
 
     // Patrol runs every test in a fresh process, through the Android test orchestrator.
